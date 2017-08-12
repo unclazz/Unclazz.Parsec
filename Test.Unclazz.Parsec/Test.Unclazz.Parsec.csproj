@@ -46,7 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PrefixedReaderTest.cs" />
+    <Compile Include="CharacterPositionTest.cs" />
+    <Compile Include="PrependableReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResettableReaderTest.cs" />
   </ItemGroup>

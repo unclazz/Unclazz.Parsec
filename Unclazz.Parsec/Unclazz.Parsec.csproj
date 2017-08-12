@@ -22,12 +22,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Unclazz.Parsec.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,8 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoDispose.cs" />
+    <Compile Include="CharacterPosition.cs" />
+    <Compile Include="IParser.cs" />
+    <Compile Include="IResettableReader.cs" />
+    <Compile Include="ITextReader.cs" />
+    <Compile Include="ParseResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PrefixedReader.cs" />
+    <Compile Include="PrependableReader.cs" />
     <Compile Include="ResettableReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
