@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
+using Unclazz.Parsec.Reader;
 
 namespace Test.Unclazz.Parsec
 {

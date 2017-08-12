@@ -43,13 +43,26 @@
   <ItemGroup>
     <Compile Include="AutoDispose.cs" />
     <Compile Include="CharacterPosition.cs" />
+    <Compile Include="CharClass\CharRange.cs" />
+    <Compile Include="CharClass\CharClass.cs" />
+    <Compile Include="CharClass\DelegateCharClass.cs" />
+    <Compile Include="CharClass\ComplementCharClass.cs" />
+    <Compile Include="CharClass\SingleCharRangeCharClass.cs" />
+    <Compile Include="CharClass\CharRangesCharClass.cs" />
+    <Compile Include="CharClass\CharactersCharClass.cs" />
+    <Compile Include="CharClass\SingleCharacterCharClass.cs" />
+    <Compile Include="CharClass\SingleUnicodeCategoryCharClass.cs" />
+    <Compile Include="CharClass\UnicodeCategoriesCharClass.cs" />
+    <Compile Include="CharClass\UnionCharClass.cs" />
     <Compile Include="IParser.cs" />
-    <Compile Include="IResettableReader.cs" />
-    <Compile Include="ITextReader.cs" />
+    <Compile Include="IParserInput.cs" />
+    <Compile Include="Reader\IResettableReader.cs" />
+    <Compile Include="Reader\ITextReader.cs" />
     <Compile Include="ParseResult.cs" />
+    <Compile Include="ParserExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PrependableReader.cs" />
-    <Compile Include="ResettableReader.cs" />
+    <Compile Include="Reader\PrependableReader.cs" />
+    <Compile Include="Reader\ResettableReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

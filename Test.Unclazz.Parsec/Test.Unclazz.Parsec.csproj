@@ -48,10 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterPositionTest.cs" />
+    <Compile Include="CharClass\CharRangesCharClassTest.cs" />
+    <Compile Include="CharClass\CharRangeTest.cs" />
     <Compile Include="ParseResultTest.cs" />
-    <Compile Include="PrependableReaderTest.cs" />
+    <Compile Include="Reader\PrependableReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResettableReaderTest.cs" />
+    <Compile Include="Reader\ResettableReaderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Unclazz.Parsec
 {
-    public interface IParser<T>
+    public interface IParserInput
     {
-        ParseResult<T> Parse(IParserInput input);
     }
 }
