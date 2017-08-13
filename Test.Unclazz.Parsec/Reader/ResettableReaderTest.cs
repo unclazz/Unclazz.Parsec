@@ -71,5 +71,52 @@ namespace Test.Unclazz.Parsec
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn));
             Assert.That(r.Peek(), Is.EqualTo(markedChar));
         }
+
+        [Test]
+        public void Reset_Case3()
+        {
+            // Arrange
+            var r = new ResettableReader(new StringReader("0123456789X"));
+
+            // Act
+            // Assert
+            Repeats(r.Read, 2);
+            Assert.That((char)r.Peek(), Is.EqualTo('2'));
+
+            r.Mark(); // 01[2]3456789X
+
+            Repeats(r.Read, 2);
+            Assert.That((char)r.Peek(), Is.EqualTo('4'));
+
+            r.Reset();
+            Assert.That((char)r.Peek(), Is.EqualTo('2'));
+
+            Repeats(r.Read, 2);
+            Assert.That((char)r.Peek(), Is.EqualTo('4'));
+
+            r.Reset();
+            Assert.That((char) r.Peek(), Is.EqualTo('2'));
+
+            Repeats(r.Read, 2);
+            Assert.That((char)r.Peek(), Is.EqualTo('4'));
+
+            Repeats(r.Read, 2);
+            Assert.That((char)r.Peek(), Is.EqualTo('6'));
+
+            r.Reset();
+            Assert.That((char)r.Peek(), Is.EqualTo('2'));
+        }
+
+        void Repeats(Action act, int times)
+        {
+            foreach (var i in Enumerable.Range(1, times))
+            {
+                act();
+            }
+        }
+        void Repeats<T>(Func<T> func, int times)
+        {
+            Repeats(() => { func(); }, times);
+        }
     }
 }

@@ -1,76 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Unclazz.Parsec.Reader
 {
-    sealed class NestedResettableReader : IResettableReader
+    sealed class NestedResettableReader : AutoDispose, INestedResettableReader
     {
-        IResettableReader _nested;
-        bool _disposed;
-        internal NestedResettableReader(IResettableReader r)
+        internal NestedResettableReader(TextReader r) : this(new TextReaderProxy(r)) { }
+        internal NestedResettableReader(ITextReader r)
         {
-            _nested = r ?? throw new ArgumentNullException(nameof(r));
-        }
-        ~NestedResettableReader()
-        {
-            Dispose(false);
+            if (r == null) throw new ArgumentNullException(nameof(r));
+            var resettable = r as IResettableReader;
+            Internal = resettable == null ? new ResettableReader(r) : resettable;
         }
 
-        public CharacterPosition Position => _nested.Position;
+        public CharacterPosition Position => Internal.Position;
+        public bool EndOfFile => Internal.EndOfFile;
+        protected override IDisposable Disposable => Internal;
+        IResettableReader Internal { get; set; }
 
-        public bool EndOfFile => _nested.EndOfFile;
-
-        void Dispose(bool disposing)
+        public void Nest()
         {
-            if (_disposed) return;
-            if (disposing && _nested != null) _nested.Dispose();
-            _disposed = true;
+            Internal = new ResettableReader(Internal);
+        }
+        public void Unnest()
+        {
+            var nested = Internal as ResettableReader;
+            if (nested == null) throw new InvalidOperationException();
+            Internal = nested.Unwrap();
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public void Mark()
-        {
-            _nested.Mark();
-        }
-
-        public int Peek()
-        {
-            return _nested.Peek();
-        }
-
-        public int Read()
-        {
-            return _nested.Read();
-        }
-
-        public string ReadLine()
-        {
-            return _nested.ReadLine();
-        }
-
-        public void Reset()
-        {
-            _nested.Reset();
-        }
-
-        public void Unmark()
-        {
-            _nested.Unmark();
-        }
-
-        public IResettableReader Unnest()
-        {
-            var tmp = _nested;
-            _nested = null;
-            return tmp;
-        }
+        public int Peek() => Internal.Peek();
+        public int Read() => Internal.Read();
+        public string ReadLine() => Internal.ReadLine();
+        public void Mark() => Internal.Mark();
+        public void Unmark() => Internal.Unmark();
+        public void Reset() => Internal.Reset();
     }
 }

@@ -19,16 +19,16 @@ namespace Unclazz.Parsec
         protected override IDisposable Disposable => Original;
         IResettableReader Original { get; set; }
 
-        public void PreparesBacktracking()
-        {
-            Original = new NestedResettableReader(Original);
-        }
-        public void Backtracks()
-        {
-            var nested = Original as NestedResettableReader;
-            if (nested == null) throw new InvalidOperationException();
-            Original = nested.Unnest();
-        }
+        //public void PreparesBacktracking()
+        //{
+        //    Original = new WrappedResettableReader(Original);
+        //}
+        //public void Backtracks()
+        //{
+        //    var nested = Original as WrappedResettableReader;
+        //    if (nested == null) throw new InvalidOperationException();
+        //    Original = nested.Unwrap();
+        //}
 
         public int Peek() => Original.Peek();
         public int Read() => Original.Read();

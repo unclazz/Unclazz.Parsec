@@ -63,6 +63,8 @@
     <Compile Include="ParseResult.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reader\INestedResettableReader.cs" />
+    <Compile Include="Reader\WrappedResettableReader.cs" />
     <Compile Include="Reader\NestedResettableReader.cs" />
     <Compile Include="Reader\PrependableReader.cs" />
     <Compile Include="Reader\ResettableReader.cs" />

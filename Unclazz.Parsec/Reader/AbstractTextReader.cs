@@ -26,8 +26,6 @@ namespace Unclazz.Parsec.Reader
         /// このメソッドは読み取りに専念し<see cref="Position"/>の値の更新は行いません。
         /// </para>
         /// </summary>
-        /// <remarks>
-        /// </remarks>
         /// <returns>文字</returns>
         public abstract int ReadSimply();
         public int Read()
