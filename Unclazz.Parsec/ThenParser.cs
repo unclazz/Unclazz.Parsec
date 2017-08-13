@@ -21,9 +21,8 @@ namespace Unclazz.Parsec
             if (leftResult.Successful)
             {
                 var rightResult = _right.Parse(input);
-                IEnumerable<T> pair = new[] { leftResult.Value, default(T) };
                 return rightResult.Successful
-                    ? ParseResult.OfSuccess(p, pair)
+                    ? ParseResult.OfSuccess<IEnumerable<T>>(p, new[] { leftResult.Value, rightResult.Value })
                     : ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message);
             }
             return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message);
