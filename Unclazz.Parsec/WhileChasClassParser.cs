@@ -3,9 +3,9 @@ using System.Text;
 
 namespace Unclazz.Parsec
 {
-    sealed class WhileChasClassParser: Parser<string>
+    sealed class WhileCharClassParser: Parser<string>
     {
-        internal WhileChasClassParser(CharClass.CharClass clazz)
+        internal WhileCharClassParser(CharClass.CharClass clazz)
         {
             _clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
         }
