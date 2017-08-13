@@ -16,6 +16,10 @@ namespace Unclazz.Parsec
         {
             return Not(operand);
         }
+        public static Parser<T> operator|(Parser<T> left, Parser<T> right)
+        {
+            return Or(left, right);
+        }
 
         public static Parser<T> For<T>(Func<ParserInput, ParseResult<T>> func)
         {
@@ -23,25 +27,38 @@ namespace Unclazz.Parsec
         }
         public static Parser<T> Not(Parser<T> operand)
         {
-            return new NegativeParser<T>(operand);
+            return new NotParser<T>(operand);
+        }
+        public static Parser<T> Or(Parser<T> left, Parser<T> right)
+        {
+            return new OrParser<T>(left, right);
         }
 
         public abstract ParseResult<T> Parse(ParserInput input);
-    }
 
-    sealed class NegativeParser<T> : Parser<T>
-    {
-        internal NegativeParser(Parser<T> original)
+        public Parser<U> Map<U>(Func<T,U> transform)
         {
-            Original = original ?? throw new ArgumentNullException(nameof(original));
+            return new MapParser<T, U>(this, transform);
         }
-
-        Parser<T> Original { get; }
-        
-        public override ParseResult<T> Parse(ParserInput input)
+        public Parser<IEnumerable<T>> Repeat(int min, int max)
         {
-            // TODO
-            throw new NotImplementedException();
+            return new RepeatMinMaxParser<T>(this, min, max);
+        }
+        public Parser<IEnumerable<T>> RepeatMin(int min)
+        {
+            return new RepeatMinMaxParser<T>(this, min, -1);
+        }
+        public Parser<IEnumerable<T>> RepeatMax(int max)
+        {
+            return new RepeatMinMaxParser<T>(this, 0, max);
+        }
+        public Parser<IEnumerable<T>> RepeatExactly(int exactly)
+        {
+            return new RepeatExactlyParser<T>(this, exactly);
+        }
+        public Parser<T> Or(Parser<T> another)
+        {
+            return new OrParser<T>(this, another);
         }
     }
 }

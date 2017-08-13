@@ -6,14 +6,18 @@ namespace Unclazz.Parsec
     {
         internal DelegateParser(Func<ParserInput, ParseResult<T>> func)
         {
-            Delegate = func ?? throw new ArgumentNullException(nameof(func));
+            _delegate = func ?? throw new ArgumentNullException(nameof(func));
         }
 
-        Func<ParserInput, ParseResult<T>> Delegate { get; }
+        readonly Func<ParserInput, ParseResult<T>> _delegate;
 
         public override ParseResult<T> Parse(ParserInput input)
         {
-            return Delegate(input);
+            return _delegate(input);
+        }
+        public override string ToString()
+        {
+            return string.Format("Parser({0}", _delegate.GetType());
         }
     }
 }

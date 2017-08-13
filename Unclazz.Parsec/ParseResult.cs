@@ -154,6 +154,17 @@ namespace Unclazz.Parsec
             if (!Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Message);
         }
         /// <summary>
+        /// パース結果に引数で指定された関数を適用します。
+        /// </summary>
+        /// <typeparam name="U">結果の型</typeparam>
+        /// <param name="transform">関数</param>
+        /// <returns>関数を適用した結果</returns>
+        public ParseResult<U> Map<U>(Func<T, U> transform)
+        {
+            return Successful ? ParseResult.OfSuccess(Position, transform(Value))
+                : ParseResult.OfFailure<U>(Position, Message);
+        }
+        /// <summary>
         /// 列挙子を返します。
         /// パースが成功している場合、列挙子は唯一の要素としてパース結果の値を列挙します。
         /// パースが失敗している場合、列挙子はいかなる値も列挙しません。
