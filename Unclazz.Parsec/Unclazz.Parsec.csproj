@@ -59,6 +59,7 @@
     <Compile Include="ManyThenParser.cs" />
     <Compile Include="MapParser.cs" />
     <Compile Include="NotParser.cs" />
+    <Compile Include="OptionalParser.cs" />
     <Compile Include="OrParser.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserInput.cs" />

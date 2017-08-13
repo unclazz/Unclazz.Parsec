@@ -17,6 +17,14 @@ namespace Unclazz.Parsec
         {
             return new NotParser<T>(operand);
         }
+        public static Parser<T> Optional<T>(Parser<T> parser)
+        {
+            return new OptionalParser<T>(parser);
+        }
+        public static Parser<T> Optional<T>(Parser<T> parser, T defaultValue)
+        {
+            return new OptionalParser<T>(parser, defaultValue);
+        }
         public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
         {
             return new OrParser<T>(left, right);
@@ -38,7 +46,9 @@ namespace Unclazz.Parsec
             return new WordParser(word);
         }
         public static Parser<string> WhiteSpaceAndControls { get; } =
-            new WhileChasClassParser(new DelegateCharClass(ch => ch <= 32 || ch == 127));
+            new WhileCharClassParser(new DelegateCharClass(ch => ch <= 32 || ch == 127));
+        public static Parser<string> Controls { get; } =
+            new WhileCharClassParser(new DelegateCharClass(ch => ch < 32 || ch == 127));
 
         public static Parser<string> Concat(this Parser<IEnumerable<char>> self)
         {
@@ -51,6 +61,10 @@ namespace Unclazz.Parsec
         public static Parser<IEnumerable<T>> Then<T>(this Parser<IEnumerable<T>> self, Parser<T> another)
         {
             return new ManyThenParser<T>(self, another);
+        }
+        public static Parser<IEnumerable<T>> Or<T>(this Parser<IEnumerable<T>> self, params T[] defaultValue)
+        {
+            return new OptionalParser<IEnumerable<T>>(self, defaultValue);
         }
     }
 
@@ -67,6 +81,10 @@ namespace Unclazz.Parsec
         public static Parser<T> operator|(Parser<T> left, Parser<T> right)
         {
             return Parser.Or<T>(left, right);
+        }
+        public static Parser<T> operator|(Parser<T> left, T right)
+        {
+            return left.Or(right);
         }
         public static Parser<IEnumerable<T>> operator &(Parser<T> left, Parser<T> right)
         {
@@ -106,6 +124,10 @@ namespace Unclazz.Parsec
         public Parser<IEnumerable<T>> Then(Parser<T> another)
         {
             return new ThenParser<T>(this, another);
+        }
+        public Parser<T> Or(T defaultValue)
+        {
+            return new OptionalParser<T>(this, defaultValue);
         }
     }
 }
