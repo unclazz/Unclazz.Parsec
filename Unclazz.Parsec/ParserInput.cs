@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,31 +8,41 @@ using Unclazz.Parsec.Reader;
 
 namespace Unclazz.Parsec
 {
-    sealed class ParserInput : AutoDispose, ITextReader
+    public sealed class ParserInput : AutoDispose, IResettableReader
     {
-        ParserInput(IResettableReader r)
+        public static ParserInput FromStream(Stream stream, Encoding enc)
         {
-            Original = r ?? throw new ArgumentNullException(nameof(r));
+            return FromReader(new StreamReader(stream, enc));
+        }
+        public static ParserInput FromFile(string filepath, Encoding enc)
+        {
+            return FromStream(new FileStream(filepath, FileMode.Open), enc);
+        }
+        public static ParserInput FromString(string text)
+        {
+            return FromReader(new StringReader(text));
+        }
+        public static ParserInput FromReader(TextReader reader)
+        {
+            return new ParserInput(new ResettableReader(reader));
         }
 
-        public CharacterPosition Position => Original.Position;
-        public bool EndOfFile => Original.EndOfFile;
-        protected override IDisposable Disposable => Original;
-        IResettableReader Original { get; set; }
+        ParserInput(IResettableReader r)
+        {
+            _inner = r ?? throw new ArgumentNullException(nameof(r));
+        }
 
-        //public void PreparesBacktracking()
-        //{
-        //    Original = new WrappedResettableReader(Original);
-        //}
-        //public void Backtracks()
-        //{
-        //    var nested = Original as WrappedResettableReader;
-        //    if (nested == null) throw new InvalidOperationException();
-        //    Original = nested.Unwrap();
-        //}
+        readonly IResettableReader _inner;
 
-        public int Peek() => Original.Peek();
-        public int Read() => Original.Read();
-        public string ReadLine() => Original.ReadLine();
+        public CharacterPosition Position => _inner.Position;
+        public bool EndOfFile => _inner.EndOfFile;
+        protected override IDisposable Disposable => _inner;
+
+        public int Peek() => _inner.Peek();
+        public int Read() => _inner.Read();
+        public string ReadLine() => _inner.ReadLine();
+        public void Mark() => _inner.Mark();
+        public void Unmark() => _inner.Unmark();
+        public void Reset() => _inner.Reset();
     }
 }
