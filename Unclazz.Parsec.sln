@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unclazz.Parsec", "Unclazz.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Unclazz.Parsec", "Test.Unclazz.Parsec\Test.Unclazz.Parsec.csproj", "{B14E443D-30CC-42F4-B31A-9C3C49AC4A16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Unclazz.Parcec", "Example.Unclazz.Parcec\Example.Unclazz.Parcec.csproj", "{672A8E88-C720-4DD4-B146-5704D69839C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B14E443D-30CC-42F4-B31A-9C3C49AC4A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B14E443D-30CC-42F4-B31A-9C3C49AC4A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B14E443D-30CC-42F4-B31A-9C3C49AC4A16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{672A8E88-C720-4DD4-B146-5704D69839C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{672A8E88-C720-4DD4-B146-5704D69839C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672A8E88-C720-4DD4-B146-5704D69839C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{672A8E88-C720-4DD4-B146-5704D69839C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

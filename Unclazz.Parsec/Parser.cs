@@ -3,35 +3,78 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unclazz.Parsec.CharClass;
 
 namespace Unclazz.Parsec
 {
-    public abstract class Parser<T>
+    public static class Parser
     {
-        public static implicit operator Parser<T>(Func<ParserInput, ParseResult<T>> func)
-        {
-            return For(func);
-        }
-        public static Parser<T> operator!(Parser<T> operand)
-        {
-            return Not(operand);
-        }
-        public static Parser<T> operator|(Parser<T> left, Parser<T> right)
-        {
-            return Or(left, right);
-        }
-
         public static Parser<T> For<T>(Func<ParserInput, ParseResult<T>> func)
         {
             return new DelegateParser<T>(func);
         }
-        public static Parser<T> Not(Parser<T> operand)
+        public static Parser<T> Not<T>(Parser<T> operand)
         {
             return new NotParser<T>(operand);
         }
-        public static Parser<T> Or(Parser<T> left, Parser<T> right)
+        public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
         {
             return new OrParser<T>(left, right);
+        }
+        public static Parser<char> Char(CharClass.CharClass clazz)
+        {
+            return new CharClassParser(clazz);
+        }
+        public static Parser<char> Char(params char[] chars)
+        {
+            return new CharClassParser(new CharactersCharClass(chars));
+        }
+        public static Parser<char> Char(IEnumerable<char> chars)
+        {
+            return new CharClassParser(new CharactersCharClass(chars));
+        }
+        public static Parser<string> Word(string word)
+        {
+            return new WordParser(word);
+        }
+        public static Parser<string> WhiteSpaceAndControls { get; } =
+            new WhileChasClassParser(new DelegateCharClass(ch => ch <= 32 || ch == 127));
+
+        public static Parser<string> Concat(this Parser<IEnumerable<char>> self)
+        {
+            return self.Map(cs => cs.Aggregate(new StringBuilder(), (b, ch) => b.Append(ch)).ToString());
+        }
+        public static Parser<string> Concat(this Parser<IEnumerable<string>> self)
+        {
+            return self.Map(cs => cs.Aggregate(new StringBuilder(), (b, s) => b.Append(s)).ToString());
+        }
+        public static Parser<IEnumerable<T>> Then<T>(this Parser<IEnumerable<T>> self, Parser<T> another)
+        {
+            return new ManyThenParser<T>(self, another);
+        }
+    }
+
+    public abstract class Parser<T>
+    {
+        public static implicit operator Parser<T>(Func<ParserInput, ParseResult<T>> func)
+        {
+            return Parser.For(func);
+        }
+        public static Parser<T> operator!(Parser<T> operand)
+        {
+            return Parser.Not<T>(operand);
+        }
+        public static Parser<T> operator|(Parser<T> left, Parser<T> right)
+        {
+            return Parser.Or<T>(left, right);
+        }
+        public static Parser<IEnumerable<T>> operator &(Parser<T> left, Parser<T> right)
+        {
+            return left.Then(right);
+        }
+        public static Parser<IEnumerable<T>> operator &(Parser<IEnumerable<T>> left, Parser<T> right)
+        {
+            return new ManyThenParser<T>(left, right);
         }
 
         public abstract ParseResult<T> Parse(ParserInput input);
@@ -59,6 +102,10 @@ namespace Unclazz.Parsec
         public Parser<T> Or(Parser<T> another)
         {
             return new OrParser<T>(this, another);
+        }
+        public Parser<IEnumerable<T>> Then(Parser<T> another)
+        {
+            return new ThenParser<T>(this, another);
         }
     }
 }
