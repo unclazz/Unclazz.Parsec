@@ -8,19 +8,25 @@ namespace Unclazz.Parsec.Reader
 {
     /// <summary>
     /// 一連の文字を読み取ることができるリーダーを表します。
+    /// <para>
     /// このインターフェースは<see cref="System.IO.TextReader"/>のインターフェースとしての再定義を行うものです。
+    /// </para>
     /// </summary>
     public interface ITextReader : IDisposable
     {
         /// <summary>
         /// データソースから現在の文字位置の文字を読み取って返します。
+        /// <para>
         /// <see cref="Read"/>と異なり文字位置を進めることはありません。
+        /// </para>
         /// </summary>
         /// <returns>文字</returns>
         int Peek();
         /// <summary>
         /// データソースから現在の文字位置の文字を読み取って返します。
+        /// <para>
         /// データソースから読み取った文字を呼び出し元に返す前に、文字位置を次に進めます。
+        /// </para>
         /// </summary>
         /// <returns>文字</returns>
         int Read();

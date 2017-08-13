@@ -9,7 +9,7 @@ namespace Unclazz.Parsec
 {
     public static class ParserExtension
     {
-        public static IParser<U> Map<T, U>(this IParser<T> self, Func<T, U> transform)
+        public static Parser<U> Map<T, U>(this Parser<T> self, Func<T, U> transform)
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
             if (transform == null) throw new ArgumentNullException(nameof(transform));
@@ -17,14 +17,14 @@ namespace Unclazz.Parsec
             return null;// TODO MappedParser<T>
         }
 
-        public static IParser<T> Repeat<T>(this IParser<T> self)
+        public static Parser<T> Repeat<T>(this Parser<T> self)
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
 
             return null;// TODO RepeatedParser<T>
         }
 
-        public static IParser<T> Repeat<T>(this IParser<T> self, int min)
+        public static Parser<T> Repeat<T>(this Parser<T> self, int min)
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
             if (min < 1) throw new ArgumentOutOfRangeException(nameof(min));
@@ -32,7 +32,7 @@ namespace Unclazz.Parsec
             return null;// TODO RepeatedParser<T>
         }
 
-        public static IParser<T> RepeatJust<T>(this IParser<T> self, int times)
+        public static Parser<T> RepeatJust<T>(this Parser<T> self, int times)
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
             if (times < 1) throw new ArgumentOutOfRangeException(nameof(times));
@@ -40,7 +40,7 @@ namespace Unclazz.Parsec
             return null;// TODO RepeatedParser<T>
         }
 
-        public static IParser<T> Repeat<T>(this IParser<T> self, int min, int max)
+        public static Parser<T> Repeat<T>(this Parser<T> self, int min, int max)
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
             if (min < 1) throw new ArgumentOutOfRangeException(nameof(min));
@@ -49,7 +49,7 @@ namespace Unclazz.Parsec
             return null;// TODO RepeatedParser<T>
         }
 
-        public static IParser<T> Or<T>(this IParser<T> self, IParser<T> another)
+        public static Parser<T> Or<T>(this Parser<T> self, Parser<T> another)
         {
             if (self == null) throw new ArgumentNullException(nameof(self));
             if (another == null) throw new ArgumentNullException(nameof(another));

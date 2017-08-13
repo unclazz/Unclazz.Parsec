@@ -54,15 +54,20 @@
     <Compile Include="CharClass\SingleUnicodeCategoryCharClass.cs" />
     <Compile Include="CharClass\UnicodeCategoriesCharClass.cs" />
     <Compile Include="CharClass\UnionCharClass.cs" />
-    <Compile Include="IParser.cs" />
+    <Compile Include="DelegateParser.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="IParserInput.cs" />
+    <Compile Include="ParserInput.cs" />
     <Compile Include="Reader\IResettableReader.cs" />
     <Compile Include="Reader\ITextReader.cs" />
     <Compile Include="ParseResult.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reader\NestedResettableReader.cs" />
     <Compile Include="Reader\PrependableReader.cs" />
     <Compile Include="Reader\ResettableReader.cs" />
+    <Compile Include="Reader\AbstractTextReader.cs" />
+    <Compile Include="Reader\TextReaderProxy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
