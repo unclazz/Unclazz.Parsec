@@ -27,7 +27,7 @@ namespace Unclazz.Parsec
         {
             var p = input.Position;
             var q = new Queue<T>();
-            for (var i = 1; i <= _max; i++)
+            for (var i = 1; i <= _max && !input.EndOfFile; i++)
             {
                 // min ＜ ループ回数 ならリセットのための準備
                 if (_min <= i) input.Mark();
