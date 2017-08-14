@@ -16,14 +16,18 @@ namespace Unclazz.Parsec
         public override ParseResult<string> Parse(ParserInput input)
         {
             var p = input.Position;
-            var buff = new StringBuilder();
             for (var i = 0; i < _word.Length && !input.EndOfFile; i++)
             {
-                buff.Append((char)input.Read());
+                var expected = _word[i];
+                var actual = (char)input.Read();
+                if (expected != actual)
+                {
+                    return Failure(input.Position, 
+                        string.Format("expected '{0}'(at index {1} in \"{2}\") but found '{3}'",
+                        expected, i, _word, actual));
+                }
             }
-            return _word == buff.ToString() ? ParseResult.OfSuccess(p, _word)
-                : ParseResult.OfFailure<string>(p, 
-                string.Format("expected word \"{0}\" but found \"{1}\"", _word, buff));
+            return Success(p);
         }
         public override string ToString()
         {
