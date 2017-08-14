@@ -2,7 +2,7 @@
 
 namespace Unclazz.Parsec
 {
-    sealed class CharClassParser : Parser<char>
+    sealed class CharClassParser : Parser<string>
     {
         internal CharClassParser(CharClass.CharClass clazz)
         {
@@ -11,13 +11,13 @@ namespace Unclazz.Parsec
 
         readonly CharClass.CharClass _clazz;
 
-        public override ParseResult<char> Parse(ParserInput input)
+        public override ParseResult<string> Parse(ParserInput input)
         {
             var p = input.Position;
             var ch = (char)input.Read();
             return (_clazz.Contains(ch))
-                ? ParseResult.OfSuccess(p, ch)
-                : ParseResult.OfFailure<char>(p, 
+                ? ParseResult.OfSuccess<string>(p)
+                : ParseResult.OfFailure<string>(p, 
                 string.Format("expected a member of {0} but found '{1}' (code = {2})", _clazz, ch, (int) ch));
         }
     }

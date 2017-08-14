@@ -15,13 +15,12 @@ namespace Unclazz.Parsec
         public override ParseResult<string> Parse(ParserInput input)
         {
             var p = input.Position;
-            var buff = new StringBuilder();
             while (!input.EndOfFile)
             {
-                if (_clazz.Contains((char)input.Peek())) buff.Append((char)input.Read());
+                if (_clazz.Contains((char)input.Peek())) input.Read();
                 else break;
             }
-            return ParseResult.OfSuccess(p, buff.ToString());
+            return ParseResult.OfSuccess<string>(p);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Unclazz.Parsec
             for (var i = 0; i < _exactly; i++)
             {
                 var r = _original.Parse(input);
-                if (r.Successful) q.Enqueue(r.Value);
+                if (r.Successful) r.Capture.IfHasValue(q.Enqueue);
                 else ParseResult.OfFailure<IEnumerable<T>>(r.Position, r.Message);
             }
             return ParseResult.OfSuccess<IEnumerable<T>>(p, q);

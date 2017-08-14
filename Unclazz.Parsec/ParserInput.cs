@@ -44,5 +44,6 @@ namespace Unclazz.Parsec
         public void Mark() => _inner.Mark();
         public void Unmark() => _inner.Unmark();
         public void Reset() => _inner.Reset();
+        public string Capture(bool unmark) => _inner.Capture(unmark);
     }
 }

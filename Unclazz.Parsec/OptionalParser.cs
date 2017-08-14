@@ -22,7 +22,9 @@ namespace Unclazz.Parsec
             if (result.Successful)
             {
                 input.Unmark();
-                return ParseResult.OfSuccess(p, result.Value);
+                var cap = result.Capture;
+                if (cap.HasValue) return ParseResult.OfSuccess(p, cap.Value);
+                else return ParseResult.OfSuccess<T>(p);
             }
             input.Reset();
             input.Unmark();

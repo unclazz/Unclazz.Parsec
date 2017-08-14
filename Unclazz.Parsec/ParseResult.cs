@@ -25,6 +25,16 @@ namespace Unclazz.Parsec
             return new ParseResult<T>(true, p, v, null);
         }
         /// <summary>
+        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを返します。
+        /// </summary>
+        /// <typeparam name="T">パース結果の型</typeparam>
+        /// <param name="p">パース開始時の文字位置</param>
+        /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition p)
+        {
+            return new ParseResult<T>(true, p, null);
+        }
+        /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
         /// </summary>
         /// <typeparam name="T">パース結果の型</typeparam>
@@ -42,34 +52,51 @@ namespace Unclazz.Parsec
     /// インスタンスはコンパニオン・オブジェクト<see cref="ParseResult"/>の提供する静的ファクトリーメソッドにより得られます。
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public sealed class ParseResult<T> : IEnumerable<T>
+    public struct ParseResult<T> : IEnumerable<Capture<T>>
     {
-        static readonly IEnumerable<T> _empty = new T[0];
+        static readonly IEnumerable<Capture<T>> _empty = new Capture<T>[0];
 
-        internal ParseResult(bool s, CharacterPosition p, T v, string m)
+        internal ParseResult(bool s, CharacterPosition p, string m) : this(s, p, new Capture<T>(), m) { }
+        internal ParseResult(bool s, CharacterPosition p, T v, string m) : this(s, p, new Capture<T>(v), m) { }
+        ParseResult(bool s, CharacterPosition p, Capture<T> c, string m)
         {
-            if (!s && m == null) throw new ArgumentNullException(nameof(m));
-
-            if (s) _value = v;
-            else _message = m;
-
+            _capture = c;
+            _message = m;
             Successful = s;
             Position = p;
         }
 
-        T _value;
-        string _message;
+        readonly Capture<T> _capture;
+        readonly string _message;
 
         /// <summary>
-        /// パース結果の値です。
+        /// 指定された値を結び付けた新しいインスタンスを返します。
+        /// </summary>
+        /// <param name="value">値</param>
+        /// <returns>新しいインスタンス</returns>
+        public ParseResult<T> Attach(T value)
+        {
+            return new ParseResult<T>(Successful, Position, value, _message);
+        }
+        /// <summary>
+        /// 値を除去した新しいインスタンスを返します。
+        /// </summary>
+        /// <returns>新しいインスタンス</returns>
+        public ParseResult<T> Detach()
+        {
+            return new ParseResult<T>(Successful, Position, _message);
+        }
+
+        /// <summary>
+        /// パース結果を格納する<see cref="Capture{T}"/>インスタンスです。
         /// パースが失敗している場合は例外をスローします。
         /// </summary>
-        public T Value
+        public Capture<T> Capture
         {
             get
             {
-                if (Successful) return _value;
-                else throw new InvalidOperationException("No value.");
+                if (Successful) return _capture;
+                else throw new InvalidOperationException("No capture.");
             }
         }
         /// <summary>
@@ -84,14 +111,8 @@ namespace Unclazz.Parsec
         {
             get
             {
-                if (Successful)
-                {
-                    throw new InvalidOperationException("No message.");
-                }
-                else
-                {
-                    return _message;
-                }
+                if (Successful) throw new InvalidOperationException("No message.");
+                else return _message;
             }
         }
         /// <summary>
@@ -103,17 +124,17 @@ namespace Unclazz.Parsec
         /// パースが成功している場合は引数で指定されたアクションを実行します。
         /// </summary>
         /// <param name="act">アクション</param>
-        public void IfSuccessful(Action<T> act)
+        public void IfSuccessful(Action<Capture<T>> act)
         {
-            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Value);
+            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Capture);
         }
         /// <summary>
         /// パースが成功している場合は引数で指定されたアクションを実行します。
         /// </summary>
         /// <param name="act">アクション</param>
-        public void IfSuccessful(Action<CharacterPosition, T> act)
+        public void IfSuccessful(Action<CharacterPosition, Capture<T>> act)
         {
-            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Value);
+            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Capture);
         }
         /// <summary>
         /// パースが成功している場合は第1引数で指定されたアクションを実行します。
@@ -121,9 +142,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="act">成功している場合に実行されるアクション</param>
         /// <param name="orElse">失敗している場合に実行されるアクション</param>
-        public void IfSuccessful(Action<T> act, Action<string> orElse)
+        public void IfSuccessful(Action<Capture<T>> act, Action<string> orElse)
         {
-            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Value);
+            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Capture);
             else (orElse ?? throw new ArgumentNullException(nameof(orElse)))(Message);
         }
         /// <summary>
@@ -132,9 +153,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="act">成功している場合に実行されるアクション</param>
         /// <param name="orElse">失敗している場合に実行されるアクション</param>
-        public void IfSuccessful(Action<CharacterPosition, T> act, Action<CharacterPosition, string> orElse)
+        public void IfSuccessful(Action<CharacterPosition, Capture<T>> act, Action<CharacterPosition, string> orElse)
         {
-            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Value);
+            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Capture);
             else (orElse ?? throw new ArgumentNullException(nameof(orElse)))(Position, Message);
         }
         /// <summary>
@@ -161,8 +182,12 @@ namespace Unclazz.Parsec
         /// <returns>関数を適用した結果</returns>
         public ParseResult<U> Map<U>(Func<T, U> transform)
         {
-            return Successful ? ParseResult.OfSuccess(Position, transform(Value))
-                : ParseResult.OfFailure<U>(Position, Message);
+            if (Successful)
+            {
+                return _capture.HasValue ? ParseResult.OfSuccess(Position, transform(_capture.Value))
+                    : ParseResult.OfSuccess<U>(Position);
+            }
+            return ParseResult.OfFailure<U>(Position, Message);
         }
         /// <summary>
         /// 列挙子を返します。
@@ -170,11 +195,11 @@ namespace Unclazz.Parsec
         /// パースが失敗している場合、列挙子はいかなる値も列挙しません。
         /// </summary>
         /// <returns>列挙子</returns>
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<Capture<T>> GetEnumerator()
         {
             if (Successful)
             {
-                return ((IEnumerable<T>)new T[] { Value }).GetEnumerator();
+                return ((IEnumerable<Capture<T>>)new Capture<T>[] { Capture }).GetEnumerator();
             }
             else
             {
@@ -193,7 +218,7 @@ namespace Unclazz.Parsec
         {
             if (Successful)
             {
-                return string.Format("ParseResult(Successful = {0}, Positon = {1}, Value = {2})", true, Position, Value);
+                return string.Format("ParseResult(Successful = {0}, Positon = {1}, Capture = {2})", true, Position, Capture);
             }
             else
             {

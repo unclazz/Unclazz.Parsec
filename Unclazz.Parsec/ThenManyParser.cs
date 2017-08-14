@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace Unclazz.Parsec
 {
-    sealed class ManyThenParser<T> : Parser<IEnumerable<T>>
+    sealed class ThenManyParser<T> : Parser<IEnumerable<T>>
     {
-        internal ManyThenParser(Parser<IEnumerable<T>> left, Parser<T> right)
+        internal ThenManyParser(Parser<T> right, Parser<IEnumerable<T>> left)
         {
-            _left = left ?? throw new ArgumentNullException(nameof(left));
-            _right = right ?? throw new ArgumentNullException(nameof(right));
+            _left = right ?? throw new ArgumentNullException(nameof(right));
+            _right = left ?? throw new ArgumentNullException(nameof(left));
         }
 
-        readonly Parser<IEnumerable<T>> _left;
-        readonly Parser<T> _right;
+        readonly Parser<T> _left;
+        readonly Parser<IEnumerable<T>> _right;
 
         public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
         {
@@ -23,9 +23,12 @@ namespace Unclazz.Parsec
                 var rightResult = _right.Parse(input);
                 if (rightResult.Successful)
                 {
-                    var leftCapture = leftResult.Capture;
-                    var q = leftCapture.HasValue ? new Queue<T>(leftCapture.Value) : new Queue<T>();
-                    rightResult.Capture.IfHasValue(q.Enqueue);
+                    var q = new Queue<T>();
+                    leftResult.Capture.IfHasValue(q.Enqueue);
+                    rightResult.Capture.IfHasValue(es =>
+                    {
+                        foreach (var e in es) q.Enqueue(e);
+                    });
                     return ParseResult.OfSuccess<IEnumerable<T>>(p, q);
                 }
                 return ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message);

@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoDispose.cs" />
+    <Compile Include="Capture.cs" />
     <Compile Include="CharacterPosition.cs" />
     <Compile Include="CharClassParser.cs" />
     <Compile Include="CharClass\CharRange.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Reader\TextReaderProxy.cs" />
     <Compile Include="RepeatExactlyParser.cs" />
     <Compile Include="RepeatMinMaxParser.cs" />
+    <Compile Include="StringParser.cs" />
+    <Compile Include="ThenManyParser.cs" />
     <Compile Include="ThenParser.cs" />
     <Compile Include="WhileChasClassParser.cs" />
     <Compile Include="WordParser.cs" />

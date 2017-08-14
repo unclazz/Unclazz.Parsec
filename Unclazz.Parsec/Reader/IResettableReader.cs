@@ -40,5 +40,11 @@ namespace Unclazz.Parsec.Reader
         /// まだ<see cref="Mark"/>が呼び出された実績がない場合、このメソッドは何も行わず、例外もスローしません。
         /// </summary>
         void Reset();
+        /// <summary>
+        /// 直近<see cref="Mark"/>した文字位置から現在の文字位置までのコンテンツを返します。
+        /// </summary>
+        /// <param name="unmark"><c>true</c>の場合コンテンツを返す前に<see cref="Unmark"/>を行う</param>
+        /// <returns>キャプチャしたコンテンツ</returns>
+        string Capture(bool unmark);
     }
 }

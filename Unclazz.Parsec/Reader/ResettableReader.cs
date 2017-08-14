@@ -41,6 +41,19 @@ namespace Unclazz.Parsec.Reader
                 }
             }
         }
+        public string Capture(bool unmark)
+        {
+            if (_marked)
+            {
+                var delta = Position.Index - _marks.Peek().Index;
+                var skip = _backup.Count - delta;
+                var buff = new StringBuilder();
+                foreach (var ch in _backup.Skip(skip)) buff.Append(ch);
+                if (unmark) Unmark();
+                return buff.ToString();
+            }
+            return null;
+        }
         public void Reset()
         {
             if (_marked)

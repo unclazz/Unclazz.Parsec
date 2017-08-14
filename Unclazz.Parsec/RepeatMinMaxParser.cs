@@ -35,7 +35,7 @@ namespace Unclazz.Parsec
                 var r = _original.Parse(input);
                 if (r.Successful)
                 {
-                    q.Enqueue(r.Value);
+                    r.Capture.IfHasValue(q.Enqueue);
                 }
                 else
                 {
