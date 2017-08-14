@@ -41,6 +41,9 @@ namespace Unclazz.Parsec
         {
             return new WordParser(word);
         }
+
+        public static Parser<string> BeginningOfFile { get; } = new BeginningOfFileParser();
+        public static Parser<string> EndOfFile { get; } = new EndOfFileParser();
         public static Parser<string> WhiteSpaceAndControls { get; } =
             new WhileCharClassParser(new DelegateCharClass(ch => ch <= 32 || ch == 127));
         public static Parser<string> Controls { get; } =
@@ -121,6 +124,15 @@ namespace Unclazz.Parsec
         }
 
         public abstract ParseResult<T> Parse(ParserInput input);
+
+        protected ParseResult<T> Success(CharacterPosition p)
+        {
+            return ParseResult.OfSuccess<T>(p);
+        }
+        protected ParseResult<T> Failure(CharacterPosition p, string m)
+        {
+            return ParseResult.OfFailure<T>(p, m);
+        }
 
         public Parser<U> Map<U>(Func<T,U> transform)
         {
