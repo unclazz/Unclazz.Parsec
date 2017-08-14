@@ -37,7 +37,7 @@ namespace Test.Unclazz.Parsec
             // Assert
             try
             {
-                var v0 = r0.Capture;
+                var v0 = r0.Capture.Value;
                 Assert.That(v0, Is.EqualTo(123));
             }
             catch (InvalidOperationException)
@@ -46,7 +46,7 @@ namespace Test.Unclazz.Parsec
             }
             try
             {
-                var v1 = r1.Capture;
+                var v1 = r1.Capture.Value;
                 Assert.Fail();
             }
             catch (InvalidOperationException)
@@ -70,7 +70,7 @@ namespace Test.Unclazz.Parsec
             }
             catch (InvalidOperationException)
             {
-                Assert.That(r0.Capture, Is.EqualTo(123));
+                Assert.That(r0.Capture.Value, Is.EqualTo(123));
             }
             try
             {
@@ -94,8 +94,8 @@ namespace Test.Unclazz.Parsec
             var v1 = r1.FirstOrDefault();
 
             // Assert
-            Assert.That(v0, Is.EqualTo(123));
-            Assert.That(v1, Is.EqualTo(0));
+            Assert.That(v0.Value, Is.EqualTo(123));
+            Assert.That(v1.HasValue, Is.EqualTo(false));
         }
         [Test]
         public void SingleOrDefault_Case1()
@@ -109,8 +109,8 @@ namespace Test.Unclazz.Parsec
             var v1 = r1.SingleOrDefault();
 
             // Assert
-            Assert.That(v0, Is.EqualTo(123));
-            Assert.That(v1, Is.EqualTo(0));
+            Assert.That(v0.Value, Is.EqualTo(123));
+            Assert.That(v1.HasValue, Is.EqualTo(false));
         }
         [Test]
         public void IfSuccessful_Case1()
@@ -121,7 +121,7 @@ namespace Test.Unclazz.Parsec
 
             // Act
             // Assert
-            r0.IfSuccessful(v => Assert.That(v, Is.EqualTo(123)));
+            r0.IfSuccessful(v => Assert.That(v.Value, Is.EqualTo(123)));
             r1.IfSuccessful(v => Assert.Fail());
         }
         [Test]
@@ -133,7 +133,7 @@ namespace Test.Unclazz.Parsec
 
             // Act
             // Assert
-            r0.IfSuccessful(v => Assert.That(v, Is.EqualTo(123)), v => Assert.Fail());
+            r0.IfSuccessful(v => Assert.That(v.Value, Is.EqualTo(123)), v => Assert.Fail());
             r1.IfSuccessful(v => Assert.Fail(), v => Assert.That(v, Is.EqualTo("123")));
         }
         [Test]
