@@ -54,5 +54,10 @@ namespace Unclazz.Parsec
             }
             return ParseResult.OfSuccess<IEnumerable<T>>(p, q);
         }
+
+        public override string ToString()
+        {
+            return string.Format("Repeat({0}, min = {1}, max = {2})", _original, _min, _max);
+        }
     }
 }

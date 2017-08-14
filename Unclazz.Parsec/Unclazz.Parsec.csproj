@@ -74,7 +74,8 @@
     <Compile Include="Reader\TextReaderProxy.cs" />
     <Compile Include="RepeatExactlyParser.cs" />
     <Compile Include="RepeatMinMaxParser.cs" />
-    <Compile Include="StringParser.cs" />
+    <Compile Include="CaptureParser.cs" />
+    <Compile Include="SuccessParser.cs" />
     <Compile Include="ThenManyParser.cs" />
     <Compile Include="ThenParser.cs" />
     <Compile Include="WhileChasClassParser.cs" />

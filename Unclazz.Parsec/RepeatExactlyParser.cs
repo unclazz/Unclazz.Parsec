@@ -27,5 +27,9 @@ namespace Unclazz.Parsec
             }
             return ParseResult.OfSuccess<IEnumerable<T>>(p, q);
         }
+        public override string ToString()
+        {
+            return string.Format("Repeat({0}, exactly = {1})", _original, _exactly);
+        }
     }
 }

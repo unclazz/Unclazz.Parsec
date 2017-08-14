@@ -25,5 +25,9 @@ namespace Unclazz.Parsec
                 : ParseResult.OfFailure<string>(p, 
                 string.Format("expected word \"{0}\" but found \"{1}\"", _word, buff));
         }
+        public override string ToString()
+        {
+            return string.Format("Word({0})", _word);
+        }
     }
 }

@@ -22,5 +22,9 @@ namespace Unclazz.Parsec
             }
             return ParseResult.OfSuccess<string>(p);
         }
+        public override string ToString()
+        {
+            return string.Format("WhileCharClass({0})", _clazz);
+        }
     }
 }

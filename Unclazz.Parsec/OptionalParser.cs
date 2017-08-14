@@ -4,14 +4,11 @@ namespace Unclazz.Parsec
 {
     sealed class OptionalParser<T> : Parser<T>
     {
-        internal OptionalParser(Parser<T> original) : this(original, default(T)) { }
-        internal OptionalParser(Parser<T> original, T defaultValue)
+        internal OptionalParser(Parser<T> original)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
-            _default = defaultValue;
         }
 
-        readonly T _default;
         readonly Parser<T> _original;
 
         public override ParseResult<T> Parse(ParserInput input)
@@ -28,7 +25,11 @@ namespace Unclazz.Parsec
             }
             input.Reset();
             input.Unmark();
-            return ParseResult.OfSuccess(p, _default);
+            return ParseResult.OfSuccess<T>(p);
+        }
+        public override string ToString()
+        {
+            return string.Format("Optional({0})", _original);
         }
     }
 }

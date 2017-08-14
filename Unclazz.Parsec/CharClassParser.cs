@@ -20,5 +20,9 @@ namespace Unclazz.Parsec
                 : ParseResult.OfFailure<string>(p, 
                 string.Format("expected a member of {0} but found '{1}' (code = {2})", _clazz, ch, (int) ch));
         }
+        public override string ToString()
+        {
+            return string.Format("CharClass({0})", _clazz);
+        }
     }
 }

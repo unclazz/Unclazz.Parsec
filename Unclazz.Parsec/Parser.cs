@@ -21,29 +21,25 @@ namespace Unclazz.Parsec
         {
             return new OptionalParser<T>(parser);
         }
-        public static Parser<T> Optional<T>(Parser<T> parser, T defaultValue)
-        {
-            return new OptionalParser<T>(parser, defaultValue);
-        }
         public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
         {
             return new OrParser<T>(left, right);
         }
-        public static StringParser Char(CharClass.CharClass clazz)
+        public static Parser<string> Char(CharClass.CharClass clazz)
         {
-            return new StringParser(new CharClassParser(clazz).Parse);
+            return new CharClassParser(clazz);
         }
-        public static StringParser Char(params char[] chars)
+        public static Parser<string> Char(params char[] chars)
         {
-            return new StringParser(new CharClassParser(new CharactersCharClass(chars)).Parse);
+            return new CharClassParser(new CharactersCharClass(chars));
         }
         public static Parser<string> Char(IEnumerable<char> chars)
         {
-            return new StringParser(new CharClassParser(new CharactersCharClass(chars)).Parse);
+            return new CharClassParser(new CharactersCharClass(chars));
         }
-        public static StringParser Word(string word)
+        public static Parser<string> Word(string word)
         {
-            return new StringParser(new WordParser(word).Parse);
+            return new WordParser(word);
         }
         public static Parser<string> WhiteSpaceAndControls { get; } =
             new WhileCharClassParser(new DelegateCharClass(ch => ch <= 32 || ch == 127));
@@ -83,14 +79,13 @@ namespace Unclazz.Parsec
         {
             return self.Map(ch => ch.ToString()).Then(another);
         }
-
-        public static Parser<IEnumerable<T>> Or<T>(this Parser<IEnumerable<T>> self, params T[] defaultValue)
-        {
-            return new OptionalParser<IEnumerable<T>>(self, defaultValue);
-        }
         public static Parser<IEnumerable<U>> FlatMap<T, U>(this Parser<IEnumerable<IEnumerable<T>>> self, Func<T, U> transform)
         {
             return self.Map(outer => outer.SelectMany(inner => inner).Select(transform));
+        }
+        public static CaptureParser Capture(this Parser<string> self)
+        {
+            return new CaptureParser(self);
         }
     }
 
@@ -110,7 +105,7 @@ namespace Unclazz.Parsec
         }
         public static Parser<T> operator|(Parser<T> left, T right)
         {
-            return left.Or(right);
+            return left.Or(new SuccessParser<T>(right));
         }
         public static Parser<IEnumerable<T>> operator +(Parser<T> left, Parser<T> right)
         {
@@ -154,10 +149,6 @@ namespace Unclazz.Parsec
         public Parser<IEnumerable<T>> Then(Parser<T> another)
         {
             return new ThenParser<T>(this, another);
-        }
-        public Parser<T> Or(T defaultValue)
-        {
-            return new OptionalParser<T>(this, defaultValue);
         }
     }
 }

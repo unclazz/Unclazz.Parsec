@@ -32,5 +32,9 @@ namespace Unclazz.Parsec
             }
             return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message);
         }
+        public override string ToString()
+        {
+            return string.Format("Then({0}, {1})", _left, _right);
+        }
     }
 }

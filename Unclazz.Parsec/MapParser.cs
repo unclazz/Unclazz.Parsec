@@ -19,7 +19,7 @@ namespace Unclazz.Parsec
         }
         public override string ToString()
         {
-            return string.Format("{0}.Map({1})", _source, _transform.GetType());
+            return string.Format("Map({0}, transform = {1})", _source, _transform.GetType());
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Unclazz.Parsec
         }
         public override string ToString()
         {
-            return string.Format("Parser({0}", _delegate.GetType());
+            return string.Format("For({0})", _delegate.GetType());
         }
     }
 }
