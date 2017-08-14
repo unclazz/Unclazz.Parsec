@@ -55,6 +55,7 @@
     <Compile Include="Reader\PrependableReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader\ResettableReaderTest.cs" />
+    <Compile Include="WordParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

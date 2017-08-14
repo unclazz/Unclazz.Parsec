@@ -16,15 +16,21 @@ namespace Unclazz.Parsec
         public override ParseResult<string> Parse(ParserInput input)
         {
             var p = input.Position;
-            for (var i = 0; i < _word.Length && !input.EndOfFile; i++)
+            for (var i = 0; i < _word.Length; i++)
             {
                 var expected = _word[i];
-                var actual = (char)input.Read();
-                if (expected != actual)
+                var actual = input.Read();
+                if (actual == -1)
+                {
+                    return Failure(input.Position,
+                        string.Format("expected '{0}'(at index {1} in \"{2}\") but found EOF",
+                        expected, i, _word, (char)actual));
+                }
+                else if (expected != actual)
                 {
                     return Failure(input.Position, 
                         string.Format("expected '{0}'(at index {1} in \"{2}\") but found '{3}'",
-                        expected, i, _word, actual));
+                        expected, i, _word, (char)actual));
                 }
             }
             return Success(p);
