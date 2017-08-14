@@ -296,6 +296,46 @@ namespace Test.Unclazz.Parsec
             r.Reset();
             Assert.That((char)r.Peek(), Is.EqualTo('2'));
         }
+        [TestCase("0123456789X", 3, 3)]
+        [TestCase("0123456789X", 3, 1)]
+        [TestCase("0123456789X", 3, 0)]
+        public void Capture_Case1(string text, int willMarkOn, int readCountAfterMark)
+        {
+            // Arrange
+            var r = new ResettableReader(new StringReader(text));
+            Repeats(r.Read, willMarkOn);
+            r.Mark();
+            Repeats(r.Read, readCountAfterMark);
+
+            // Act
+            var cap = r.Capture(true);
+
+            // Assert
+            Assert.That(cap, Is.EqualTo(text.Substring(willMarkOn, readCountAfterMark)));
+            Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
+            r.Reset();
+            Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
+        }
+        [TestCase("0123456789X", 3, 3)]
+        [TestCase("0123456789X", 3, 1)]
+        [TestCase("0123456789X", 3, 0)]
+        public void Capture_Case2(string text, int willMarkOn, int readCountAfterMark)
+        {
+            // Arrange
+            var r = new ResettableReader(new StringReader(text));
+            Repeats(r.Read, willMarkOn);
+            r.Mark();
+            Repeats(r.Read, readCountAfterMark);
+
+            // Act
+            var cap = r.Capture(false);
+
+            // Assert
+            Assert.That(cap, Is.EqualTo(text.Substring(willMarkOn, readCountAfterMark)));
+            Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
+            r.Reset();
+            Assert.That(r.Position.Index, Is.EqualTo(willMarkOn));
+        }
 
         void Repeats(Action act, int times)
         {
