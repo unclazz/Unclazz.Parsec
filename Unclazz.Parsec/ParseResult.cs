@@ -17,33 +17,36 @@ namespace Unclazz.Parsec
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを返します。
         /// </summary>
         /// <typeparam name="T">パース結果の型</typeparam>
-        /// <param name="p">パース開始時の文字位置</param>
-        /// <param name="v">パース結果の値</param>
+        /// <param name="position">パース開始時の文字位置</param>
+        /// <param name="value">パース結果の値</param>
+        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfSuccess<T>(CharacterPosition p, T v)
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, T value, bool cut = false)
         {
-            return new ParseResult<T>(true, p, v, null);
+            return new ParseResult<T>(true, position, value, null, false);
         }
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを返します。
         /// </summary>
         /// <typeparam name="T">パース結果の型</typeparam>
-        /// <param name="p">パース開始時の文字位置</param>
+        /// <param name="position">パース開始時の文字位置</param>
+        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfSuccess<T>(CharacterPosition p)
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, bool cut = false)
         {
-            return new ParseResult<T>(true, p, null);
+            return new ParseResult<T>(true, position, null, false);
         }
         /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
         /// </summary>
         /// <typeparam name="T">パース結果の型</typeparam>
-        /// <param name="p">パース開始時の文字位置</param>
-        /// <param name="m">パース失敗の理由を示すメッセージ</param>
+        /// <param name="position">パース開始時の文字位置</param>
+        /// <param name="message">パース失敗の理由を示すメッセージ</param>
+        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfFailure<T>(CharacterPosition p, string m)
+        public static ParseResult<T> OfFailure<T>(CharacterPosition position, string message, bool cut = false)
         {
-            return new ParseResult<T>(false, p, default(T), m);
+            return new ParseResult<T>(false, position, default(T), message, false);
         }
     }
 
@@ -56,36 +59,20 @@ namespace Unclazz.Parsec
     {
         static readonly IEnumerable<Capture<T>> _empty = new Capture<T>[0];
 
-        internal ParseResult(bool s, CharacterPosition p, string m) : this(s, p, new Capture<T>(), m) { }
-        internal ParseResult(bool s, CharacterPosition p, T v, string m) : this(s, p, new Capture<T>(v), m) { }
-        ParseResult(bool s, CharacterPosition p, Capture<T> c, string m)
+        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Capture<T>(), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Capture<T>(v), m, c) { }
+        ParseResult(bool s, CharacterPosition p, Capture<T> c, string m, bool cut)
         {
             _capture = c;
             _message = m;
             Successful = s;
             Position = p;
+            _cut = cut;
         }
 
         readonly Capture<T> _capture;
         readonly string _message;
-
-        /// <summary>
-        /// 指定された値を結び付けた新しいインスタンスを返します。
-        /// </summary>
-        /// <param name="value">値</param>
-        /// <returns>新しいインスタンス</returns>
-        public ParseResult<T> Attach(T value)
-        {
-            return new ParseResult<T>(Successful, Position, value, _message);
-        }
-        /// <summary>
-        /// 値を除去した新しいインスタンスを返します。
-        /// </summary>
-        /// <returns>新しいインスタンス</returns>
-        public ParseResult<T> Detach()
-        {
-            return new ParseResult<T>(Successful, Position, _message);
-        }
+        readonly bool _cut;
 
         /// <summary>
         /// パース結果を格納する<see cref="Capture{T}"/>インスタンスです。
@@ -96,7 +83,7 @@ namespace Unclazz.Parsec
             get
             {
                 if (Successful) return _capture;
-                else throw new InvalidOperationException("No capture.");
+                else throw new InvalidOperationException("No capture. Because parsing has failed.");
             }
         }
         /// <summary>
@@ -111,7 +98,7 @@ namespace Unclazz.Parsec
         {
             get
             {
-                if (Successful) throw new InvalidOperationException("No message.");
+                if (Successful) throw new InvalidOperationException("No message. Because parsing has benn successful.");
                 else return _message;
             }
         }
@@ -119,7 +106,28 @@ namespace Unclazz.Parsec
         /// パースが成功している場合<c>true</c>です。
         /// </summary>
         public bool Successful { get; }
+        /// <summary>
+        /// 直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックが可能かどうかを示します。
+        /// </summary>
+        public bool CanBacktrack => !_cut;
 
+        /// <summary>
+        /// 指定された値を結び付けた新しいインスタンスを返します。
+        /// </summary>
+        /// <param name="value">値</param>
+        /// <returns>新しいインスタンス</returns>
+        public ParseResult<T> Attach(T value)
+        {
+            return new ParseResult<T>(Successful, Position, value, _message, _cut);
+        }
+        /// <summary>
+        /// 値を除去した新しいインスタンスを返します。
+        /// </summary>
+        /// <returns>新しいインスタンス</returns>
+        public ParseResult<T> Detach()
+        {
+            return new ParseResult<T>(Successful, Position, _message, _cut);
+        }
         /// <summary>
         /// パースが成功している場合は引数で指定されたアクションを実行します。
         /// </summary>
@@ -218,11 +226,13 @@ namespace Unclazz.Parsec
         {
             if (Successful)
             {
-                return string.Format("ParseResult(Successful = {0}, Positon = {1}, Capture = {2})", true, Position, Capture);
+                return string.Format("ParseResult(Successful = {0}, Positon = {1}, Capture = {2}, CanBacktrack = {3})",
+                    true, Position, Capture, !_cut);
             }
             else
             {
-                return string.Format("ParseResult(Successful = {0}, Positon = {1}, Message = {2})", false, Position, Message);
+                return string.Format("ParseResult(Successful = {0}, Positon = {1}, Message = {2}, CanBacktrack = {3})",
+                    false, Position, Message, !_cut);
             }
         }
     }
