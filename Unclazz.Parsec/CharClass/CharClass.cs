@@ -91,6 +91,38 @@ namespace Unclazz.Parsec.CharClass
         {
             return new ComplementCharClass(clazz);
         }
+        public static CharClass AnyOf(params char[] chars)
+        {
+            if (chars == null) throw new ArgumentNullException(nameof(chars));
+            switch (chars.Length)
+            {
+                case 0:
+                    throw new ArgumentException("character group is empty.");
+                case 1:
+                    return new SingleCharacterCharClass(chars[0]);
+                default:
+                    return new CharactersCharClass(chars);
+            }
+        }
+        public static CharClass AnyOf(IEnumerable<char> chars)
+        {
+            if (chars == null) throw new ArgumentNullException(nameof(chars));
+            return AnyOf(chars.ToArray());
+        }
+        public static CharClass AnyOf(params UnicodeCategory[] categories)
+        {
+            if (categories == null) throw new ArgumentNullException(nameof(categories));
+            if (categories.Length == 0) throw new ArgumentException("category group is empty.");
+            return new UnicodeCategoriesCharClass(categories);
+        }
+        public static CharClass Between(char start, char end)
+        {
+            return new SingleCharRangeCharClass(CharRange.Between(start, end));
+        }
+        public static CharClass Exactly(char ch)
+        {
+            return new SingleCharacterCharClass(ch);
+        }
 
         public abstract bool Contains(char ch);
         public virtual CharClass Union(CharClass other)
