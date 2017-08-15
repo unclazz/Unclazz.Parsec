@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -88,7 +89,25 @@ namespace Unclazz.Parsec
         /// <returns>文字列表現</returns>
         public override string ToString()
         {
-            return _hasValue ? string.Format("Capture({0})", _value) : "Capture()";
+            return _hasValue ? string.Format("Capture({0})", ValueAsString()) : "Capture()";
+        }
+        string ValueAsString()
+        {
+            var col = _value as IEnumerable;
+            if (col == null)
+            {
+                return _value.ToString();
+            }
+            else
+            {
+                var buff = new StringBuilder();
+                foreach (var e in col.Cast<object>().Select((o, i) => new { Index = i, Item = o }))
+                {
+                    if (e.Index > 0) buff.Append(',').Append(' ');
+                    buff.Append(e.Item.ToString());
+                }
+                return buff.ToString();
+            }
         }
     }
 }
