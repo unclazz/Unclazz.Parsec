@@ -65,38 +65,73 @@ namespace Unclazz.Parsec
         {
             return new OrParser<T>(left, right);
         }
-        public static Parser<char> CharBetween(char start, char end)
-        {
-            return new CharClassParser(CharClass.Between(start, end));
-        }
-        public static Parser<char> CharIn(CharClass clazz)
-        {
-            return new CharClassParser(clazz);
-        }
-        public static Parser<char> CharIn(params char[] chars)
-        {
-            if (chars != null && chars.Length == 1) return new SingleCharParser(chars[0]);
-            return new CharClassParser(CharClass.AnyOf(chars));
-        }
-        public static Parser<char> CharIn(IEnumerable<char> chars)
-        {
-            return new CharClassParser(CharClass.AnyOf(chars));
-        }
+        /// <summary>
+        /// 指定された文字にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="ch">文字</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<char> Char(char ch)
         {
             return new SingleCharParser(ch);
         }
+        /// <summary>
+        /// 指定された範囲に該当する文字にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="start">範囲の開始</param>
+        /// <param name="end">範囲の終了</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<char> CharBetween(char start, char end)
+        {
+            return new CharClassParser(CharClass.Between(start, end));
+        }
+        /// <summary>
+        /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="clazz">文字クラス</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<char> CharIn(CharClass clazz)
+        {
+            return new CharClassParser(clazz);
+        }
+        /// <summary>
+        /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="chars">文字集合</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<char> CharIn(IEnumerable<char> chars)
+        {
+            return new CharClassParser(CharClass.AnyOf(chars));
+        }
+        /// <summary>
+        /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="start">範囲の開始</param>
+        /// <param name="end">範囲の終了</param>
+        /// <param name="min">最小の文字数</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<string> CharsWhileBetween(char start, char end, int min = 1)
+        {
+            return new CharsWhileBetweenParser(start, end, min);
+        }
+        /// <summary>
+        /// 文字集合に属する文字からなる文字列にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="chars">文字集合</param>
+        /// <param name="min">最小の文字数</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<string> CharsWhileIn(IEnumerable<char> chars, int min = 1)
         {
             return new CharsWhileInParser(CharClass.AnyOf(chars), min);
         }
+        /// <summary>
+        /// 文字クラスに属する文字からなる文字列にマッチするパーサーを返します。
+        /// </summary>
+        /// <param name="clazz">文字クラス</param>
+        /// <param name="min">最小の文字数</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<string> CharsWhileIn(CharClass clazz, int min = 1)
         {
             return new CharsWhileInParser(clazz, min);
-        }
-        public static Parser<string> CharsWhileBetween(char start, char end, int min = 1)
-        {
-            return new CharsWhileBetweenParser(start, end, min);
         }
         /// <summary>
         /// 指定した文字列にのみマッチするパーサーを生成します。
@@ -107,7 +142,6 @@ namespace Unclazz.Parsec
         {
             return new WordParser(word);
         }
-
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
         /// </summary>
@@ -117,16 +151,16 @@ namespace Unclazz.Parsec
         /// </summary>
         public static Parser<string> EndOfFile { get; } = new EndOfFileParser();
         /// <summary>
-        /// 0文字以上の空白文字(コードポイント<c>32</c>）と制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// 0文字以上の空白文字(コードポイント<c>32</c>）と
+        /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         public static Parser<string> WhileSpaceAndControls { get; } =
-            new WhileCharClassParser(CharClass.Between((char)0, (char)32) + (char)127);
+            new CharsWhileInParser(CharClass.Between((char)0, (char)32) + (char)127, 0);
         /// <summary>
         /// 0文字以上の制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         public static Parser<string> WhileControls { get; } =
-            new WhileCharClassParser(CharClass.Between((char)0, (char)31) + (char)127);
-
+            new CharsWhileInParser(CharClass.Between((char)0, (char)31) + (char)127, 0);
     }
 
     /// <summary>
@@ -282,6 +316,15 @@ namespace Unclazz.Parsec
 
         /// <summary>
         /// このパーサーの読み取り結果をキャプチャするパーサーを生成します。
+        /// <para>
+        /// パース処理そのものはこのパーサー（レシーバー）に委譲されます。
+        /// ただしこのパーサーが本来返す値の型がなんであれ、パース開始から終了（パース成功）までの区間のデータはあくまでも
+        /// <see cref="string"/>としてキャプチャされ、それがラッパーとなる新しいパーサーが返す値となります。</para>
+        /// <para>
+        /// 内部的な動作はおおよそ次のように進みます。
+        /// パース処理本体が実行される前に<see cref="ParserInput.Mark"/>が呼び出されます。
+        /// パース処理本体が成功した場合は<see cref="ParserInput.Capture(bool)"/>が呼び出されます。
+        /// パース処理本体が失敗した場合は単に<see cref="ParserInput.Unmark"/>が呼び出されます。</para>
         /// </summary>
         /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
         public Parser<string> Capture()
