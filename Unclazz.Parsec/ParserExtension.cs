@@ -119,5 +119,15 @@ namespace Unclazz.Parsec
         {
             return new CaptureParser(self);
         }
+        /// <summary>
+        /// <see cref="string"/>を読み取るパーサーをもとに、
+        /// 読み取り結果をキャプチャするパーサーを生成します。
+        /// </summary>
+        /// <param name="self">レシーバー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<string> Capture(this Parser<char> self)
+        {
+            return new CaptureParser(self.Map(char.ToString));
+        }
     }
 }
