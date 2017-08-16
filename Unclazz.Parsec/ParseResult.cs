@@ -19,9 +19,9 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="value">パース結果の値</param>
-        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
+        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, T value, bool cut = false)
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, T value, bool canBacktrack = true)
         {
             return new ParseResult<T>(true, position, value, null, false);
         }
@@ -30,23 +30,14 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
-        /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, bool cut = false)
-        {
-            return new ParseResult<T>(true, position, null, false);
-        }
-        /// <summary>
-        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを返します。
-        /// </summary>
-        /// <typeparam name="T">パース結果の型</typeparam>
-        /// <param name="position">パース開始時の文字位置</param>
         /// <param name="capture">パース結果の値</param>
-        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
+        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>
+        /// を起点としたバックトラックを無効化する場合<c>false</c></param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, Capture<T> capture, bool cut = false)
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, 
+            Capture<T> capture = new Capture<T>(), bool canBacktrack = true)
         {
-            return new ParseResult<T>(true, position, capture, null, false);
+            return new ParseResult<T>(true, position, capture, null, !canBacktrack);
         }
         /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
@@ -54,11 +45,11 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
+        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する場合<c>false</c></param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfFailure<T>(CharacterPosition position, string message, bool cut = false)
+        public static ParseResult<T> OfFailure<T>(CharacterPosition position, string message, bool canBacktrack = true)
         {
-            return new ParseResult<T>(false, position, default(T), message, false);
+            return new ParseResult<T>(false, position, default(T), message, !canBacktrack);
         }
     }
 
@@ -200,6 +191,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// パース結果に引数で指定された関数を適用します。
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
         /// </summary>
         /// <typeparam name="U">結果の型</typeparam>
         /// <param name="transform">関数</param>
@@ -208,10 +200,10 @@ namespace Unclazz.Parsec
         {
             if (Successful)
             {
-                return _capture.HasValue ? ParseResult.OfSuccess(Position, transform(_capture.Value))
-                    : ParseResult.OfSuccess<U>(Position);
+                return _capture.HasValue ? ParseResult.OfSuccess(Position, transform(_capture.Value), !_cut)
+                    : ParseResult.OfSuccess<U>(Position, canBacktrack: !_cut);
             }
-            return ParseResult.OfFailure<U>(Position, Message);
+            return ParseResult.OfFailure<U>(Position, Message, !_cut);
         }
         /// <summary>
         /// 列挙子を返します。

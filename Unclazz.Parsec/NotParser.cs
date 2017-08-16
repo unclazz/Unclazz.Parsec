@@ -18,14 +18,15 @@ namespace Unclazz.Parsec
             var originalResult = _original.Parse(input);
             if (originalResult.Successful)
             {
-                return ParseResult.OfFailure<T>(p, string.Format("parsing with {0} " +
-                        "must be failed but actualy be successful.", _original));
+                var m = string.Format("parsing with {0} must be failed but actualy be successful.", _original);
+                return ParseResult.OfFailure<T>(p, m, originalResult.CanBacktrack);
             }
             else
             {
                 input.Reset();
                 input.Unmark();
-                return ParseResult.OfSuccess(p, default(T));
+                return ParseResult.OfSuccess(p, capture: new Capture<T>(), 
+                    canBacktrack: originalResult.CanBacktrack);
             }
         }
 

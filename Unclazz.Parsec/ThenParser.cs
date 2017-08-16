@@ -22,13 +22,14 @@ namespace Unclazz.Parsec
             {
                 var rightResult = _right.Parse(input);
                 var q = new Queue<T>();
+                var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 leftResult.IfSuccessful(c => c.IfHasValue(q.Enqueue));
                 rightResult.IfSuccessful(c => c.IfHasValue(q.Enqueue));
                 return rightResult.Successful
-                    ? ParseResult.OfSuccess<IEnumerable<T>>(p, q)
-                    : ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message);
+                    ? ParseResult.OfSuccess<IEnumerable<T>>(p, q, canBacktrack)
+                    : ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message, canBacktrack);
             }
-            return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message);
+            return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message, leftResult.CanBacktrack);
         }
         public override string ToString()
         {

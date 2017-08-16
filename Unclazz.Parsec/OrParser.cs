@@ -17,15 +17,21 @@ namespace Unclazz.Parsec
         {
             input.Mark();
             var leftResult = _left.Parse(input);
+            Console.WriteLine(">>>" + leftResult);
             if (leftResult.Successful)
             {
                 input.Unmark();
                 return leftResult;
             }
+            else if (!leftResult.CanBacktrack)
+            {
+                input.Unmark();
+                return leftResult.AllowBacktrack(true);
+            }
             input.Reset();
             var rightResult = _right.Parse(input);
             input.Unmark();
-            return rightResult;
+            return rightResult.AllowBacktrack(true);
         }
         public override string ToString()
         {

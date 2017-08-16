@@ -20,8 +20,8 @@ namespace Unclazz.Parsec
             {
                 input.Unmark();
                 var cap = result.Capture;
-                if (cap.HasValue) return ParseResult.OfSuccess(p, cap.Value);
-                else return ParseResult.OfSuccess<T>(p);
+                if (cap.HasValue) return ParseResult.OfSuccess(p, cap, result.CanBacktrack);
+                else return ParseResult.OfSuccess<T>(p, canBacktrack: result.CanBacktrack);
             }
             input.Reset();
             input.Unmark();

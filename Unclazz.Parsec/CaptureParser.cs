@@ -8,6 +8,9 @@ namespace Unclazz.Parsec
     /// パース処理本体が実行される前に<see cref="ParserInput.Mark"/>が呼び出されます。
     /// パース処理本体が成功した場合は<see cref="ParserInput.Capture(bool)"/>が呼び出されます。
     /// パース処理本体が失敗した場合は単に<see cref="ParserInput.Unmark"/>が呼び出されます。</para>
+    /// <para>
+    /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+    /// </para>
     /// </summary>
     sealed class CaptureParser : Parser<string>
     {

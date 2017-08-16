@@ -57,6 +57,7 @@
     <Compile Include="CharClass\SingleUnicodeCategoryCharClass.cs" />
     <Compile Include="CharClass\UnicodeCategoriesCharClass.cs" />
     <Compile Include="CharClass\UnionCharClass.cs" />
+    <Compile Include="CutParser.cs" />
     <Compile Include="DelegateParser.cs" />
     <Compile Include="EndOfFileParser.cs" />
     <Compile Include="ManyThenParser.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="SuccessParser.cs" />
     <Compile Include="ThenManyParser.cs" />
     <Compile Include="ThenParser.cs" />
-    <Compile Include="WhileChasClassParser.cs" />
+    <Compile Include="WhileCharClassParser.cs" />
     <Compile Include="WordParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

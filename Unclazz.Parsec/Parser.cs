@@ -25,6 +25,9 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
+        /// <para>
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// </para>
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="operand">元になるパーサー</param>
@@ -35,6 +38,9 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
+        /// <para>
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// </para>
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="parser">元になるパーサー</param>
@@ -45,7 +51,10 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
+        /// <para>
         /// <paramref name="left"/>のパース失敗時のみ<paramref name="right"/>のパースが試みられます。
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// </para>
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="left"></param>
@@ -112,7 +121,7 @@ namespace Unclazz.Parsec
         {
             return Parser.Or<T>(left, right);
         }
-        public static Parser<T> operator|(Parser<T> left, T right)
+        public static Parser<T> operator |(Parser<T> left, T right)
         {
             return left.Or(new SuccessParser<T>(right));
         }
@@ -131,13 +140,13 @@ namespace Unclazz.Parsec
 
         public abstract ParseResult<T> Parse(ParserInput input);
 
-        protected ParseResult<T> Success(CharacterPosition p)
+        protected ParseResult<T> Success(CharacterPosition p, Capture<T> capture = new Capture<T>(), bool canBacktrack = true)
         {
-            return ParseResult.OfSuccess<T>(p);
+            return ParseResult.OfSuccess(p, capture, canBacktrack);
         }
-        protected ParseResult<T> Failure(CharacterPosition p, string m)
+        protected ParseResult<T> Failure(CharacterPosition p, string m, bool canBacktrack = true)
         {
-            return ParseResult.OfFailure<T>(p, m);
+            return ParseResult.OfFailure<T>(p, m, canBacktrack);
         }
 
         public Parser<U> Map<U>(Func<T,U> transform)
@@ -167,6 +176,10 @@ namespace Unclazz.Parsec
         public Parser<IEnumerable<T>> Then(Parser<T> another)
         {
             return new ThenParser<T>(this, another);
+        }
+        public Parser<T> Cut()
+        {
+            return new CutParser<T>(this);
         }
     }
 }
