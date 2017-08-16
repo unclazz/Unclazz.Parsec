@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.Readers
 {
     /// <summary>
     /// 実装済みの<see cref="IDisposable.Dispose()"/>を提供する抽象クラスです。

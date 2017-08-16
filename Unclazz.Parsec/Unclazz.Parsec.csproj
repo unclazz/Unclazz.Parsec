@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoDispose.cs" />
+    <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="BeginningOfFileParser.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="CharacterPosition.cs" />
@@ -87,6 +87,9 @@
     <Compile Include="ThenManyParser.cs" />
     <Compile Include="ThenParser.cs" />
     <Compile Include="KeywordParser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CoreParsers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
