@@ -7,20 +7,50 @@ using Unclazz.Parsec.CharClass;
 
 namespace Unclazz.Parsec
 {
+    /// <summary>
+    /// <see cref="Parser{T}"/>のコンパニオン・オブジェクトです。
+    /// <see cref="Parser{T}"/>のインスタンスを生成するためのユーティリティとして機能します。
+    /// </summary>
     public static class Parser
     {
+        /// <summary>
+        /// デリゲートをもとにパーサーを生成します。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="func">パースの実処理を行うデリゲート</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> For<T>(Func<ParserInput, ParseResult<T>> func)
         {
             return new DelegateParser<T>(func);
         }
+        /// <summary>
+        /// パーサーのパース結果成否を反転させるパーサーを生成します。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="operand">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> Not<T>(Parser<T> operand)
         {
             return new NotParser<T>(operand);
         }
+        /// <summary>
+        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="parser">元になるパーサー</param>
+        /// <returns></returns>
         public static Parser<T> Optional<T>(Parser<T> parser)
         {
             return new OptionalParser<T>(parser);
         }
+        /// <summary>
+        /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
+        /// <paramref name="left"/>のパース失敗時のみ<paramref name="right"/>のパースが試みられます。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
         {
             return new OrParser<T>(left, right);
@@ -37,59 +67,35 @@ namespace Unclazz.Parsec
         {
             return new CharClassParser(new CharactersCharClass(chars));
         }
+        /// <summary>
+        /// 指定した文字列にのみマッチするパーサーを生成します。
+        /// </summary>
+        /// <param name="word">文字列</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<string> Word(string word)
         {
             return new WordParser(word);
         }
 
+        /// <summary>
+        /// データソースの先頭（BOF）にだけマッチするパーサーです。
+        /// </summary>
         public static Parser<string> BeginningOfFile { get; } = new BeginningOfFileParser();
+        /// <summary>
+        /// データソースの終端（EOF）にだけマッチするパーサーです。
+        /// </summary>
         public static Parser<string> EndOfFile { get; } = new EndOfFileParser();
-        public static Parser<string> WhiteSpaceAndControls { get; } =
-            new WhileCharClassParser(new DelegateCharClass(ch => ch <= 32 || ch == 127));
-        public static Parser<string> Controls { get; } =
-            new WhileCharClassParser(new DelegateCharClass(ch => ch < 32 || ch == 127));
+        /// <summary>
+        /// 0文字以上の空白文字(コードポイント<c>32</c>）と制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// </summary>
+        public static Parser<string> WhileSpaceAndControls { get; } =
+            new WhileCharClassParser(CharClass.CharClass.Between((char)0, (char)32) + (char)127);
+        /// <summary>
+        /// 0文字以上の制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// </summary>
+        public static Parser<string> WhileControls { get; } =
+            new WhileCharClassParser(CharClass.CharClass.Between((char)0, (char)31) + (char)127);
 
-        public static Parser<string> Concat(this Parser<IEnumerable<char>> self)
-        {
-            return self.Map(cs => cs.Aggregate(new StringBuilder(), (b, ch) => b.Append(ch)).ToString());
-        }
-        public static Parser<string> Concat(this Parser<IEnumerable<string>> self)
-        {
-            return self.Map(cs => cs.Aggregate(new StringBuilder(), (b, s) => b.Append(s)).ToString());
-        }
-        public static Parser<string> FlatConcat(this Parser<IEnumerable<IEnumerable<string>>> self)
-        {
-            return self.Map(sss => sss.SelectMany(ss => ss).Aggregate(new StringBuilder(), (b, s) => b.Append(s)).ToString());
-        }
-        public static Parser<IEnumerable<T>> Then<T>(this Parser<IEnumerable<IEnumerable<T>>> self, Parser<T> another)
-        {
-            return new ManyThenParser<T>(self.FlatMap(e => e), another);
-        }
-        public static Parser<IEnumerable<T>> Then<T>(this Parser<IEnumerable<T>> self, Parser<T> another)
-        {
-            return new ManyThenParser<T>(self, another);
-        }
-        public static Parser<IEnumerable<T>> Then<T>(this Parser<T> self, Parser<IEnumerable<T>> another)
-        {
-            return new ThenManyParser<T>(self, another);
-        }
-
-        public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<string>> self, Parser<char> another)
-        {
-            return self.Then(another.Map(ch => ch.ToString()));
-        }
-        public static Parser<IEnumerable<string>> Then(this Parser<char> self, Parser<string> another)
-        {
-            return self.Map(ch => ch.ToString()).Then(another);
-        }
-        public static Parser<IEnumerable<U>> FlatMap<T, U>(this Parser<IEnumerable<IEnumerable<T>>> self, Func<T, U> transform)
-        {
-            return self.Map(outer => outer.SelectMany(inner => inner).Select(transform));
-        }
-        public static CaptureParser Capture(this Parser<string> self)
-        {
-            return new CaptureParser(self);
-        }
     }
 
     public abstract class Parser<T>
