@@ -131,6 +131,12 @@ namespace Unclazz.Parsec
         {
             return new ParseResult<T>(Successful, Position, _message, _cut);
         }
+        /// <summary>
+        /// 直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点とする
+        /// バックトラックの設定を変更した新しいインスタンスを返します。
+        /// </summary>
+        /// <param name="allow">バックトラックを可能にする場合は<c>true</c></param>
+        /// <returns>新しいインスタンス</returns>
         public ParseResult<T> AllowBacktrack(bool allow)
         {
             return new ParseResult<T>(Successful, Position, _capture, _message, !allow);
