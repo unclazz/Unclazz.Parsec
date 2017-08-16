@@ -34,10 +34,14 @@ namespace Unclazz.Parsec
             }
             return string.Format("{0} (codepoint = {1})", s, ch);
         }
-        public static string FuncToString<T,U>(Func<T, U> func)
+        public static string ObjectTypeToString<T>(T value)
+        {
+            return TypeToString(value.GetType());
+        }
+        public static string TypeToString(Type type)
         {
             var buff = new StringBuilder();
-            TypeToString(func.GetType(), buff);
+            TypeToString(type, buff);
             return buff.ToString();
         }
         static void TypeToString(Type t, StringBuilder b)

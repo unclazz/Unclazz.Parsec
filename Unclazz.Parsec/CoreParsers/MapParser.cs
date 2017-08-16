@@ -33,7 +33,7 @@ namespace Unclazz.Parsec
         public override string ToString()
         {
             return string.Format("Map({0}, transform = {1})",
-                _source, ParsecUtility.FuncToString(_transform));
+                _source, ParsecUtility.ObjectTypeToString(_transform));
         }
     }
     sealed class EnumerableMapParser<T, U> : Parser<U>
@@ -65,7 +65,7 @@ namespace Unclazz.Parsec
         public override string ToString()
         {
             return string.Format("Map({0}, transform = {1})",
-                _source, ParsecUtility.FuncToString(_transform));
+                _source, ParsecUtility.ObjectTypeToString(_transform));
         }
     }
 }
