@@ -42,10 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Readers\AutoDispose.cs" />
-    <Compile Include="BeginningOfFileParser.cs" />
+    <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="CharacterPosition.cs" />
-    <Compile Include="CharClassParser.cs" />
+    <Compile Include="CoreParsers\CharClassParser.cs" />
     <Compile Include="CharClasses\CharRange.cs" />
     <Compile Include="CharClasses\CharClass.cs" />
     <Compile Include="CharClasses\DelegateCharClass.cs" />
@@ -57,16 +57,16 @@
     <Compile Include="CharClasses\SingleUnicodeCategoryCharClass.cs" />
     <Compile Include="CharClasses\UnicodeCategoriesCharClass.cs" />
     <Compile Include="CharClasses\UnionCharClass.cs" />
-    <Compile Include="CharsWhileBetweenParser.cs" />
-    <Compile Include="CharsWhileInParser.cs" />
-    <Compile Include="CutParser.cs" />
-    <Compile Include="DelegateParser.cs" />
-    <Compile Include="EndOfFileParser.cs" />
-    <Compile Include="ManyThenParser.cs" />
-    <Compile Include="MapParser.cs" />
-    <Compile Include="NotParser.cs" />
-    <Compile Include="OptionalParser.cs" />
-    <Compile Include="OrParser.cs" />
+    <Compile Include="CoreParsers\CharsWhileBetweenParser.cs" />
+    <Compile Include="CoreParsers\CharsWhileInParser.cs" />
+    <Compile Include="CoreParsers\CutParser.cs" />
+    <Compile Include="CoreParsers\DelegateParser.cs" />
+    <Compile Include="CoreParsers\EndOfFileParser.cs" />
+    <Compile Include="CoreParsers\ManyThenParser.cs" />
+    <Compile Include="CoreParsers\MapParser.cs" />
+    <Compile Include="CoreParsers\NotParser.cs" />
+    <Compile Include="CoreParsers\OptionalParser.cs" />
+    <Compile Include="CoreParsers\OrParser.cs" />
     <Compile Include="ParsecUtility.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserExtension.cs" />
@@ -79,17 +79,15 @@
     <Compile Include="Readers\ResettableReader.cs" />
     <Compile Include="Readers\AbstractTextReader.cs" />
     <Compile Include="Readers\TextReaderProxy.cs" />
-    <Compile Include="RepeatExactlyParser.cs" />
-    <Compile Include="RepeatMinMaxParser.cs" />
-    <Compile Include="CaptureParser.cs" />
-    <Compile Include="SingleCharParser.cs" />
-    <Compile Include="SuccessParser.cs" />
-    <Compile Include="ThenManyParser.cs" />
-    <Compile Include="ThenParser.cs" />
-    <Compile Include="KeywordParser.cs" />
+    <Compile Include="CoreParsers\RepeatExactlyParser.cs" />
+    <Compile Include="CoreParsers\RepeatMinMaxParser.cs" />
+    <Compile Include="CoreParsers\CaptureParser.cs" />
+    <Compile Include="CoreParsers\SingleCharParser.cs" />
+    <Compile Include="CoreParsers\SuccessParser.cs" />
+    <Compile Include="CoreParsers\ThenManyParser.cs" />
+    <Compile Include="CoreParsers\ThenParser.cs" />
+    <Compile Include="CoreParsers\KeywordParser.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CoreParsers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
