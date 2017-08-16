@@ -110,7 +110,7 @@ namespace Unclazz.Parsec
         /// <returns>バックトラック機能をサポートする新しいパーサー</returns>
         public static Parser<string> Or(this Parser<char> self, Parser<string> another)
         {
-            return new OrParser<string>(self.Map(a => a), another);
+            return new OrParser<string>(self.Cast<string>(), another);
         }
         /// <summary>
         /// レシーバーとなるパーサーが失敗したとき引数で指定されたパーサーが実行されます。
@@ -139,7 +139,7 @@ namespace Unclazz.Parsec
         /// <returns>バックトラック機能をサポートする新しいパーサー</returns>
         public static Parser<string> Or(this Parser<string> self, Parser<char> another)
         {
-            return new OrParser<string>(self, another.Map(a => a));
+            return new OrParser<string>(self, another.Cast<string>());
         }
         /// <summary>
         /// 任意の型の値を読み取るパーサーと同じ型のシーケンスを読み取るパーサーをもとに、
@@ -174,7 +174,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<string> Then(this Parser<string> self, Parser<char> another)
         {
-            return self.Then(another.Map(a => a)).Concat();
+            return self.Then(another.Cast<string>()).Cast<string>();
         }
         /// <summary>
         /// <see cref="char"/>を読み取るパーサーと<see cref="string"/>を読み取るパーサーをもとに、
@@ -185,7 +185,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<string> Then(this Parser<char> self, Parser<string> another)
         {
-            return self.Map(a => a).Then(another).Concat();
+            return self.Cast<string>().Then(another).Cast<string>();
         }
         /// <summary>
         /// <see cref="char"/>を読み取るパーサーと<see cref="string"/>のシーケンスを読み取るパーサーをもとに、
@@ -196,9 +196,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<IEnumerable<string>> Then(this Parser<char> self, Parser<IEnumerable<string>> another)
         {
-            Func<IEnumerable<string>, string> f = cs =>
-            cs.Aggregate(new StringBuilder(), (b, s) => b.Append(s)).ToString();
-            return self.Map(a => a).Then(another.Map(f));
+            return self.Cast<string>().Then(another.Cast<string>());
         }
         /// <summary>
         /// <see cref="string"/>のシーケンスを読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
@@ -209,7 +207,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<string>> self, Parser<char> another)
         {
-            return self.Then(another.Map(a => a));
+            return self.Then(another.Cast<string>());
         }
         /// <summary>
         /// <see cref="char"/>のシーケンスを読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
@@ -220,7 +218,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<char>> self, Parser<string> another)
         {
-            return self.Concat().Then(another);
+            return self.Cast<string>().Then(another);
         }
     }
 }

@@ -18,14 +18,15 @@ namespace Unclazz.Parsec
         public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
         {
             var p = input.Position;
-            var q = new Queue<T>();
             for (var i = 0; i < _exactly; i++)
             {
                 var r = _original.Parse(input);
-                if (r.Successful) r.Capture.IfHasValue(q.Enqueue);
-                else ParseResult.OfFailure<IEnumerable<T>>(r.Position, r.Message);
+                if (!r.Successful)
+                {
+                    return Failure(r.Position, r.Message);
+                }
             }
-            return ParseResult.OfSuccess<IEnumerable<T>>(p, q);
+            return Success(p);
         }
         public override string ToString()
         {

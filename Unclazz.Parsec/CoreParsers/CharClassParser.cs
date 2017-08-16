@@ -15,10 +15,15 @@ namespace Unclazz.Parsec
         {
             var p = input.Position;
             var ch = (char)input.Read();
-            return (_clazz.Contains(ch))
-                ? ParseResult.OfSuccess<char>(p)
-                : ParseResult.OfFailure<char>(p, 
-                string.Format("expected a member of {0} but found '{1}' (code = {2})", _clazz, ch, (int) ch));
+            if (_clazz.Contains(ch))
+            {
+                return Success(p);
+            }
+            else
+            {
+                return Failure(p, string.Format("expected a member of " +
+                    "{0} but found '{1}' (code = {2})", _clazz, ch, (int)ch));
+            }
         }
         public override string ToString()
         {
