@@ -13,9 +13,9 @@ namespace Unclazz.Parsec
 
         public override ParseResult<T> Parse(ParserInput input)
         {
-            var originalResult = _original.Parse(input);
-            if (originalResult.Successful) return originalResult.AllowBacktrack(false);
-            return originalResult.AllowBacktrack(false);
+            var r = _original.Parse(input);
+            if (r.Successful) return r.AllowBacktrack(false);
+            return r.AllowBacktrack(true);
         }
 
         public override string ToString()
