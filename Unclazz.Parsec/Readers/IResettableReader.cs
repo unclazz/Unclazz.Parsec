@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Unclazz.Parsec.Reader
+namespace Unclazz.Parsec.Readers
 {
     /// <summary>
     /// リセット機能を持つ<see cref="ITextReader"/>です。

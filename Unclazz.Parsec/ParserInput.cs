@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unclazz.Parsec.Reader;
+using Unclazz.Parsec.Readers;
 
 namespace Unclazz.Parsec
 {

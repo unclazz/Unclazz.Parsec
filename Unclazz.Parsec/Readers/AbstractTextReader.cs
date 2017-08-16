@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Unclazz.Parsec.Reader
+namespace Unclazz.Parsec.Readers
 {
     /// <summary>
     /// <see cref="ITextReader"/>の実装を容易にするための抽象クラスです。
