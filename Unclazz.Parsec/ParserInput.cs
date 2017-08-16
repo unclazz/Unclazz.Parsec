@@ -10,6 +10,10 @@ namespace Unclazz.Parsec
 {
     public sealed class ParserInput : AutoDispose, IResettableReader
     {
+        public static implicit operator ParserInput(string text)
+        {
+            return ParserInput.FromString(text);
+        }
         public static ParserInput FromStream(Stream stream, Encoding enc)
         {
             return FromReader(new StreamReader(stream, enc));
