@@ -5,12 +5,12 @@ namespace Unclazz.Parsec
 {
     sealed class WhileCharClassParser: Parser<string>
     {
-        internal WhileCharClassParser(CharClass.CharClass clazz)
+        internal WhileCharClassParser(CharClasses.CharClass clazz)
         {
             _clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
         }
 
-        readonly CharClass.CharClass _clazz;
+        readonly CharClasses.CharClass _clazz;
 
         public override ParseResult<string> Parse(ParserInput input)
         {

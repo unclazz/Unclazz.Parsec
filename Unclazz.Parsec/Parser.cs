@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unclazz.Parsec.CharClass;
+using Unclazz.Parsec.CharClasses;
 
 namespace Unclazz.Parsec
 {
@@ -64,17 +64,38 @@ namespace Unclazz.Parsec
         {
             return new OrParser<T>(left, right);
         }
-        public static Parser<char> Char(CharClass.CharClass clazz)
+        public static Parser<char> CharBetween(char start, char end)
+        {
+            return new CharClassParser(CharClass.Between(start, end));
+        }
+        public static Parser<char> CharIn(CharClass clazz)
         {
             return new CharClassParser(clazz);
         }
-        public static Parser<char> Char(params char[] chars)
+        public static Parser<char> CharIn(params char[] chars)
         {
-            return new CharClassParser(CharClass.CharClass.AnyOf(chars));
+            if (chars != null && chars.Length == 1) return new SingleCharParser(chars[0]);
+            return new CharClassParser(CharClass.AnyOf(chars));
         }
-        public static Parser<char> Char(IEnumerable<char> chars)
+        public static Parser<char> CharIn(IEnumerable<char> chars)
         {
-            return new CharClassParser(CharClass.CharClass.AnyOf(chars));
+            return new CharClassParser(CharClass.AnyOf(chars));
+        }
+        public static Parser<char> Char(char ch)
+        {
+            return new SingleCharParser(ch);
+        }
+        public static Parser<string> CharsWhileIn(IEnumerable<char> chars, int min = 1)
+        {
+            return new CharsWhileInParser(CharClass.AnyOf(chars), min);
+        }
+        public static Parser<string> CharsWhileIn(CharClass clazz, int min = 1)
+        {
+            return new CharsWhileInParser(clazz, min);
+        }
+        public static Parser<string> CharsWhileBetween(char start, char end, int min = 1)
+        {
+            return new CharsWhileBetweenParser(start, end, min);
         }
         /// <summary>
         /// 指定した文字列にのみマッチするパーサーを生成します。
@@ -98,12 +119,12 @@ namespace Unclazz.Parsec
         /// 0文字以上の空白文字(コードポイント<c>32</c>）と制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         public static Parser<string> WhileSpaceAndControls { get; } =
-            new WhileCharClassParser(CharClass.CharClass.Between((char)0, (char)32) + (char)127);
+            new WhileCharClassParser(CharClass.Between((char)0, (char)32) + (char)127);
         /// <summary>
         /// 0文字以上の制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         public static Parser<string> WhileControls { get; } =
-            new WhileCharClassParser(CharClass.CharClass.Between((char)0, (char)31) + (char)127);
+            new WhileCharClassParser(CharClass.Between((char)0, (char)31) + (char)127);
 
     }
 

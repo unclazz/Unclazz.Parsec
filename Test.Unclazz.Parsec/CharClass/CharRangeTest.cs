@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using Unclazz.Parsec.CharClass;
+using Unclazz.Parsec.CharClasses;
 
 namespace Test.Unclazz.Parsec.CharClass
 {

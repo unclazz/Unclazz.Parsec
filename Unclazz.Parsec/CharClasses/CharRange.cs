@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Unclazz.Parsec.CharClass
+namespace Unclazz.Parsec.CharClasses
 {
     /// <summary>
     /// 文字の範囲を表すクラスです。

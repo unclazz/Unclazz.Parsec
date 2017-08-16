@@ -65,6 +65,7 @@
     <Compile Include="NotParser.cs" />
     <Compile Include="OptionalParser.cs" />
     <Compile Include="OrParser.cs" />
+    <Compile Include="ParsecUtility.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="ParserInput.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="RepeatExactlyParser.cs" />
     <Compile Include="RepeatMinMaxParser.cs" />
     <Compile Include="CaptureParser.cs" />
+    <Compile Include="SingleCharParser.cs" />
     <Compile Include="SuccessParser.cs" />
     <Compile Include="ThenManyParser.cs" />
     <Compile Include="ThenParser.cs" />
