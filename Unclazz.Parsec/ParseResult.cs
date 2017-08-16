@@ -23,7 +23,7 @@ namespace Unclazz.Parsec
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
         public static ParseResult<T> OfSuccess<T>(CharacterPosition position, T value, bool canBacktrack = true)
         {
-            return new ParseResult<T>(true, position, value, null, false);
+            return new ParseResult<T>(true, position, value, null, !canBacktrack);
         }
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを返します。
