@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreParsers\ManyOrParser.cs" />
+    <Compile Include="CoreParsers\OrManyParser.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Capture.cs" />

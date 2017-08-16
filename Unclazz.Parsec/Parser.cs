@@ -354,13 +354,20 @@ namespace Unclazz.Parsec
         /// パース成功時（元になるパーサーがパースに成功した時）はキャプチャした値を引数にして<paramref name="transform"/>を呼び出します。
         /// パース失敗時（元になるパーサーがパースに失敗した時）は<paramref name="transform"/>は呼び出されません。
         /// </para>
+        /// <para>
+        /// このメソッドが返すパーサーは関数<paramref name="transform"/>が例外をスローした場合、
+        /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
+        /// この挙動を変更し、関数がスローした例外をそのまま再スローさせたい場合は
+        /// <paramref name="canThrow"/>に<c>true</c>を指定します。
+        /// </para>
         /// </summary>
         /// <typeparam name="U">読み取り結果を変換した後の型</typeparam>
         /// <param name="transform">変換を行う関数</param>
+        /// <param name="canThrow"><paramref name="transform"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
         /// <returns>新しいパーサー</returns>
-        public Parser<U> Map<U>(Func<string, U> transform)
+        public Parser<U> Map<U>(Func<string, U> transform, bool canThrow = false)
         {
-            return new MapParser<T, U>(this, transform);
+            return new MapParser<T, U>(this, transform, canThrow);
         }
         /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
