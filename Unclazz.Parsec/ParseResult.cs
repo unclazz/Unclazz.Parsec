@@ -174,10 +174,10 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="act">成功している場合に実行されるアクション</param>
         /// <param name="orElse">失敗している場合に実行されるアクション</param>
-        public void IfSuccessful(Action<CharacterPosition, Capture<T>> act, Action<CharacterPosition, string> orElse)
+        public void IfSuccessful(Action<Capture<T>, CharacterPosition> act, Action<string, CharacterPosition> orElse)
         {
-            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Capture);
-            else (orElse ?? throw new ArgumentNullException(nameof(orElse)))(Position, Message);
+            if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Capture, Position);
+            else (orElse ?? throw new ArgumentNullException(nameof(orElse)))(Message, Position);
         }
         /// <summary>
         /// パースが失敗している場合は引数で指定されたアクションを実行します。
@@ -191,9 +191,9 @@ namespace Unclazz.Parsec
         /// パースが失敗している場合は引数で指定されたアクションを実行します。
         /// </summary>
         /// <param name="act">アクション</param>
-        public void IfFailed(Action<CharacterPosition, string> act)
+        public void IfFailed(Action<string, CharacterPosition> act)
         {
-            if (!Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Message);
+            if (!Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Message, Position);
         }
         /// <summary>
         /// パース結果に引数で指定された関数を適用します。
@@ -206,10 +206,12 @@ namespace Unclazz.Parsec
         {
             if (Successful)
             {
-                return _capture.HasValue ? ParseResult.OfSuccess(Position, transform(_capture.Value), !_cut)
-                    : ParseResult.OfSuccess<U>(Position, canBacktrack: !_cut);
+                return ParseResult.OfSuccess<U>(Position, _capture.Map(transform), !_cut);
             }
-            return ParseResult.OfFailure<U>(Position, Message, !_cut);
+            else
+            {
+                return ParseResult.OfFailure<U>(Position, Message, !_cut);
+            }
         }
         /// <summary>
         /// 列挙子を返します。

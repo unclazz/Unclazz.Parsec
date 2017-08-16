@@ -29,12 +29,12 @@ namespace Test.Unclazz.Parsec
 
             // Assert
             Assert.That(result.Successful, Is.EqualTo(expectedResult));
-            result.IfSuccessful((pos, cap) =>
+            result.IfSuccessful((cap, pos) =>
             {
                 Assert.That(cap.HasValue, Is.False);
                 Assert.That(pos.Index, Is.EqualTo(0));
                 Assert.That(input.Position.Index, Is.EqualTo(expectedIndex));
-            }, (pos, message) =>
+            }, (message, pos) =>
             {
                 Assert.That(pos.Index, Is.EqualTo(0));
             });
@@ -55,11 +55,11 @@ namespace Test.Unclazz.Parsec
 
             // Assert
             Assert.That(result.Successful, Is.EqualTo(expectedResult));
-            result.IfSuccessful((pos, cap) =>
+            result.IfSuccessful((cap, pos) =>
             {
                 Assert.That(cap.HasValue, Is.False);
                 Assert.That(pos.Index, Is.EqualTo(0));
-            }, (pos, message) =>
+            }, (message, pos) =>
             {
                 Assert.That(pos.Index, Is.EqualTo(0));
             });
