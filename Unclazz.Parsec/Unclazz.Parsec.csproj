@@ -66,6 +66,7 @@
     <Compile Include="OptionalParser.cs" />
     <Compile Include="OrParser.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="ParserExtension.cs" />
     <Compile Include="ParserInput.cs" />
     <Compile Include="Reader\IResettableReader.cs" />
     <Compile Include="Reader\ITextReader.cs" />

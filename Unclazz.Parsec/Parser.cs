@@ -64,17 +64,17 @@ namespace Unclazz.Parsec
         {
             return new OrParser<T>(left, right);
         }
-        public static Parser<string> Char(CharClass.CharClass clazz)
+        public static Parser<char> Char(CharClass.CharClass clazz)
         {
             return new CharClassParser(clazz);
         }
-        public static Parser<string> Char(params char[] chars)
+        public static Parser<char> Char(params char[] chars)
         {
-            return new CharClassParser(new CharactersCharClass(chars));
+            return new CharClassParser(CharClass.CharClass.AnyOf(chars));
         }
-        public static Parser<string> Char(IEnumerable<char> chars)
+        public static Parser<char> Char(IEnumerable<char> chars)
         {
-            return new CharClassParser(new CharactersCharClass(chars));
+            return new CharClassParser(CharClass.CharClass.AnyOf(chars));
         }
         /// <summary>
         /// 指定した文字列にのみマッチするパーサーを生成します。
