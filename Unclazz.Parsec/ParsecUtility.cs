@@ -58,5 +58,16 @@ namespace Unclazz.Parsec
                 b.Append('>');
             }
         }
+        public static ParseResult<string> ProxyCapture<T>(Parser<T> parser, ParserInput input)
+        {
+            input.Mark();
+            var r = parser.Parse(input);
+            if (r.Successful)
+            {
+                return r.Cast<string>().Attach(input.Capture(true));
+            }
+            input.Unmark();
+            return r.Cast<string>();
+        }
     }
 }

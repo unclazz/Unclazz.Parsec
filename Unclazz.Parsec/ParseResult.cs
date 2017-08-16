@@ -214,6 +214,23 @@ namespace Unclazz.Parsec
             }
         }
         /// <summary>
+        /// パース結果の型パラメータを変更します。
+        /// これに伴い<see cref="Capture{T}"/>が内包する値は破棄されます。
+        /// </summary>
+        /// <typeparam name="U">任意の型</typeparam>
+        /// <returns>型パラメータを変更した結果</returns>
+        public ParseResult<U> Cast<U>()
+        {
+            if (Successful)
+            {
+                return ParseResult.OfSuccess<U>(Position, new Capture<U>(), !_cut);
+            }
+            else
+            {
+                return ParseResult.OfFailure<U>(Position, Message, !_cut);
+            }
+        }
+        /// <summary>
         /// 列挙子を返します。
         /// パースが成功している場合、列挙子は唯一の要素としてパース結果の値を列挙します。
         /// パースが失敗している場合、列挙子はいかなる値も列挙しません。

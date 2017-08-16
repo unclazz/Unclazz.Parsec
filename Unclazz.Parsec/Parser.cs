@@ -276,10 +276,6 @@ namespace Unclazz.Parsec
             return ParseResult.OfFailure<T>(position, message, canBacktrack);
         }
 
-        public Parser<U> Map<U>(Func<T,U> transform)
-        {
-            return new MapParser<T, U>(this, transform);
-        }
         public Parser<IEnumerable<T>> Repeat(int min, int max)
         {
             return new RepeatMinMaxParser<T>(this, min, max);
