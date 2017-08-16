@@ -19,8 +19,11 @@ namespace Unclazz.Parsec
         {
             var p = input.Position;
             var count = 0;
-            while (!input.EndOfFile && _clazz.Contains((char)input.Read()))
+            while (!input.EndOfFile)
             {
+                var ch = (char)input.Peek();
+                if (!_clazz.Contains(ch)) break;
+                input.Read();
                 count++;
             }
             if (_min <= count)

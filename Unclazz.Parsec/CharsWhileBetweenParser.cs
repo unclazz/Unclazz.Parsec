@@ -23,8 +23,9 @@ namespace Unclazz.Parsec
             var count = 0;
             while (!input.EndOfFile)
             {
-                var ch = input.Read();
+                var ch = input.Peek();
                 if (ch < _start || _end < ch) break;
+                input.Read();
                 count++;
             }
             if (_min <= count)
