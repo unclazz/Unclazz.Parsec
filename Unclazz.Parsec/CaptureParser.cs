@@ -39,7 +39,14 @@ namespace Unclazz.Parsec
         /// <returns>パース結果</returns>
         public override ParseResult<string> Parse(ParserInput input)
         {
-            return ParsecUtility.ProxyCapture(this, input);
+            input.Mark();
+            var r = _parse.Parse(input);
+            if (r.Successful)
+            {
+                return r.Cast<string>().Attach(input.Capture(true));
+            }
+            input.Unmark();
+            return r.Cast<string>();
         }
         /// <summary>
         /// このパーサーの文字列表現を返します。

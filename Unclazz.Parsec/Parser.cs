@@ -13,6 +13,28 @@ namespace Unclazz.Parsec
     /// </summary>
     public static class Parser
     {
+        #region 定義済みパーサーを提供するプロパティの宣言
+        /// <summary>
+        /// データソースの先頭（BOF）にだけマッチするパーサーです。
+        /// </summary>
+        public static Parser<string> BeginningOfFile { get; } = new BeginningOfFileParser();
+        /// <summary>
+        /// データソースの終端（EOF）にだけマッチするパーサーです。
+        /// </summary>
+        public static Parser<string> EndOfFile { get; } = new EndOfFileParser();
+        /// <summary>
+        /// 0文字以上の空白文字(コードポイント<c>32</c>）と
+        /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// </summary>
+        public static Parser<string> WhileSpaceAndControls { get; } =
+            new CharsWhileInParser(CharClass.Between((char)0, (char)32) + (char)127, 0);
+        /// <summary>
+        /// 0文字以上の制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// </summary>
+        public static Parser<string> WhileControls { get; } =
+            new CharsWhileInParser(CharClass.Between((char)0, (char)31) + (char)127, 0);
+        #endregion
+
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
@@ -22,48 +44,6 @@ namespace Unclazz.Parsec
         public static Parser<T> For<T>(Func<ParserInput, ParseResult<T>> func)
         {
             return new DelegateParser<T>(func);
-        }
-        /// <summary>
-        /// パーサーのパース結果成否を反転させるパーサーを生成します。
-        /// <para>
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="operand">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Not<T>(Parser<T> operand)
-        {
-            return new NotParser<T>(operand);
-        }
-        /// <summary>
-        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
-        /// <para>
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="parser">元になるパーサー</param>
-        /// <returns></returns>
-        public static Parser<T> Optional<T>(Parser<T> parser)
-        {
-            return new OptionalParser<T>(parser);
-        }
-        /// <summary>
-        /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
-        /// <para>
-        /// <paramref name="left"/>のパース失敗時のみ<paramref name="right"/>のパースが試みられます。
-        /// 成功したパーサーのパース結果が全体のパース結果となります。
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
-        {
-            return new OrParser<T>(left, right);
         }
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
@@ -134,33 +114,56 @@ namespace Unclazz.Parsec
             return new CharsWhileInParser(clazz, min);
         }
         /// <summary>
-        /// 指定した文字列にのみマッチするパーサーを生成します。
+        /// パーサーのパース結果成否を反転させるパーサーを生成します。
+        /// <para>
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// </para>
         /// </summary>
-        /// <param name="word">文字列</param>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<string> Word(string word)
+        public static Parser<T> Not<T>(Parser<T> operand)
         {
-            return new WordParser(word);
+            return new NotParser<T>(operand);
         }
         /// <summary>
-        /// データソースの先頭（BOF）にだけマッチするパーサーです。
+        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
+        /// <para>
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// </para>
         /// </summary>
-        public static Parser<string> BeginningOfFile { get; } = new BeginningOfFileParser();
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="parser">元になるパーサー</param>
+        /// <returns></returns>
+        public static Parser<T> Optional<T>(Parser<T> parser)
+        {
+            return new OptionalParser<T>(parser);
+        }
         /// <summary>
-        /// データソースの終端（EOF）にだけマッチするパーサーです。
+        /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
+        /// <para>
+        /// <paramref name="left"/>のパース失敗時のみ<paramref name="right"/>のパースが試みられます。
+        /// 成功したパーサーのパース結果が全体のパース結果となります。
+        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// </para>
         /// </summary>
-        public static Parser<string> EndOfFile { get; } = new EndOfFileParser();
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
+        {
+            return new OrParser<T>(left, right);
+        }
         /// <summary>
-        /// 0文字以上の空白文字(コードポイント<c>32</c>）と
-        /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// 指定した文字列にのみマッチするパーサーを生成します。
         /// </summary>
-        public static Parser<string> WhileSpaceAndControls { get; } =
-            new CharsWhileInParser(CharClass.Between((char)0, (char)32) + (char)127, 0);
-        /// <summary>
-        /// 0文字以上の制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
-        /// </summary>
-        public static Parser<string> WhileControls { get; } =
-            new CharsWhileInParser(CharClass.Between((char)0, (char)31) + (char)127, 0);
+        /// <param name="keyword">文字列</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<string> Keyword(string keyword)
+        {
+            return new KeywordParser(keyword);
+        }
     }
 
     /// <summary>

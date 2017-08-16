@@ -86,8 +86,7 @@
     <Compile Include="SuccessParser.cs" />
     <Compile Include="ThenManyParser.cs" />
     <Compile Include="ThenParser.cs" />
-    <Compile Include="WhileCharClassParser.cs" />
-    <Compile Include="WordParser.cs" />
+    <Compile Include="KeywordParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

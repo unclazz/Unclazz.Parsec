@@ -7,16 +7,17 @@ namespace Unclazz.Parsec
     {
         internal MapParser(Parser<T> source, Func<string, U> transform)
         {
-            _source = source ?? throw new ArgumentNullException(nameof(source));
+            var tmp = source ?? throw new ArgumentNullException(nameof(source));
+            _source = source.Capture();
             _transform = transform ?? throw new ArgumentNullException(nameof(transform));
         }
 
-        readonly Parser<T> _source;
+        readonly Parser<string> _source;
         readonly Func<string, U> _transform;
 
         public override ParseResult<U> Parse(ParserInput input)
         {
-            return ParsecUtility.ProxyCapture(_source, input).Map(_transform);
+            return _source.Parse(input).Map(_transform);
         }
         public override string ToString()
         {

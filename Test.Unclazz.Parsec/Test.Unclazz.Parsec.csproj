@@ -57,7 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\ResettableReaderTest.cs" />
     <Compile Include="CharsWhileInParserTest.cs" />
-    <Compile Include="WordParserTest.cs" />
+    <Compile Include="KeywordParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

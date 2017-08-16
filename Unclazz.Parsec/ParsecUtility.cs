@@ -16,7 +16,7 @@ namespace Unclazz.Parsec
             "DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS",
             "RS", "US"
         };
-        public static string CharString(int ch)
+        public static string CharToString(int ch)
         {
             if (ch == -1) return "EOF";
             string s = null;
@@ -57,17 +57,6 @@ namespace Unclazz.Parsec
                 }
                 b.Append('>');
             }
-        }
-        public static ParseResult<string> ProxyCapture<T>(Parser<T> parser, ParserInput input)
-        {
-            input.Mark();
-            var r = parser.Parse(input);
-            if (r.Successful)
-            {
-                return r.Cast<string>().Attach(input.Capture(true));
-            }
-            input.Unmark();
-            return r.Cast<string>();
         }
     }
 }

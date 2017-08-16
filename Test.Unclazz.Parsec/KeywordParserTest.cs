@@ -9,7 +9,7 @@ using Unclazz.Parsec;
 namespace Test.Unclazz.Parsec
 {
     [TestFixture]
-    public class WordParserTest
+    public class KeywordParserTest
     {
         [TestCase("0123456789X", "0", true)]
         [TestCase("0123456789X", "01", true)]
@@ -21,7 +21,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Word(word);
+            var parser = Parser.Keyword(word);
 
             // Act
             var result = parser.Parse(input);
@@ -42,7 +42,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Word(word);
+            var parser = Parser.Keyword(word);
             input.Read();
 
             // Act
@@ -64,7 +64,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Word(word).Capture();
+            var parser = Parser.Keyword(word).Capture();
             input.Read();
 
             // Act

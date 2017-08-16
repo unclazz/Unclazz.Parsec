@@ -18,12 +18,12 @@
             else
             {
                 return Failure(p, string.Format("expected {0} but found {1}.",
-                    ParsecUtility.CharString(_ch), ParsecUtility.CharString(actual)));
+                    ParsecUtility.CharToString(_ch), ParsecUtility.CharToString(actual)));
             }
         }
         public override string ToString()
         {
-            return string.Format("Char({0})", ParsecUtility.CharString(_ch));
+            return string.Format("Char({0})", ParsecUtility.CharToString(_ch));
         }
     }
 }
