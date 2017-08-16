@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Unclazz.Parsec;
 using Unclazz.Parsec.CharClasses;
 
-namespace Test.Unclazz.Parsec.CharClass
+namespace Test.Unclazz.Parsec.CharClasses
 {
     [TestFixture]
     public class CharRangeTest

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec.CharClasses;
 
-namespace Test.Unclazz.Parsec.CharClass
+namespace Test.Unclazz.Parsec.CharClasses
 {
     [TestFixture]
     public class CharactersCharClassTest

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Unclazz.Parsec;
 using Unclazz.Parsec.Readers;
 
-namespace Test.Unclazz.Parsec
+namespace Test.Unclazz.Parsec.Readers
 {
     [TestFixture]
     public class PrependableReaderTest
