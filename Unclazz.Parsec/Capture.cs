@@ -93,6 +93,8 @@ namespace Unclazz.Parsec
         }
         string ValueAsString()
         {
+            var str = _value as string;
+            if (str != null) return str;
             var col = _value as IEnumerable;
             if (col == null)
             {
