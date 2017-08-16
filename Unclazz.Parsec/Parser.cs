@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec.CharClasses;
@@ -335,6 +334,20 @@ namespace Unclazz.Parsec
             return new CaptureParser<T>(this);
         }
         /// <summary>
+        /// このパーサーの読み取り結果型を変更した新しいパーサーを生成します。
+        /// <para>
+        /// このメソッドが返すパーサーは<see cref="Parser{T}.Map{U}(Func{string, U}, bool)"/>が返すパーサーと異なり、
+        /// 値のキャプチャを行いません。仮に元になるパーサーがキャプチャをサポートするものであっても、
+        /// このメソッドが返す新しいパーサーはその値を破棄したからの<see cref="Capture{T}"/>を返すものとなります。
+        /// </para>
+        /// </summary>
+        /// <typeparam name="U">任意の型</typeparam>
+        /// <returns>新しいパーサー</returns>
+        public Parser<U> Cast<U>()
+        {
+            return new CastParser<T, U>(this);
+        }
+        /// <summary>
         /// 直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化します。
         /// <para>
         /// このパーサーが成功したあと後続のパーサーが失敗した場合バックトラックは機能せず、
@@ -351,6 +364,9 @@ namespace Unclazz.Parsec
         /// このパーサーの読み取り結果を任意の関数で変換して返すパーサーを生成します。
         /// <para>
         /// このメソッドが生成して返すパーサーは、その目的ゆえにパース成功時に値を返します。
+        /// パース結果の型を変更することだけが目的で実際にはその値を利用しない場合は<see cref="Cast{U}"/>を利用します。
+        /// </para>
+        /// <para>
         /// パース成功時（元になるパーサーがパースに成功した時）はキャプチャした値を引数にして<paramref name="transform"/>を呼び出します。
         /// パース失敗時（元になるパーサーがパースに失敗した時）は<paramref name="transform"/>は呼び出されません。
         /// </para>
