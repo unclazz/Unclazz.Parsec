@@ -34,12 +34,29 @@ namespace Unclazz.Parsec
             }
             return string.Format("{0} (codepoint = {1})", s, ch);
         }
-        public static string FuncToString<T,U>(Func<T, U> f)
+        public static string FuncToString<T,U>(Func<T, U> func)
         {
-            var typeArgs = f.GetType().GenericTypeArguments;
-            var typeArg0Name = typeArgs[0].Name;
-            var typeArg1Name = typeArgs[1].Name;
-            return string.Format("Func<{0}, {1}>", typeArg0Name, typeArg1Name);
+            var buff = new StringBuilder();
+            TypeToString(func.GetType(), buff);
+            return buff.ToString();
+        }
+        static void TypeToString(Type t, StringBuilder b)
+        {
+            var type = t;
+            var typeName = type.Name;
+            var typeArgs = type.GenericTypeArguments;
+            b.Append(typeName);
+            if (typeArgs.Length > 0)
+            {
+                b.Append('<');
+                var initLength = b.Length;
+                foreach (var a in typeArgs)
+                {
+                    if (b.Length > initLength) b.Append(',').Append(' ');
+                    TypeToString(a, b);
+                }
+                b.Append('>');
+            }
         }
     }
 }
