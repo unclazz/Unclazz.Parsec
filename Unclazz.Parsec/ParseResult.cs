@@ -37,6 +37,18 @@ namespace Unclazz.Parsec
             return new ParseResult<T>(true, position, null, false);
         }
         /// <summary>
+        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを返します。
+        /// </summary>
+        /// <typeparam name="T">パース結果の型</typeparam>
+        /// <param name="position">パース開始時の文字位置</param>
+        /// <param name="capture">パース結果の値</param>
+        /// <param name="cut">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
+        /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, Capture<T> capture, bool cut = false)
+        {
+            return new ParseResult<T>(true, position, capture, null, false);
+        }
+        /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
         /// </summary>
         /// <typeparam name="T">パース結果の型</typeparam>
@@ -61,7 +73,7 @@ namespace Unclazz.Parsec
 
         internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Capture<T>(), m, c) { }
         internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Capture<T>(v), m, c) { }
-        ParseResult(bool s, CharacterPosition p, Capture<T> c, string m, bool cut)
+        internal ParseResult(bool s, CharacterPosition p, Capture<T> c, string m, bool cut)
         {
             _capture = c;
             _message = m;
@@ -127,6 +139,10 @@ namespace Unclazz.Parsec
         public ParseResult<T> Detach()
         {
             return new ParseResult<T>(Successful, Position, _message, _cut);
+        }
+        public ParseResult<T> AllowBacktrack(bool allow)
+        {
+            return new ParseResult<T>(Successful, Position, _capture, _message, !allow);
         }
         /// <summary>
         /// パースが成功している場合は引数で指定されたアクションを実行します。
