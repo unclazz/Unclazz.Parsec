@@ -12,26 +12,6 @@ namespace Unclazz.Parsec
     public static class ParserExtension
     {
         /// <summary>
-        /// <see cref="string"/>を読み取るパーサーをもとに、
-        /// 読み取り結果をキャプチャするパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<string> Capture<T>(this Parser<T> self)
-        {
-            return new CaptureParser<T>(self);
-        }
-        /// <summary>
-        /// <see cref="string"/>を読み取るパーサーをもとに、
-        /// 読み取り結果をキャプチャするパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<string> Capture(this Parser<char> self)
-        {
-            return self.Map(a => a);
-        }
-        /// <summary>
         /// <see cref="char"/>のシーケンスを読み取るパーサーをもとに
         /// <see cref="string"/>を読み取るパーサーを生成します。
         /// </summary>
@@ -52,24 +32,6 @@ namespace Unclazz.Parsec
             Func<IEnumerable<string>, string> f = cs =>
             cs.Aggregate(new StringBuilder(), (b, s) => b.Append(s)).ToString();
             return self.Map(f);
-        }
-        /// <summary>
-        /// 任意の型を読み取るパーサーをもとに、
-        /// その読み取り結果を任意の関数で変換して返すパーサーを生成します。
-        /// <para>
-        /// このメソッドが生成して返すパーサーは、その目的ゆえにパース成功時に値を返します。
-        /// パース成功時（元になるパーサーがパースに成功した時）はキャプチャした値を引数にして<paramref name="transform"/>を呼び出します。
-        /// パース失敗時（元になるパーサーがパースに失敗した時）は<paramref name="transform"/>は呼び出されません。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">元のパーサーの読み取り結果の型</typeparam>
-        /// <typeparam name="U">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="transform">変換を行う関数</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<U> Map<T, U>(this Parser<T> self, Func<string, U> transform)
-        {
-            return new MapParser<T, U>(self, transform);
         }
         /// <summary>
         /// <see cref="IEnumerable{T}"/>を読み取るパーサーをもとに、
@@ -113,6 +75,7 @@ namespace Unclazz.Parsec
         {
             return self.Map(outer => outer.SelectMany(inner => inner).Select(transform));
         }
+
         /// <summary>
         /// 任意の型の値を読み取るパーサーと同じ型のシーケンスを読み取るパーサーをもとに、
         /// 同じ型のシーケンスを読みよるパーサーを生成します。

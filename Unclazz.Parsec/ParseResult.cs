@@ -45,7 +45,8 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する場合<c>false</c></param>
+        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
+        /// 起点としたバックトラックを無効化する場合<c>false</c></param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
         public static ParseResult<T> OfFailure<T>(CharacterPosition position, string message, bool canBacktrack = true)
         {

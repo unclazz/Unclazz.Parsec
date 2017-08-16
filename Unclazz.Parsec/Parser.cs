@@ -140,6 +140,7 @@ namespace Unclazz.Parsec
     /// <typeparam name="T">パース結果の型</typeparam>
     public abstract class Parser<T>
     {
+        #region 演算子オーバーロードの宣言
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
@@ -227,7 +228,9 @@ namespace Unclazz.Parsec
         {
             return new ThenManyParser<T>(left, right);
         }
+        #endregion
 
+        #region 具象クラス実装者のためのメンバーの宣言
         /// <summary>
         /// パースを行います。
         /// <para>
@@ -275,34 +278,106 @@ namespace Unclazz.Parsec
         {
             return ParseResult.OfFailure<T>(position, message, canBacktrack);
         }
+        #endregion
 
-        public Parser<IEnumerable<T>> Repeat(int min, int max)
+        /// <summary>
+        /// このパーサーの読み取り結果をキャプチャするパーサーを生成します。
+        /// </summary>
+        /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
+        public Parser<string> Capture()
         {
-            return new RepeatMinMaxParser<T>(this, min, max);
+            return new CaptureParser<T>(this);
         }
-        public Parser<IEnumerable<T>> RepeatMin(int min)
+        /// <summary>
+        /// 直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化します。
+        /// <para>
+        /// このパーサーが成功したあと後続のパーサーが失敗した場合バックトラックは機能せず、
+        /// <see cref="Parser{T}.Or(Parser{T})"/>で連結された他のパーサーの実行が試行されることはありません。
+        /// もちろんこのメソッドを呼び出す以前のパーサーが失敗した場合は引き続きバックトラックが有効です。
+        /// </para>
+        /// </summary>
+        /// <returns>バックトラック機能が無効化された新しいパーサー</returns>
+        public Parser<T> Cut()
         {
-            return new RepeatMinMaxParser<T>(this, min, -1);
+            return new CutParser<T>(this);
         }
-        public Parser<IEnumerable<T>> RepeatMax(int max)
+        /// <summary>
+        /// このパーサーの読み取り結果を任意の関数で変換して返すパーサーを生成します。
+        /// <para>
+        /// このメソッドが生成して返すパーサーは、その目的ゆえにパース成功時に値を返します。
+        /// パース成功時（元になるパーサーがパースに成功した時）はキャプチャした値を引数にして<paramref name="transform"/>を呼び出します。
+        /// パース失敗時（元になるパーサーがパースに失敗した時）は<paramref name="transform"/>は呼び出されません。
+        /// </para>
+        /// </summary>
+        /// <typeparam name="U">読み取り結果を変換した後の型</typeparam>
+        /// <param name="transform">変換を行う関数</param>
+        /// <returns>新しいパーサー</returns>
+        public Parser<U> Map<U>(Func<string, U> transform)
         {
-            return new RepeatMinMaxParser<T>(this, 0, max);
+            return new MapParser<T, U>(this, transform);
         }
-        public Parser<IEnumerable<T>> RepeatExactly(int exactly)
-        {
-            return new RepeatExactlyParser<T>(this, exactly);
-        }
+        /// <summary>
+        /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
+        /// <para>
+        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
+        /// その結果がそのまま新しいパーサーの返す結果となります。
+        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
+        /// 引数で指定されたもう1つのパーサーの読み取りが試行されます。
+        /// もう1つのパーサーの読み取りが成功した場合は、その結果が新しいパーサーの返す結果となります。
+        /// いずれのパーサーも失敗した場合は、新しいパーサーの返す結果も失敗を表すものとなります。
+        /// </para>
+        /// </summary>
+        /// <param name="another"></param>
+        /// <returns>バックトラック機能をサポートする新しいパーサー</returns>
         public Parser<T> Or(Parser<T> another)
         {
             return new OrParser<T>(this, another);
         }
+        /// <summary>
+        /// シーケンスを読み取るパーサーを生成します。
+        /// </summary>
+        /// <param name="min">繰り返しの最小回数</param>
+        /// <param name="max">繰り返しの最大回数</param>
+        /// <returns>繰り返しをサポートする新しいパーサー</returns>
+        public Parser<IEnumerable<T>> Repeat(int min, int max)
+        {
+            return new RepeatMinMaxParser<T>(this, min, max);
+        }
+        /// <summary>
+        /// シーケンスを読み取るパーサーを生成します。
+        /// </summary>
+        /// <param name="min">繰り返しの最小回数</param>
+        /// <returns>繰り返しをサポートする新しいパーサー</returns>
+        public Parser<IEnumerable<T>> RepeatMin(int min)
+        {
+            return new RepeatMinMaxParser<T>(this, min, -1);
+        }
+        /// <summary>
+        /// シーケンスを読み取るパーサーを生成します。
+        /// </summary>
+        /// <param name="max">繰り返しの最大回数</param>
+        /// <returns>繰り返しをサポートする新しいパーサー</returns>
+        public Parser<IEnumerable<T>> RepeatMax(int max)
+        {
+            return new RepeatMinMaxParser<T>(this, 0, max);
+        }
+        /// <summary>
+        /// シーケンスを読み取るパーサーを生成します。
+        /// </summary>
+        /// <param name="exactly">繰り返しの回数</param>
+        /// <returns>繰り返しをサポートする新しいパーサー</returns>
+        public Parser<IEnumerable<T>> RepeatExactly(int exactly)
+        {
+            return new RepeatExactlyParser<T>(this, exactly);
+        }
+        /// <summary>
+        /// このパーサーの読み取りが成功したあとに実行されるパーサーを指定します。
+        /// </summary>
+        /// <param name="another">次に実行されるパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser<IEnumerable<T>> Then(Parser<T> another)
         {
             return new ThenParser<T>(this, another);
-        }
-        public Parser<T> Cut()
-        {
-            return new CutParser<T>(this);
         }
     }
 }
