@@ -11,12 +11,9 @@ namespace Unclazz.Parsec
     {
         static readonly string[] code0to31 = new[]
         {
-            "NUL", "SOH", "STX", "ETX", "EOT",
-            "ENQ", "ACK", "BEL", "BS", "HT",
-            "LF", "VT", "FF", "CR", "SO",
-            "SI", "DLE", "DC1", "DC2", "DC3",
-            "DC4", "NAK", "SYN", "ETB", "CAN",
-            "EM", "SUB", "ESC", "FS", "GS",
+            "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS", "HT",
+            "LF", "VT", "FF", "CR", "SO", "SI", "DLE", "DC1", "DC2", "DC3",
+            "DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS",
             "RS", "US"
         };
         public static string CharString(int ch)
@@ -36,6 +33,13 @@ namespace Unclazz.Parsec
                 s = string.Format("'{0}'", (char)ch);
             }
             return string.Format("{0} (codepoint = {1})", s, ch);
+        }
+        public static string FuncToString<T,U>(Func<T, U> f)
+        {
+            var typeArgs = f.GetType().GenericTypeArguments;
+            var typeArg0Name = typeArgs[0].Name;
+            var typeArg1Name = typeArgs[1].Name;
+            return string.Format("Func<{0}, {1}>", typeArg0Name, typeArg1Name);
         }
     }
 }
