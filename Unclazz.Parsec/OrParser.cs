@@ -17,7 +17,6 @@ namespace Unclazz.Parsec
         {
             input.Mark();
             var leftResult = _left.Parse(input);
-            Console.WriteLine(">>>" + leftResult);
             if (leftResult.Successful)
             {
                 input.Unmark();
