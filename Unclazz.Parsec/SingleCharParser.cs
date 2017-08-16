@@ -21,5 +21,9 @@
                     ParsecUtility.CharString(_ch), ParsecUtility.CharString(actual)));
             }
         }
+        public override string ToString()
+        {
+            return string.Format("Char({0})", ParsecUtility.CharString(_ch));
+        }
     }
 }

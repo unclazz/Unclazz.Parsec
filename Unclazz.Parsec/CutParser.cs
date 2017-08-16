@@ -17,5 +17,10 @@ namespace Unclazz.Parsec
             if (originalResult.Successful) return originalResult.AllowBacktrack(false);
             return originalResult.AllowBacktrack(false);
         }
+
+        public override string ToString()
+        {
+            return string.Format("Cut({0})", _original);
+        }
     }
 }

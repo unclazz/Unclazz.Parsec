@@ -17,15 +17,10 @@ namespace Unclazz.Parsec
         {
             input.Mark();
             var leftResult = _left.Parse(input);
-            if (leftResult.Successful)
+            if (leftResult.Successful || !leftResult.CanBacktrack)
             {
                 input.Unmark();
                 return leftResult;
-            }
-            else if (!leftResult.CanBacktrack)
-            {
-                input.Unmark();
-                return leftResult.AllowBacktrack(true);
             }
             input.Reset();
             var rightResult = _right.Parse(input);
