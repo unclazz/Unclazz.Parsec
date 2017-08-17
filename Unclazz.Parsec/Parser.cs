@@ -49,7 +49,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<char> Char(char ch)
+        public static Parser<string> Char(char ch)
         {
             return new SingleCharParser(ch);
         }
@@ -59,7 +59,7 @@ namespace Unclazz.Parsec
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<char> CharBetween(char start, char end)
+        public static Parser<string> CharBetween(char start, char end)
         {
             return new CharClassParser(CharClass.Between(start, end));
         }
@@ -68,7 +68,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<char> CharIn(CharClass clazz)
+        public static Parser<string> CharIn(CharClass clazz)
         {
             return new CharClassParser(clazz);
         }
@@ -77,7 +77,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<char> CharIn(IEnumerable<char> chars)
+        public static Parser<string> CharIn(IEnumerable<char> chars)
         {
             return new CharClassParser(CharClass.AnyOf(chars));
         }
@@ -232,24 +232,24 @@ namespace Unclazz.Parsec
         /// <param name="left">元になるパーサー</param>
         /// <param name="right"><paramref name="left"/>のパース成功時に実行されるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<IEnumerable<T>> operator +(Parser<T> left, Parser<T> right)
-        {
-            return left.Then(right);
-        }
-        /// <summary>
-        /// 左側のパーサーのパース成功時に右側のパーサーのパースを行うパーサーを生成します。
-        /// <para>
-        /// 新しいパーサーがパース結果として返す値は、
-        /// それぞれのパーサーのパース結果を内容とするシーケンスになります。
-        /// </para>
-        /// </summary>
-        /// <param name="left">元になるパーサー</param>
-        /// <param name="right"><paramref name="left"/>のパース成功時に実行されるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<IEnumerable<T>> operator +(Parser<IEnumerable<T>> left, Parser<T> right)
-        {
-            return new ManyThenParser<T>(left, right);
-        }
+        //public static Parser<IEnumerable<T>> operator +(Parser<T> left, Parser<T> right)
+        //{
+        //    return left.Then(right);
+        //}
+        ///// <summary>
+        ///// 左側のパーサーのパース成功時に右側のパーサーのパースを行うパーサーを生成します。
+        ///// <para>
+        ///// 新しいパーサーがパース結果として返す値は、
+        ///// それぞれのパーサーのパース結果を内容とするシーケンスになります。
+        ///// </para>
+        ///// </summary>
+        ///// <param name="left">元になるパーサー</param>
+        ///// <param name="right"><paramref name="left"/>のパース成功時に実行されるパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<IEnumerable<T>> operator +(Parser<IEnumerable<T>> left, Parser<T> right)
+        //{
+        //    return new ManyThenParser<T>(left, right);
+        //}
         /// <summary>
         /// 左側のパーサーのパース成功時に右側のパーサーのパースを行うパーサーを生成します。
         /// <para>
@@ -439,14 +439,19 @@ namespace Unclazz.Parsec
         {
             return new RepeatExactlyParser<T>(this, exactly);
         }
-        /// <summary>
-        /// このパーサーの読み取りが成功したあとに実行されるパーサーを指定します。
-        /// </summary>
-        /// <param name="another">次に実行されるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public Parser<IEnumerable<T>> Then(Parser<T> another)
-        {
-            return new ThenParser<T>(this, another);
-        }
+        ///// <summary>
+        ///// このパーサーの読み取りが成功したあとに実行されるパーサーを指定します。
+        ///// </summary>
+        ///// <param name="another">次に実行されるパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public Parser<IEnumerable<T>> Then(Parser<T> another, params Parser<T>[] others)
+        //{
+        //    Parser<IEnumerable<T>> p = new ThenParser<T>(this, another);
+        //    foreach(var o in others)
+        //    {
+        //        p = new ManyThenParser<T>(p, o);
+        //    }
+        //    return p;
+        //}
     }
 }

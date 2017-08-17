@@ -2,7 +2,7 @@
 
 namespace Unclazz.Parsec
 {
-    sealed class CharClassParser : Parser<char>
+    sealed class CharClassParser : Parser<string>
     {
         internal CharClassParser(CharClasses.CharClass clazz)
         {
@@ -11,7 +11,7 @@ namespace Unclazz.Parsec
 
         readonly CharClasses.CharClass _clazz;
 
-        public override ParseResult<char> Parse(ParserInput input)
+        public override ParseResult<string> Parse(ParserInput input)
         {
             var p = input.Position;
             var ch = (char)input.Read();

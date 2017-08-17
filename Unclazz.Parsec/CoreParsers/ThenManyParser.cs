@@ -5,10 +5,10 @@ namespace Unclazz.Parsec
 {
     sealed class ThenManyParser<T> : Parser<IEnumerable<T>>
     {
-        internal ThenManyParser(Parser<T> right, Parser<IEnumerable<T>> left)
+        internal ThenManyParser(Parser<T> left, Parser<IEnumerable<T>> right)
         {
-            _left = right ?? throw new ArgumentNullException(nameof(right));
-            _right = left ?? throw new ArgumentNullException(nameof(left));
+            _left = left ?? throw new ArgumentNullException(nameof(left));
+            _right = right ?? throw new ArgumentNullException(nameof(right));
         }
 
         readonly Parser<T> _left;

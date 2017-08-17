@@ -142,18 +142,6 @@ namespace Unclazz.Parsec
             return new OrParser<string>(self, another.Cast<string>());
         }
         /// <summary>
-        /// 任意の型の値を読み取るパーサーと同じ型のシーケンスを読み取るパーサーをもとに、
-        /// 同じ型のシーケンスを読み取るパーサーを生成します。
-        /// </summary>
-        /// <typeparam name="T">読み取り対象の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">任意の型のシーケンスを読み取るパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<IEnumerable<T>> Then<T>(this Parser<T> self, Parser<IEnumerable<T>> another)
-        {
-            return new ThenManyParser<T>(self, another);
-        }
-        /// <summary>
         /// 任意の型のシーケンスを読み取るパーサーと同じ型の単一値を読み取るパーサーをもとに、
         /// 同じ型のシーケンスを読み取るパーサーを生成します。
         /// </summary>
@@ -165,60 +153,98 @@ namespace Unclazz.Parsec
         {
             return new ManyThenParser<T>(self, another);
         }
-        /// <summary>
-        /// <see cref="string"/>を読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
-        /// <see cref="string"/>を読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another"><see cref="char"/>を読み取るパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<string> Then(this Parser<string> self, Parser<char> another)
+        //public static Parser<IEnumerable<T>> Then<T>(this Parser<T> self, Parser<T> another)
+        //{
+        //    return new ThenParser<T>(self, another);
+        //}
+        ///// <summary>
+        ///// 任意の型の値を読み取るパーサーと同じ型のシーケンスを読み取るパーサーをもとに、
+        ///// 同じ型のシーケンスを読み取るパーサーを生成します。
+        ///// </summary>
+        ///// <typeparam name="T">読み取り対象の型</typeparam>
+        ///// <param name="self">レシーバー</param>
+        ///// <param name="another">任意の型のシーケンスを読み取るパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<IEnumerable<T>> Then<T>(this Parser<T> self, Parser<IEnumerable<T>> another)
+        //{
+        //    return new ThenManyParser<T>(self, another);
+        //}
+        public static Parser<string> Then(this Parser<string> self, 
+            Parser<string> another, params Parser<string>[] andOthers)
         {
-            return self.Then(another.Cast<string>()).Cast<string>();
+            Parser<string> tmp = new StringThenParser(self, another);
+            foreach (var other in andOthers)
+            {
+                tmp = new StringThenParser(tmp, other);
+            }
+            return tmp;
         }
-        /// <summary>
-        /// <see cref="char"/>を読み取るパーサーと<see cref="string"/>を読み取るパーサーをもとに、
-        /// <see cref="string"/>を読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another"><see cref="string"/>を読み取るパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<string> Then(this Parser<char> self, Parser<string> another)
+        public static Parser<U> Then<T,U>(this Parser<T> self, Parser<U> another, params Parser<U>[] andOthers)
         {
-            return self.Cast<string>().Then(another).Cast<string>();
+            Parser<U> tmp = new ThenParser<T, U>(self, another);
+            if (andOthers == null || andOthers.Length == 0) return tmp;
+
+            ThenParser<U, U> tmp2 = null;
+            foreach (var other in andOthers)
+            {
+                tmp2 = new ThenParser<U, U>(tmp, other);
+            }
+            return tmp2;
         }
-        /// <summary>
-        /// <see cref="char"/>を読み取るパーサーと<see cref="string"/>のシーケンスを読み取るパーサーをもとに、
-        /// <see cref="string"/>のシーケンスを読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another"><see cref="string"/>のシーケンスを読み取るパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<IEnumerable<string>> Then(this Parser<char> self, Parser<IEnumerable<string>> another)
-        {
-            return self.Cast<string>().Then(another.Cast<string>());
-        }
-        /// <summary>
-        /// <see cref="string"/>のシーケンスを読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
-        /// <see cref="string"/>のシーケンスを読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another"><see cref="string"/>のシーケンスを読み取るパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<string>> self, Parser<char> another)
-        {
-            return self.Then(another.Cast<string>());
-        }
-        /// <summary>
-        /// <see cref="char"/>のシーケンスを読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
-        /// <see cref="string"/>を読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another"><see cref="string"/>のシーケンスを読み取るパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<char>> self, Parser<string> another)
-        {
-            return self.Cast<string>().Then(another);
-        }
+        ///// <summary>
+        ///// <see cref="string"/>を読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
+        ///// <see cref="string"/>を読み取るパーサーを生成します。
+        ///// </summary>
+        ///// <param name="self">レシーバー</param>
+        ///// <param name="another"><see cref="char"/>を読み取るパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<string> Then(this Parser<string> self, Parser<char> another)
+        //{
+        //    return self.Then(another.Cast<string>()).Cast<string>();
+        //}
+        ///// <summary>
+        ///// <see cref="char"/>を読み取るパーサーと<see cref="string"/>を読み取るパーサーをもとに、
+        ///// <see cref="string"/>を読み取るパーサーを生成します。
+        ///// </summary>
+        ///// <param name="self">レシーバー</param>
+        ///// <param name="another"><see cref="string"/>を読み取るパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<string> Then(this Parser<char> self, Parser<string> another)
+        //{
+        //    return self.Cast<string>().Then(another).Cast<string>();
+        //}
+        ///// <summary>
+        ///// <see cref="char"/>を読み取るパーサーと<see cref="string"/>のシーケンスを読み取るパーサーをもとに、
+        ///// <see cref="string"/>のシーケンスを読み取るパーサーを生成します。
+        ///// </summary>
+        ///// <param name="self">レシーバー</param>
+        ///// <param name="another"><see cref="string"/>のシーケンスを読み取るパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<IEnumerable<string>> Then(this Parser<char> self, Parser<IEnumerable<string>> another)
+        //{
+        //    return self.Cast<string>().Then(another.Cast<string>());
+        //}
+        ///// <summary>
+        ///// <see cref="string"/>のシーケンスを読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
+        ///// <see cref="string"/>のシーケンスを読み取るパーサーを生成します。
+        ///// </summary>
+        ///// <param name="self">レシーバー</param>
+        ///// <param name="another"><see cref="string"/>のシーケンスを読み取るパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<string>> self, Parser<char> another)
+        //{
+        //    return self.Then(another.Cast<string>());
+        //}
+        ///// <summary>
+        ///// <see cref="char"/>のシーケンスを読み取るパーサーと<see cref="char"/>を読み取るパーサーをもとに、
+        ///// <see cref="string"/>を読み取るパーサーを生成します。
+        ///// </summary>
+        ///// <param name="self">レシーバー</param>
+        ///// <param name="another"><see cref="string"/>のシーケンスを読み取るパーサー</param>
+        ///// <returns>新しいパーサー</returns>
+        //public static Parser<IEnumerable<string>> Then(this Parser<IEnumerable<char>> self, Parser<string> another)
+        //{
+        //    return self.Cast<string>().Then(another);
+        //}
     }
 }

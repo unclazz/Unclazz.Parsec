@@ -1,13 +1,13 @@
 ﻿namespace Unclazz.Parsec
 {
-    sealed class SingleCharParser : Parser<char>
+    sealed class SingleCharParser : Parser<string>
     {
         internal SingleCharParser(char ch)
         {
             _ch = ch;
         }
         readonly char _ch;
-        public override ParseResult<char> Parse(ParserInput input)
+        public override ParseResult<string> Parse(ParserInput input)
         {
             var p = input.Position;
             var actual = input.Read();
