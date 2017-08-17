@@ -42,8 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreParsers\CastParser.cs" />
+    <Compile Include="CoreParsers\ConcatParser.cs" />
     <Compile Include="CoreParsers\ManyOrParser.cs" />
     <Compile Include="CoreParsers\OrManyParser.cs" />
+    <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Capture.cs" />
@@ -88,7 +90,7 @@
     <Compile Include="CoreParsers\SingleCharParser.cs" />
     <Compile Include="CoreParsers\SuccessParser.cs" />
     <Compile Include="CoreParsers\ThenManyParser.cs" />
-    <Compile Include="CoreParsers\ThenParser.cs" />
+    <Compile Include="CoreParsers\AddParser.cs" />
     <Compile Include="CoreParsers\KeywordParser.cs" />
   </ItemGroup>
   <ItemGroup />
