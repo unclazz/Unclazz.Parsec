@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
 using Unclazz.Parsec.Readers;
+using static Test.Unclazz.Parsec.TestUtility;
 
 namespace Test.Unclazz.Parsec.Readers
 {
@@ -335,27 +336,6 @@ namespace Test.Unclazz.Parsec.Readers
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
             r.Reset();
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn));
-        }
-
-        void Repeats(Action act, int times)
-        {
-            foreach (var i in Enumerable.Range(1, times))
-            {
-                act();
-            }
-        }
-        void Repeats<T>(Func<T> func, int times)
-        {
-            Repeats(() => { func(); }, times);
-        }
-        string ReadsAll(ITextReader r)
-        {
-            var buff = new StringBuilder();
-            while (!r.EndOfFile)
-            {
-                buff.Append((char)r.Read());
-            }
-            return buff.ToString();
         }
     }
 }

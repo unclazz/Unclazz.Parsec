@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
 using Unclazz.Parsec.Readers;
+using static Test.Unclazz.Parsec.TestUtility;
 
 namespace Test.Unclazz.Parsec.Readers
 {
@@ -175,11 +176,6 @@ namespace Test.Unclazz.Parsec.Readers
             Assert.That(l, Is.EqualTo(1));
             Assert.That(c, Is.EqualTo(1));
             Assert.That(ch, Is.EqualTo(prefixText.Length == 0 ? readerText[1] : (prefixText + readerText)[0]));
-        }
-
-        void ConsumesAll(PrependableReader r)
-        {
-            while (!r.EndOfFile) r.Read();
         }
     }
 }
