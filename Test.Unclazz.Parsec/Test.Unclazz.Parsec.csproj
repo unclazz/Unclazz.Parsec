@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CaptureTest.cs" />
     <Compile Include="CharacterPositionTest.cs" />
     <Compile Include="CharClasses\CharactersCharClassTest.cs" />
     <Compile Include="CharClasses\CharRangesCharClassTest.cs" />
