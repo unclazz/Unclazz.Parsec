@@ -92,12 +92,12 @@ namespace Unclazz.Parsec
             if (_hasValue)
             {
                 return string.Format("Capture({0}, type = {1})",
-                    ValueAsString(), ParsecUtility.ObjectTypeToString(_value));
+                    ValueAsString(), ParsecUtility.TypeToString(typeof(T)));
             }
             else
             {
                 return string.Format("Capture(type = {0})",
-                    ParsecUtility.ObjectTypeToString(_value));
+                    ParsecUtility.TypeToString(typeof(T)));
             }
         }
         string ValueAsString()
