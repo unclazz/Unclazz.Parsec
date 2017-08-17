@@ -30,11 +30,11 @@ namespace Unclazz.Parsec
                     {
                         foreach (var e in es) q.Enqueue(e);
                     });
-                    return ParseResult.OfSuccess<IEnumerable<T>>(p, q, canBacktrack);
+                    return Success(p, new Capture<IEnumerable<T>>(q), canBacktrack);
                 }
-                return ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message, canBacktrack);
+                return Failure(p, rightResult.Message, canBacktrack);
             }
-            return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message, leftResult.CanBacktrack);
+            return Failure(p, leftResult.Message, leftResult.CanBacktrack);
         }
 
         public override string ToString()

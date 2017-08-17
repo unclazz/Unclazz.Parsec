@@ -26,10 +26,10 @@ namespace Unclazz.Parsec
                 leftResult.IfSuccessful(c => c.IfHasValue(q.Enqueue));
                 rightResult.IfSuccessful(c => c.IfHasValue(q.Enqueue));
                 return rightResult.Successful
-                    ? ParseResult.OfSuccess<IEnumerable<T>>(p, q, canBacktrack)
-                    : ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message, canBacktrack);
+                    ? Success(p, new Capture<IEnumerable<T>>(q), canBacktrack)
+                    : Failure(p, rightResult.Message, canBacktrack);
             }
-            return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message, leftResult.CanBacktrack);
+            return Failure(p, leftResult.Message, leftResult.CanBacktrack);
         }
         public override string ToString()
         {

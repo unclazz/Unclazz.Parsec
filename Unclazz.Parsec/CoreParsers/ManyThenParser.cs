@@ -27,11 +27,11 @@ namespace Unclazz.Parsec
                     var leftCapture = leftResult.Capture;
                     var q = leftCapture.HasValue ? new Queue<T>(leftCapture.Value) : new Queue<T>();
                     rightResult.Capture.IfHasValue(q.Enqueue);
-                    return ParseResult.OfSuccess<IEnumerable<T>>(p, q, canBacktrack);
+                    return Success(p, new Capture<IEnumerable<T>>(q), canBacktrack);
                 }
-                return ParseResult.OfFailure<IEnumerable<T>>(p, rightResult.Message, canBacktrack);
+                return Failure(p, rightResult.Message, canBacktrack);
             }
-            return ParseResult.OfFailure<IEnumerable<T>>(p, leftResult.Message, leftResult.CanBacktrack);
+            return Failure(p, leftResult.Message, leftResult.CanBacktrack);
         }
         public override string ToString()
         {

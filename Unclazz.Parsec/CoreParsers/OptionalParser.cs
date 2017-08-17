@@ -20,12 +20,12 @@ namespace Unclazz.Parsec
             {
                 input.Unmark();
                 var cap = result.Capture;
-                if (cap.HasValue) return ParseResult.OfSuccess(p, cap, result.CanBacktrack);
-                else return ParseResult.OfSuccess<T>(p, canBacktrack: result.CanBacktrack);
+                if (cap.HasValue) return Success(p, cap, result.CanBacktrack);
+                else return Success(p, canBacktrack: result.CanBacktrack);
             }
             input.Reset();
             input.Unmark();
-            return ParseResult.OfSuccess<T>(p);
+            return Success(p);
         }
         public override string ToString()
         {
