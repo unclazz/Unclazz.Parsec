@@ -89,7 +89,16 @@ namespace Unclazz.Parsec
         /// <returns>文字列表現</returns>
         public override string ToString()
         {
-            return _hasValue ? string.Format("Capture({0})", ValueAsString()) : "Capture()";
+            if (_hasValue)
+            {
+                return string.Format("Capture({0}, type = {1})",
+                    ValueAsString(), ParsecUtility.ObjectTypeToString(_value));
+            }
+            else
+            {
+                return string.Format("Capture(type = {0})",
+                    ParsecUtility.ObjectTypeToString(_value));
+            }
         }
         string ValueAsString()
         {
