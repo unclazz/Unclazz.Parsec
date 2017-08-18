@@ -33,7 +33,7 @@ namespace Unclazz.Parsec
         }
         public override string ToString()
         {
-            return string.Format("Then({0}, {1})", _left, _right);
+            return string.Format("Add({0}, {1})", _left, _right);
         }
     }
 }
