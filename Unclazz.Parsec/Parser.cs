@@ -141,18 +141,30 @@ namespace Unclazz.Parsec
         /// <summary>
         /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
         /// <para>
-        /// <paramref name="left"/>のパース失敗時のみ<paramref name="right"/>のパースが試みられます。
-        /// 成功したパーサーのパース結果が全体のパース結果となります。
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
+        /// その結果がそのまま新しいパーサーの返す結果となります。
+        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
+        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
+        /// </para>
+        /// <para>演算子<c>|</c>とインスタンス・メソッド<see cref="Parser{T}.Or(Parser{T})"/>のグループと
+        /// 静的メソッド<see cref="Parser.Or{T}(Parser{T}, Parser{T})"/>はいずれも右結合です。
+        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
+        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
+        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
+        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
         /// </para>
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="left">左被演算子</param>
+        /// <param name="right">右被演算子</param>
         /// <returns></returns>
         public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
         {
-            return new OrParser<T>(left, right);
+            return OrParser<T>.LeftAssoc(left, right);
+        }
+        public static Parser<T> OrRightAssoc<T>(Parser<T> left, Parser<T> right)
+        {
+            return OrParser<T>.RightAssoc(left, right);
         }
         /// <summary>
         /// 指定した文字列にのみマッチするパーサーを生成します。
@@ -204,9 +216,17 @@ namespace Unclazz.Parsec
         /// <summary>
         /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
         /// <para>
-        /// <paramref name="left"/>のパース失敗時のみ<paramref name="right"/>のパースが試みられます。
-        /// 成功したパーサーのパース結果が全体のパース結果となります。
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
+        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
+        /// その結果がそのまま新しいパーサーの返す結果となります。
+        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
+        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
+        /// </para>
+        /// <para>演算子<c>|</c>とインスタンス・メソッド<see cref="Parser{T}.Or(Parser{T})"/>のグループと
+        /// 静的メソッド<see cref="Parser.Or{T}(Parser{T}, Parser{T})"/>はいずれも右結合です。
+        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
+        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
+        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
+        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
         /// </para>
         /// </summary>
         /// <param name="left">元になるパーサー</param>
@@ -214,7 +234,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, Parser<T> right)
         {
-            return Parser.Or<T>(left, right);
+            return OrParser<T>.LeftAssoc(left, right);
         }
         /// <summary>
         /// 左側のパーサーのパースが失敗したら右側の値をパース結果とするパーサーを生成します。
@@ -224,7 +244,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, T right)
         {
-            return left.Or(new SuccessParser<T>(right));
+            return OrParser<T>.LeftAssoc(left, new SuccessParser<T>(right));
         }
         public static Parser<IEnumerable<T>> operator +(Parser<T> left, Parser<T> right)
         {
@@ -371,21 +391,33 @@ namespace Unclazz.Parsec
         /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
         /// その結果がそのまま新しいパーサーの返す結果となります。
         /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
-        /// 引数で指定されたもう1つのパーサーの読み取りが試行されます。
-        /// もう1つのパーサーの読み取りが成功した場合は、その結果が新しいパーサーの返す結果となります。
-        /// いずれのパーサーも失敗した場合は、新しいパーサーの返す結果も失敗を表すものとなります。
+        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
+        /// </para>
+        /// <para>演算子<c>|</c>とインスタンス・メソッド<see cref="Parser{T}.Or(Parser{T})"/>のグループと
+        /// 静的メソッド<see cref="Parser.Or{T}(Parser{T}, Parser{T})"/>はいずれも右結合です。
+        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
+        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
+        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
+        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
         /// </para>
         /// </summary>
         /// <param name="another"></param>
         /// <returns>バックトラック機能をサポートする新しいパーサー</returns>
+        public Parser<T> Or(Parser<T> another)
+        {
+            return OrParser<T>.LeftAssoc(this, another);
+        }
         public Parser<T> Or(Parser<T> another, params Parser<T>[] andOthers)
         {
-            var tmp = new OrParser<T>(this, another);
-            foreach (var other in andOthers)
-            {
-                tmp = new OrParser<T>(tmp, other);
-            }
-            return tmp;
+            return OrParser<T>.LeftAssoc(this, another, andOthers);
+        }
+        public Parser<T> OrRightAssoc(Parser<T> another)
+        {
+            return OrParser<T>.RightAssoc(this, another);
+        }
+        public Parser<T> OrRightAssoc(Parser<T> another, params Parser<T>[] andOthers)
+        {
+            return OrParser<T>.RightAssoc(this, another, andOthers);
         }
         public Parser<T> OrNot()
         {
