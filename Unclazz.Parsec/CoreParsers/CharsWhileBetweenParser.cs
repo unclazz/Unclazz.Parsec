@@ -1,7 +1,7 @@
 ﻿using System;
 using Unclazz.Parsec.CharClasses;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharsWhileBetweenParser : Parser<string>
     {

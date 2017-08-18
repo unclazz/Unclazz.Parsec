@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.CoreParsers
 {
     sealed class ThenManyParser<T> : Parser<IEnumerable<T>>
     {

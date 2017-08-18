@@ -1,4 +1,4 @@
-﻿namespace Unclazz.Parsec
+﻿namespace Unclazz.Parsec.CoreParsers
 {
     sealed class EndOfFileParser : Parser<string>
     {

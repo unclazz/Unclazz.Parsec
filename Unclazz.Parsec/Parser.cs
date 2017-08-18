@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec.CharClasses;
+using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
 {

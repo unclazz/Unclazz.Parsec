@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CastParser<T, U> : Parser<U>
     {

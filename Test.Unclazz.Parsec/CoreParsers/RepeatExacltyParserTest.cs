@@ -2,6 +2,7 @@
 using Unclazz.Parsec;
 using static Unclazz.Parsec.Parser;
 using System;
+using Unclazz.Parsec.CoreParsers;
 
 namespace Test.Unclazz.Parsec.CoreParsers
 {

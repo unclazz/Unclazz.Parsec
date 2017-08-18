@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.CoreParsers
 {
     sealed class KeywordParser : Parser<string>
     {

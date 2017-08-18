@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.CoreParsers
 {
     /// <summary>
     /// 文字列を読み取りキャプチャするパーサーです。

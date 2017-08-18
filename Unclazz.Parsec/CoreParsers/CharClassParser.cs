@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Unclazz.Parsec
+namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharClassParser : Parser<string>
     {
