@@ -31,7 +31,7 @@ namespace Unclazz.Parsec.CoreParsers
                 if (expected != actual)
                 {
                     return Failure(input.Position,
-                        string.Format("expected {0} but found {1} at index {1} in \"{2}\"",
+                        string.Format("expected {0} but found {1} at index {2} in \"{3}\"",
                         ParsecUtility.CharToString(expected), ParsecUtility.CharToString(actual), i, _keyword),
                         -1 == _cut || i < _cut);
                 }
