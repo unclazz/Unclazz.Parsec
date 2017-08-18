@@ -45,6 +45,10 @@ namespace Unclazz.Parsec
         {
             return new DelegateParser<T>(func);
         }
+        public static Parser<T> Lazy<T>(Func<Parser<T>> factory)
+        {
+            return new LazyParser<T>(factory);
+        }
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
         /// </summary>
