@@ -12,7 +12,7 @@ namespace Unclazz.Parsec.CoreParsers
 
             if (max < 1) throw new ArgumentOutOfRangeException(nameof(max));
             if (min < 0) throw new ArgumentOutOfRangeException(nameof(max));
-            if (max <= min) throw new ArgumentException("max <= min");
+            if (max <= min) throw new ArgumentOutOfRangeException("max <= min");
 
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _min = min;
@@ -32,19 +32,26 @@ namespace Unclazz.Parsec.CoreParsers
             // 予め指定された回数のパースを試みる
             for (var i = 1; i <= _max; i++)
             {
+                // min ＜ ループ回数 ならリセットのための準備
+                if (_min < i) input.Mark();
+
                 // ループが2回目 かつ セパレーターのパーサーが指定されている場合
-                if (0 < i && _sep != null)
+                if (1 < i && _sep != null)
                 {
                     // セパレーターのトークンのパース
                     var sepResult = _sep.Parse(input);
                     if (!sepResult.Successful)
                     {
+                        if (_min < i)
+                        {
+                            // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
+                            input.Reset();
+                            input.Unmark();
+                            break;
+                        }
                         return Failure(sepResult.Position, sepResult.Message);
                     }
                 }
-
-                // min ＜ ループ回数 ならリセットのための準備
-                if (_min <= i) input.Mark();
 
                 var r = _original.Parse(input);
                 if (!r.Successful)
@@ -60,7 +67,7 @@ namespace Unclazz.Parsec.CoreParsers
                 }
 
                 // min ＜ ループ回数 ならリセットのための準備を解除
-                if (_min <= i) input.Unmark();
+                if (_min < i) input.Unmark();
             }
             return Success(p);
         }
