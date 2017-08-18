@@ -101,6 +101,22 @@ namespace Test.Unclazz.Parsec
             // Assert
             Assert.That(result.CanBacktrack, Is.EqualTo(canBacktrack));
         }
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        [TestCase(5)]
+        public void Parse_Case5(int cutIndex)
+        {
+            // Arrange
+            var input = ParserInput.FromString("0123456789X");
+            var parser = Parser.Keyword("012X456", cutIndex: cutIndex);
+
+            // Act
+            var result = parser.Parse(input);
+
+            // Assert
+            Assert.That(result.CanBacktrack, Is.EqualTo(3 < cutIndex));
+        }
         [Test]
         public void Constructor_Case1()
         {
