@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using Unclazz.Parsec;
+using static Unclazz.Parsec.Parser;
 
 namespace Test.Unclazz.Parsec.CoreParsers
 {
@@ -13,9 +14,9 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             // Act
             // Assert
-            var p0 = Parser.StringIn("hello", "bonjour");
-            var p1 = Parser.StringIn("h", "hello");
-            var p2 = Parser.StringIn("hello");
+            var p0 = StringIn("hello", "bonjour");
+            var p1 = StringIn("h", "hello");
+            var p2 = StringIn("hello");
         }
         [Test]
         public void Constructor_Case2()
@@ -23,18 +24,18 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             // Act
             // Assert
-            Assert.That(() => Parser.StringIn(null), Throws.InstanceOf<ArgumentNullException>());
-            Assert.That(() => Parser.StringIn(new string[0]), Throws.InstanceOf<ArgumentException>());
-            Assert.That(() => Parser.StringIn("hello", string.Empty), Throws.InstanceOf<ArgumentException>());
-            Assert.That(() => Parser.StringIn("hello", null), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => StringIn(null), Throws.InstanceOf<ArgumentNullException>());
+            Assert.That(() => StringIn(new string[0]), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => StringIn("hello", string.Empty), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => StringIn("hello", null), Throws.InstanceOf<ArgumentException>());
         }
         [Test]
         public void ToString_Case1()
         {
             // Arrange
-            var p0 = Parser.StringIn("hello", "bonjour");
-            var p1 = Parser.StringIn("h", "hello");
-            var p2 = Parser.StringIn("hello");
+            var p0 = StringIn("hello", "bonjour");
+            var p1 = StringIn("h", "hello");
+            var p2 = StringIn("hello");
 
             // Act
             var r0 = p0.ToString();
@@ -51,7 +52,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var input = ParserInput.FromString("hello");
-            var parser = Parser.StringIn("hallo", "helo");
+            var parser = StringIn("hallo", "helo");
 
             // Act
             var result = parser.Parse(input);
