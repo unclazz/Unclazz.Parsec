@@ -45,6 +45,7 @@
     <Compile Include="CoreParsers\ConcatParser.cs" />
     <Compile Include="CoreParsers\ManyOrParser.cs" />
     <Compile Include="CoreParsers\OrManyParser.cs" />
+    <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />

@@ -54,6 +54,8 @@
     <Compile Include="CharClasses\CharRangeTest.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParserTest.cs" />
     <Compile Include="CoreParsers\CharsWhileBetweenParserTest.cs" />
+    <Compile Include="CoreParsers\SingleCharParserTest.cs" />
+    <Compile Include="CoreParsers\StringInParserTest.cs" />
     <Compile Include="ParseResultTest.cs" />
     <Compile Include="CoreParsers\EndOfFileParserTest.cs" />
     <Compile Include="Readers\PrependableReaderTest.cs" />

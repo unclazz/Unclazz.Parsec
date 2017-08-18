@@ -159,9 +159,13 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keyword">文字列</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<string> Keyword(string keyword)
+        public static Parser<string> Keyword(string keyword, int cutIndex = -1)
         {
-            return new KeywordParser(keyword);
+            return new KeywordParser(keyword, cutIndex);
+        }
+        public static Parser<string> StringIn(params string[] keywords)
+        {
+            return new StringInParser(keywords);
         }
     }
 
