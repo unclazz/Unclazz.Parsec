@@ -92,32 +92,13 @@ namespace Unclazz.Parsec
             if (_hasValue)
             {
                 return string.Format("Capture({0}, type = {1})",
-                    ValueAsString(), ParsecUtility.TypeToString(typeof(T)));
+                    ParsecUtility.ValueToString(_value),
+                    ParsecUtility.TypeToString(typeof(T)));
             }
             else
             {
                 return string.Format("Capture(type = {0})",
                     ParsecUtility.TypeToString(typeof(T)));
-            }
-        }
-        string ValueAsString()
-        {
-            var str = _value as string;
-            if (str != null) return str;
-            var col = _value as IEnumerable;
-            if (col == null)
-            {
-                return _value.ToString();
-            }
-            else
-            {
-                var buff = new StringBuilder();
-                foreach (var e in col.Cast<object>().Select((o, i) => new { Index = i, Item = o }))
-                {
-                    if (e.Index > 0) buff.Append(',').Append(' ');
-                    buff.Append(e.Item.ToString());
-                }
-                return buff.ToString();
             }
         }
     }

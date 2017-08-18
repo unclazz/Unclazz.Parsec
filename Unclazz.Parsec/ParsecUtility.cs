@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,26 @@ namespace Unclazz.Parsec
                 s = string.Format("'{0}'", (char)ch);
             }
             return string.Format("{0} (codepoint = {1})", s, ch);
+        }
+        public static string ValueToString<T>(T _value)
+        {
+            var str = _value as string;
+            if (str != null) return str;
+            var col = _value as IEnumerable;
+            if (col == null)
+            {
+                return _value.ToString();
+            }
+            else
+            {
+                var buff = new StringBuilder();
+                foreach (var e in col.Cast<object>().Select((o, i) => new { Index = i, Item = o }))
+                {
+                    if (e.Index > 0) buff.Append(',').Append(' ');
+                    buff.Append(ValueToString(e.Item));
+                }
+                return buff.ToString();
+            }
         }
         public static string ObjectTypeToString<T>(T value)
         {
