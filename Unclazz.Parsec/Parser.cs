@@ -429,36 +429,36 @@ namespace Unclazz.Parsec
         /// <param name="min">繰り返しの最小回数</param>
         /// <param name="max">繰り返しの最大回数</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> Repeat(int min, int max)
+        public Parser<IEnumerable<T>> Repeat(int min, int max, Parser<string> sep = null)
         {
-            return new RepeatMinMaxParser<T>(this, min, max);
+            return new RepeatMinMaxParser<T>(this, min, max, sep);
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
         /// </summary>
         /// <param name="min">繰り返しの最小回数</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> RepeatMin(int min)
+        public Parser<IEnumerable<T>> RepeatMin(int min, Parser<string> sep = null)
         {
-            return new RepeatMinMaxParser<T>(this, min, -1);
+            return new RepeatMinMaxParser<T>(this, min, -1, sep);
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
         /// </summary>
         /// <param name="max">繰り返しの最大回数</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> RepeatMax(int max)
+        public Parser<IEnumerable<T>> RepeatMax(int max, Parser<string> sep = null)
         {
-            return new RepeatMinMaxParser<T>(this, 0, max);
+            return new RepeatMinMaxParser<T>(this, 0, max, sep);
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
         /// </summary>
         /// <param name="exactly">繰り返しの回数</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> RepeatExactly(int exactly)
+        public Parser<IEnumerable<T>> RepeatExactly(int exactly, Parser<string> sep = null)
         {
-            return new RepeatExactlyParser<T>(this, exactly);
+            return new RepeatExactlyParser<T>(this, exactly, sep);
         }
         public Parser<U> Then<U>(Parser<U> another, params Parser<U>[] andOthers)
         {

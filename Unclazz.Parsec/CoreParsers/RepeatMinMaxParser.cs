@@ -5,7 +5,7 @@ namespace Unclazz.Parsec
 {
     sealed class RepeatMinMaxParser<T> : Parser<IEnumerable<T>>
     {
-        internal RepeatMinMaxParser(Parser<T> original, int min, int max)
+        internal RepeatMinMaxParser(Parser<T> original, int min, int max, Parser<string> sep)
         {
             max = max == -1 ? int.MaxValue : max;
             min = min == -1 ? 0 : min;
@@ -17,17 +17,32 @@ namespace Unclazz.Parsec
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _min = min;
             _max = max;
+            _sep = sep;
         }
 
         readonly int _min;
         readonly int _max;
         readonly Parser<T> _original;
+        readonly Parser<string> _sep;
 
         public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
         {
+            // パース開始時の文字位置を記憶
             var p = input.Position;
-            for (var i = 1; i <= _max && !input.EndOfFile; i++)
+            // 予め指定された回数のパースを試みる
+            for (var i = 1; i <= _max; i++)
             {
+                // ループが2回目 かつ セパレーターのパーサーが指定されている場合
+                if (0 < i && _sep != null)
+                {
+                    // セパレーターのトークンのパース
+                    var sepResult = _sep.Parse(input);
+                    if (!sepResult.Successful)
+                    {
+                        return Failure(sepResult.Position, sepResult.Message);
+                    }
+                }
+
                 // min ＜ ループ回数 ならリセットのための準備
                 if (_min <= i) input.Mark();
 
@@ -52,7 +67,14 @@ namespace Unclazz.Parsec
 
         public override string ToString()
         {
-            return string.Format("Repeat({0}, min = {1}, max = {2})", _original, _min, _max);
+            if (_sep == null)
+            {
+                return string.Format("Repeat({0}, min = {1}, max = {2})", _original, _min, _max);
+            }
+            else
+            {
+                return string.Format("Repeat({0}, min = {1}, max = {2}, sep = {3})", _original, _min, _max, _sep);
+            }
         }
     }
 }

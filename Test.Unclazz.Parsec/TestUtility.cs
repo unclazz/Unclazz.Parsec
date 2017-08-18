@@ -33,5 +33,18 @@ namespace Test.Unclazz.Parsec
             }
             return buff.ToString();
         }
+        public static string Repeats(string str, int times, string sep = null)
+        {
+            var buff = new StringBuilder();
+            foreach (var i in Enumerable.Range(0, times))
+            {
+                if (0 < i && sep != null)
+                {
+                    buff.Append(sep);
+                }
+                buff.Append(str);
+            }
+            return buff.ToString();
+        }
     }
 }
