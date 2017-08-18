@@ -79,5 +79,79 @@ namespace Test.Unclazz.Parsec
                 Assert.That(cap.Value, Is.EqualTo(word));
             });
         }
+        [TestCase("0123456789X", "X12", 1, true)]
+        [TestCase("0123456789X", "X12", 2, true)]
+        [TestCase("0123456789X", "X12", 3, true)]
+        [TestCase("0123456789X", "0X2", 1, false)]
+        [TestCase("0123456789X", "0X2", 2, true)]
+        [TestCase("0123456789X", "0X2", 3, true)]
+        [TestCase("0123456789X", "01X", 2, false)]
+        [TestCase("0123456789X", "01X", 3, true)]
+        [Description("Parse - Case #4 - cutIndexが指すキーワード内の文字位置まえまでマッチが成功していた場合 トラックバックは無効化されること")]
+        public void Parse_Case4(string text, string keyword, int cutIndex, bool canBacktrack)
+        {
+            // Arrange
+            var input = ParserInput.FromString(text);
+            var parser = Parser.Keyword(keyword, cutIndex);
+
+            // Act
+            var result = parser.Parse(input);
+
+            // Assert
+            Assert.That(result.CanBacktrack, Is.EqualTo(canBacktrack));
+        }
+        [Test]
+        public void Constructor_Case1()
+        {
+            // Arrange
+            // Act
+            // Assert
+            var p0 = new KeywordParser("0123", -1);
+            var p2 = new KeywordParser("0123", 1);
+            var p3 = new KeywordParser("0123", 3);
+        }
+        [Test]
+        public void Constructor_Case2()
+        {
+            // Arrange
+            // Act
+            // Assert
+            Assert.That(() => new KeywordParser("0123", -2), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => new KeywordParser("0123", 0), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => new KeywordParser("0123", 5), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        }
+        [Test]
+        public void Constructor_Case3()
+        {
+            // Arrange
+            // Act
+            // Assert
+            Assert.That(() => new KeywordParser("", -1), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => new KeywordParser(null), Throws.InstanceOf<ArgumentNullException>());
+        }
+        [Test]
+        public void ToString_Case1()
+        {
+            // Arrange
+            var parser = new KeywordParser("0123", 2);
+
+            // Act
+            var result = parser.ToString();
+
+            // Assert
+            Assert.That(result, Is.EqualTo("Keyword(0123, cutIndex = 2)"));
+        }
+        [Test]
+        public void ToString_Case2()
+        {
+            // Arrange
+            var parser = new KeywordParser("0123", -1);
+
+            // Act
+            var result = parser.ToString();
+
+            // Assert
+            Assert.That(result, Is.EqualTo("Keyword(0123)"));
+        }
     }
 }
