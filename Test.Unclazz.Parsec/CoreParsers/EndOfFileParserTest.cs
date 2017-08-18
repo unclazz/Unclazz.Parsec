@@ -17,6 +17,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             var input = ParserInput.FromString("hello");
             var parser = Parser.EndOfFile;
             Assert.That(parser.Parse(input).Successful, Is.False);
+            Assert.That(input.Position.Index, Is.EqualTo(0));
         }
         [Test]
         public void Parse_Case2()
