@@ -19,9 +19,7 @@ namespace Unclazz.Parsec
             if (result.Successful)
             {
                 input.Unmark();
-                var cap = result.Capture;
-                if (cap.HasValue) return Success(p, cap, result.CanBacktrack);
-                else return Success(p, canBacktrack: result.CanBacktrack);
+                return result;
             }
             input.Reset();
             input.Unmark();
