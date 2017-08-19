@@ -206,6 +206,10 @@ namespace Unclazz.Parsec
         {
             return Parser.For(func);
         }
+        public static implicit operator Parser<T>(Func<Parser<T>> factory)
+        {
+            return Parser.Lazy(factory);
+        }
         /// <summary>
         /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
         /// </summary>
