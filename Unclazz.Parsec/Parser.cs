@@ -481,6 +481,22 @@ namespace Unclazz.Parsec
             }
             return tmp2;
         }
+        public Parser<T> Log(Action<string> logger)
+        {
+            return new LogParser<T>(this, logger);
+        }
+        public Parser<U> CastThen<U>(Parser<U> another)
+        {
+            return Then(another);
+        }
+        public Parser<T> ThenCast<U>(Parser<U> another)
+        {
+            return Then(another).Cast<T>();
+        }
+        public Parser<T> Relay<U>(Parser<U> another)
+        {
+            return new RelayParser<T, U>(this, another);
+        }
         /// <summary>
         /// このパーサーの読み取りが成功したあとに実行されるパーサーを指定します。
         /// </summary>

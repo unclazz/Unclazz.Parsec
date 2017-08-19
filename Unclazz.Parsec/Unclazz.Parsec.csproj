@@ -43,8 +43,10 @@
   <ItemGroup>
     <Compile Include="CoreParsers\CastParser.cs" />
     <Compile Include="CoreParsers\ConcatParser.cs" />
+    <Compile Include="CoreParsers\LogParser.cs" />
     <Compile Include="CoreParsers\ManyOrParser.cs" />
     <Compile Include="CoreParsers\OrManyParser.cs" />
+    <Compile Include="CoreParsers\RelayParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="LazyParser.cs" />
