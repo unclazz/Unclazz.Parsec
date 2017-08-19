@@ -42,14 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreParsers\CastParser.cs" />
-    <Compile Include="CoreParsers\ConcatParser.cs" />
     <Compile Include="CoreParsers\LogParser.cs" />
-    <Compile Include="CoreParsers\ManyOrParser.cs" />
-    <Compile Include="CoreParsers\OrManyParser.cs" />
-    <Compile Include="CoreParsers\RelayParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
-    <Compile Include="LazyParser.cs" />
+    <Compile Include="CoreParsers\LazyParser.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Capture.cs" />
@@ -71,7 +67,6 @@
     <Compile Include="CoreParsers\CutParser.cs" />
     <Compile Include="CoreParsers\DelegateParser.cs" />
     <Compile Include="CoreParsers\EndOfFileParser.cs" />
-    <Compile Include="CoreParsers\ManyThenParser.cs" />
     <Compile Include="CoreParsers\MapParser.cs" />
     <Compile Include="CoreParsers\NotParser.cs" />
     <Compile Include="CoreParsers\OptionalParser.cs" />
@@ -91,11 +86,11 @@
     <Compile Include="CoreParsers\RepeatExactlyParser.cs" />
     <Compile Include="CoreParsers\RepeatMinMaxParser.cs" />
     <Compile Include="CoreParsers\CaptureParser.cs" />
-    <Compile Include="CoreParsers\SingleCharParser.cs" />
-    <Compile Include="CoreParsers\SuccessParser.cs" />
-    <Compile Include="CoreParsers\ThenManyParser.cs" />
+    <Compile Include="CoreParsers\CharParser.cs" />
+    <Compile Include="CoreParsers\PassParser.cs" />
     <Compile Include="CoreParsers\AddParser.cs" />
     <Compile Include="CoreParsers\KeywordParser.cs" />
+    <Compile Include="X.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,8 +1,8 @@
 ﻿namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class BeginningOfFileParser : Parser<string>
+    sealed class BeginningOfFileParser : Parser
     {
-        public override ParseResult<string> Parse(ParserInput input)
+        public override ParseResult<X> Parse(ParserInput input)
         {
             var p = input.Position;
             return p.Index == 0  ? Success(p)

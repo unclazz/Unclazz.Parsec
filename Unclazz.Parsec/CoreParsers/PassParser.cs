@@ -1,8 +1,8 @@
 ﻿namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class SuccessParser<T> : Parser<T>
+    sealed class PassParser<T> : Parser<T>
     {
-        internal SuccessParser(T value)
+        internal PassParser(T value)
         {
             _value = value;
         }
@@ -11,12 +11,12 @@
 
         public override ParseResult<T> Parse(ParserInput input)
         {
-            return Success(input.Position, new Capture<T>(_value));
+            return Success(input.Position, Capture<T>.OfSingle(_value));
         }
 
         public override string ToString()
         {
-            return string.Format("Success({0})");
+            return string.Format("Pass({0})");
         }
     }
 }

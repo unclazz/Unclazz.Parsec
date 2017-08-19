@@ -26,13 +26,13 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Assert
             if (okNg)
             {
-                var p1 = new RepeatMinMaxParser<string>(p0, min, max, null);
+                var p1 = new RepeatMinMaxParser<X>(p0, min, max, null);
             }
             else
             {
                 Assert.That(() =>
                 {
-                    var p1 = new RepeatMinMaxParser<string>(p0, min, max, null);
+                    var p1 = new RepeatMinMaxParser<X>(p0, min, max, null);
                 }, Throws.InstanceOf<ArgumentOutOfRangeException>());
             }
         }
@@ -46,7 +46,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p0 = Keyword(word);
-            var p1 = new RepeatMinMaxParser<string>(p0, min, max, null);
+            var p1 = new RepeatMinMaxParser<X>(p0, min, max, null);
             string text = TestUtility.Repeats(word, wordRepeatCount);
             ParserInput input = text;
 
@@ -67,7 +67,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p0 = Keyword(word);
-            var p1 = new RepeatMinMaxParser<string>(p0, min, max, Char('$'));
+            var p1 = new RepeatMinMaxParser<X>(p0, min, max, Char('$'));
             string text = TestUtility.Repeats(word, wordRepeatCount, "$");
             ParserInput input = text;
 

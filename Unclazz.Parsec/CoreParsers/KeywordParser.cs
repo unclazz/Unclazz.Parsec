@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class KeywordParser : Parser<string>
+    sealed class KeywordParser : Parser
     {
         internal KeywordParser(string keyword) : this(keyword, -1) { }
         internal KeywordParser(string keyword, int cutIndex)
@@ -21,7 +21,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _cut;
         readonly string _keyword;
 
-        public override ParseResult<string> Parse(ParserInput input)
+        public override ParseResult<X> Parse(ParserInput input)
         {
             var p = input.Position;
             for (var i = 0; i < _keyword.Length; i++)

@@ -8,23 +8,52 @@ using System.Threading.Tasks;
 namespace Unclazz.Parsec
 {
     /// <summary>
-    /// パーサーによりキャプチャされた値を保持する（もしくは保持しない）列挙型です。
+    /// パーサーによりキャプチャされた値を保持する列挙型です。
     /// </summary>
     /// <typeparam name="T">保持する値の型</typeparam>
-    public struct Capture<T>
+    public struct Capture<T> : IEnumerable<T>
     {
-        /// <summary>
-        /// 値を保持するインスタンスを生成するコンストラクタです。
-        /// </summary>
-        /// <param name="value">値</param>
-        public Capture(T value)
+        static readonly T[] _empty = new T[0];
+
+        public static Capture<T> operator +(Capture<T> left, T right)
+        {
+            return left.Add(right);
+        }
+        public static Capture<T> operator +(Capture<T> left, Capture<T> right)
+        {
+            return left.Union(right);
+        }
+
+        public static Capture<T> OfEmpty()
+        {
+            return new Capture<T>();
+        }
+        public static Capture<T> OfSingle(T value)
+        {
+            return new Capture<T>(value);
+        }
+        public static Capture<T> OfMultiple(params T[] items)
+        {
+            return new Capture<T>(items);
+        }
+        public static Capture<T> OfMultiple(IEnumerable<T> items)
+        {
+            return OfMultiple(items.ToArray());
+        }
+
+        Capture(T value)
         {
             _hasValue = true;
-            _value = value;
+            _value = new[] { value };
+        }
+        Capture(T[] values)
+        {
+            _hasValue = true;
+            _value = values;
         }
 
         readonly bool _hasValue;
-        readonly T _value;
+        readonly T[] _value;
 
         /// <summary>
         /// 値を保持している場合<c>true</c>
@@ -34,23 +63,35 @@ namespace Unclazz.Parsec
         /// 値を取得します。
         /// このインスタンスが値を保持していない場合は例外をスローします。
         /// </summary>
-        public T Value
+        public IEnumerable<T> Value => _hasValue ? _value : _empty;
+
+        public Capture<T> Add(T item)
         {
-            get
+            if (_hasValue)
             {
-                if (_hasValue) return _value;
-                else throw new InvalidOperationException();
+                T[] newItems = new T[_value.Length + 1];
+                _value.CopyTo(newItems, 0);
+                return new Capture<T>(newItems);
+            }
+            else
+            {
+                return new Capture<T>();
             }
         }
-        /// <summary>
-        /// 値を保持している場合はその値を、そうでない場合は引数で指定された値を返します。
-        /// </summary>
-        /// <param name="value">このインスタンスが値を保持していない場合にこのメソッドが返す値</param>
-        /// <returns>値</returns>
-        public T OrElse(T value)
+        public Capture<T> Union(Capture<T> other)
         {
-            if (_hasValue) return _value;
-            else return value;
+            if (_hasValue)
+            {
+                if (other._hasValue)
+                {
+                    T[] newItems = new T[_value.Length + other._value.Length];
+                    _value.CopyTo(newItems, 0);
+                    other._value.CopyTo(newItems, _value.Length);
+                    return new Capture<T>(newItems);
+                }
+                return this;
+            }
+            return other;
         }
         /// <summary>
         /// このインスタンスが保持する値を引数で指定された関数で変換し新しいインスタンスでくるんで返します。
@@ -61,27 +102,18 @@ namespace Unclazz.Parsec
         /// <returns>変換後の値を保持するインスタンス</returns>
         public Capture<U> Map<U>(Func<T, U> transform)
         {
-            if (_hasValue) return new Capture<U>(transform(_value));
+            if (_hasValue) return new Capture<U>(new U[0]);
             else return new Capture<U>();
         }
-        /// <summary>
-        /// このインスタンスが値を保持している場合アクションを実行します。
-        /// </summary>
-        /// <param name="act">アクション</param>
-        public void IfHasValue(Action<T> act)
+        public void ForEach(Action<T> act)
         {
-            if (_hasValue) act(_value);
+            if (_hasValue) return;
+            for (var i = 0; i < _value.Length; i++) act(_value[i]);
         }
-        /// <summary>
-        /// このインスタンスが値を保持している場合第1引数のアクションを実行し、
-        /// そうでない場合第2引数のアクションを実行します。
-        /// </summary>
-        /// <param name="act">値を保持している場合に実行されるアクション</param>
-        /// <param name="orElse">値を保持していない場合に実行されるアクション</param>
-        public void IfHasValue(Action<T> act, Action orElse)
+        public void ForEach(Action<T, int> act)
         {
-            if (_hasValue) act(_value);
-            else orElse();
+            if (_hasValue) return;
+            for (var i = 0; i < _value.Length; i++) act(_value[i], i);
         }
         /// <summary>
         /// このインスタンスの文字列表現を返します。
@@ -89,17 +121,17 @@ namespace Unclazz.Parsec
         /// <returns>文字列表現</returns>
         public override string ToString()
         {
-            if (_hasValue)
-            {
-                return string.Format("Capture({0}, type = {1})",
-                    ParsecUtility.ValueToString(_value),
-                    ParsecUtility.TypeToString(typeof(T)));
-            }
-            else
-            {
-                return string.Format("Capture(type = {0})",
-                    ParsecUtility.TypeToString(typeof(T)));
-            }
+            return string.Format("Capture({0})", ParsecUtility.ValueToString(_value));
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>)_empty).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

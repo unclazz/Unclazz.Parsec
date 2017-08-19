@@ -25,12 +25,12 @@ namespace Unclazz.Parsec.CoreParsers
         /// コンストラクタです。
         /// </summary>
         /// <param name="parse">パース・ロジックを提供するデリゲート</param>
-        public CaptureParser(Parser<T> parse)
+        public CaptureParser(IParser<T> parse)
         {
             _parse = parse ?? throw new ArgumentNullException(nameof(parse));
         }
 
-        readonly Parser<T> _parse;
+        readonly IParser<T> _parse;
 
         /// <summary>
         /// パースを行います。

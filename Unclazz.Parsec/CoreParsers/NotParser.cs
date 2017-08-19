@@ -4,13 +4,13 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class NotParser<T> : Parser<T>
     {
-        internal NotParser(Parser<T> original)
+        internal NotParser(IParser<T> original)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
-        readonly Parser<T> _original;
-        
+        readonly IParser<T> _original;
+
         public override ParseResult<T> Parse(ParserInput input)
         {
             input.Mark();
@@ -25,7 +25,7 @@ namespace Unclazz.Parsec.CoreParsers
             {
                 input.Reset();
                 input.Unmark();
-                return Success(p, capture: new Capture<T>(), 
+                return Success(p, capture: new Capture<T>(),
                     canBacktrack: originalResult.CanBacktrack);
             }
         }

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class StringInParser : Parser<string>
+    sealed class StringInParser : Parser
     {
         static int CommonPrefixLength(string keyword0, string keyword1)
         {
@@ -12,9 +12,9 @@ namespace Unclazz.Parsec.CoreParsers
                     .TakeWhile(a => a)
                     .Count();
         }
-        static Parser<string> KeywordsParser(string[] keywords)
+        static Parser KeywordsParser(string[] keywords)
         {
-            Parser<string> parser = null;
+            Parser parser = null;
             var zip = keywords.Zip(keywords.Skip(1), (k0, k1) =>
             new { Keyword = k0, CommonPrefixLength = CommonPrefixLength(k0, k1) });
             foreach (var zipElem in zip)
@@ -42,8 +42,8 @@ namespace Unclazz.Parsec.CoreParsers
 
         }
         readonly string[] _keywords;
-        readonly Parser<string> _parser;
-        public override ParseResult<string> Parse(ParserInput input)
+        readonly Parser _parser;
+        public override ParseResult<X> Parse(ParserInput input)
         {
             return _parser.Parse(input);
         }

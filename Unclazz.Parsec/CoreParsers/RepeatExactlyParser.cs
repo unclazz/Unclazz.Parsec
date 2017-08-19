@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class RepeatExactlyParser<T> : Parser<IEnumerable<T>>
     {
-        internal RepeatExactlyParser(Parser<T> original, int exactly, Parser<string> sep)
+        internal RepeatExactlyParser(IParser<T> original, int exactly, Parser sep)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
@@ -13,9 +13,9 @@ namespace Unclazz.Parsec.CoreParsers
             _sep = sep;
         }
 
-        readonly Parser<T> _original;
+        readonly IParser<T> _original;
         readonly int _exactly;
-        readonly Parser<string> _sep;
+        readonly Parser _sep;
 
         public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
         {

@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class RepeatMinMaxParser<T> : Parser<IEnumerable<T>>
     {
-        internal RepeatMinMaxParser(Parser<T> original, int min, int max, Parser<string> sep)
+        internal RepeatMinMaxParser(IParser<T> original, int min, int max, Parser sep)
         {
             max = max == -1 ? int.MaxValue : max;
             min = min == -1 ? 0 : min;
@@ -22,8 +22,8 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly int _min;
         readonly int _max;
-        readonly Parser<T> _original;
-        readonly Parser<string> _sep;
+        readonly IParser<T> _original;
+        readonly Parser _sep;
 
         public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
         {

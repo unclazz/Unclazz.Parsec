@@ -63,8 +63,8 @@ namespace Unclazz.Parsec
     {
         static readonly IEnumerable<Capture<T>> _empty = new Capture<T>[0];
 
-        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Capture<T>(), m, c) { }
-        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Capture<T>(v), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, Capture<T>.OfEmpty(), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, Capture<T>.OfSingle(v), m, c) { }
         internal ParseResult(bool s, CharacterPosition p, Capture<T> c, string m, bool cut)
         {
             _capture = c;

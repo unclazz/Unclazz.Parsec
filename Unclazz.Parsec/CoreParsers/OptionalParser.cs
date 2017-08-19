@@ -4,12 +4,12 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class OptionalParser<T> : Parser<T>
     {
-        internal OptionalParser(Parser<T> original)
+        internal OptionalParser(IParser<T> original)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
-        readonly Parser<T> _original;
+        readonly IParser<T> _original;
 
         public override ParseResult<T> Parse(ParserInput input)
         {

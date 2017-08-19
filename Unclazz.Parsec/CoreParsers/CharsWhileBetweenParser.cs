@@ -3,7 +3,7 @@ using Unclazz.Parsec.CharClasses;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class CharsWhileBetweenParser : Parser<string>
+    sealed class CharsWhileBetweenParser : Parser
     {
         internal CharsWhileBetweenParser(char start, char end, int min)
         {
@@ -17,7 +17,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly char _start;
         readonly char _end;
 
-        public override ParseResult<string> Parse(ParserInput input)
+        public override ParseResult<X> Parse(ParserInput input)
         {
             var p = input.Position;
             var count = 0;

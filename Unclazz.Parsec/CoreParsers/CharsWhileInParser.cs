@@ -3,7 +3,7 @@ using Unclazz.Parsec.CharClasses;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class CharsWhileInParser : Parser<string>
+    sealed class CharsWhileInParser : Parser
     {
         internal CharsWhileInParser(CharClass clazz, int min)
         {
@@ -15,7 +15,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _min;
         readonly CharClass _clazz;
 
-        public override ParseResult<string> Parse(ParserInput input)
+        public override ParseResult<X> Parse(ParserInput input)
         {
             var p = input.Position;
             var count = 0;
