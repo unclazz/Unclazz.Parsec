@@ -423,6 +423,15 @@ namespace Unclazz.Parsec
         {
             return new ThenTakeRightParser<Nil, Nil>(this, another).Cast();
         }
+        /// <summary>
+        /// デバッグたのめパース処理前後の情報をログ出力するパーサーを返します。
+        /// </summary>
+        /// <param name="logger">ログ出力そのものを行うアクション</param>
+        /// <returns>新しいパーサー</returns>
+        public Parser Log(Action<string> logger)
+        {
+            return new LogParser<Nil>(this, logger).Cast();
+        }
     }
 
     /// <summary>
@@ -641,15 +650,7 @@ namespace Unclazz.Parsec
             return new CutParser<T>(this);
         }
         /// <summary>
-        /// このパーサーの読み取り結果を任意の関数で変換して返すパーサーを生成します。
-        /// <para>
-        /// このメソッドが生成して返すパーサーは、その目的ゆえにパース成功時に値を返します。
-        /// パース結果の型を変更することだけが目的で実際にはその値を利用しない場合は<see cref="Cast{U}"/>を利用します。
-        /// </para>
-        /// <para>
-        /// パース成功時（元になるパーサーがパースに成功した時）はキャプチャした値を引数にして<paramref name="transform"/>を呼び出します。
-        /// パース失敗時（元になるパーサーがパースに失敗した時）は<paramref name="transform"/>は呼び出されません。
-        /// </para>
+        /// 読み取り結果の<see cref="Capture{T}"/>が内包する各要素に関数を提供するパーサーを生成します。
         /// <para>
         /// このメソッドが返すパーサーは関数<paramref name="transform"/>が例外をスローした場合、
         /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
@@ -664,6 +665,24 @@ namespace Unclazz.Parsec
         public Parser<U> Map<U>(Func<T, U> transform, bool canThrow = false)
         {
             return new MapParser<T, U>(this, transform, canThrow);
+        }
+        /// <summary>
+        /// 読み取り結果の<see cref="Capture{T}"/>にアキュームレータ関数を適用するパーサーを返します。
+        /// <para>
+        /// このメソッドが返すパーサーは関数<paramref name="accumulator"/>が例外をスローした場合、
+        /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
+        /// この挙動を変更し、関数がスローした例外をそのまま再スローさせたい場合は
+        /// <paramref name="canThrow"/>に<c>true</c>を指定します。
+        /// </para>
+        /// </summary>
+        /// <typeparam name="U">シードの型</typeparam>
+        /// <param name="seed">シード</param>
+        /// <param name="accumulator">アキュームレータ関数</param>
+        /// <param name="canThrow"><paramref name="accumulator"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <returns>新しいパーサー</returns>
+        public Parser<U> Aggregate<U>(U seed, Func<U,T,U> accumulator, bool canThrow = false)
+        {
+            return new AggregateParser<T,U>(this, seed, accumulator, canThrow);
         }
         /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
@@ -754,6 +773,15 @@ namespace Unclazz.Parsec
         public Parser<T> Then(Parser another)
         {
             return new ThenTakeLeftParser<T, Nil>(this, another);
+        }
+        /// <summary>
+        /// デバッグたのめパース処理前後の情報をログ出力するパーサーを返します。
+        /// </summary>
+        /// <param name="logger">ログ出力そのものを行うアクション</param>
+        /// <returns>新しいパーサー</returns>
+        public Parser<T> Log(Action<string> logger)
+        {
+            return new LogParser<T>(this, logger);
         }
     }
 }
