@@ -11,9 +11,9 @@ namespace Unclazz.Parsec
     /// パーサーを表すインターフェースです。
     /// <para>
     /// このインターフェースの実装を宣言する2つの抽象クラスとそこから派生した多くの具象クラスが存在しています。
-    /// 抽象クラスの1つ<see cref="Parser"/>はパース結果の型が<see cref="X"/>であるパーサーです。
+    /// 抽象クラスの1つ<see cref="Parser"/>はパース結果の型が<see cref="Nil"/>であるパーサーです。
     /// <see cref="Parser"/>はパースの成否判定だけを行うパーサーです。
-    /// <see cref="X"/>は実際にはインスタンスを持たないクラスであり、
+    /// <see cref="Nil"/>は実際にはインスタンスを持たないクラスであり、
     /// <see cref="Parser.Parse(ParserInput)"/>が返す<see cref="ParseResult{T}"/>は
     /// パース結果の成否にかかわらず常に値を持たないインスタンスです（<see cref="ParseResult{T}.Capture"/>が空のシーケンスを返す）。
     /// パース結果を文字列やその他の型のインスタンスとして取得する必要がある場合は<see cref="Parser{T}"/>のインスタンスを使用します。
@@ -49,10 +49,19 @@ namespace Unclazz.Parsec
 
     /// <summary>
     /// <see cref="Parser{T}"/>のコンパニオン・オブジェクトです。
-    /// <see cref="Parser{T}"/>のインスタンスを生成するためのユーティリティとして機能します。
+    /// <para>
+    /// この抽象クラスのから派生した具象パーサー・クラスは値のキャプチャを一切行いません。
+    /// メソッド<see cref="Parser.Parse(ParserInput)"/>はパースを行いその結果として<see cref="ParseResult{T}"/>を返しますが、
+    /// パース結果の成否と関係なく、<see cref="ParseResult{T}.Capture"/>は必ず空のシーケンスになります。
+    /// </para>
+    /// <para>
+    /// このクラスはまた<see cref="Parser"/>および<see cref="Parser{T}"/>の
+    /// 派生クラスのインスタンスを生成するためのユーティリティとして機能します。
+    /// </para>
     /// </summary>
-    public abstract class Parser : IParser<X>
+    public abstract class Parser : IParser<Nil>
     {
+
         #region 定義済みパーサーを提供するプロパティの宣言
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
@@ -83,7 +92,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator !(Parser operand)
         {
-            return new NotParser<X>(operand).Cast();
+            return new NotParser<Nil>(operand).Cast();
         }
         /// <summary>
         /// <see cref="Parser.Then(Parser)"/>と同義です。
@@ -103,7 +112,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator |(Parser left, Parser right)
         {
-            return OrParser<X>.LeftAssoc(left, right).Cast();
+            return OrParser<Nil>.LeftAssoc(left, right).Cast();
         }
         #endregion
 
@@ -125,7 +134,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Not(Parser operand)
         {
-            return new NotParser<X>(operand).Cast();
+            return new NotParser<Nil>(operand).Cast();
         }
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
@@ -142,9 +151,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser For(Func<ParserInput, ParseResult<X>> func)
+        public static Parser For(Func<ParserInput, ParseResult<Nil>> func)
         {
-            return new DelegateParser<X>(func).Cast();
+            return new DelegateParser<Nil>(func).Cast();
         }
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
@@ -165,7 +174,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Lazy(Func<Parser> factory)
         {
-            return new LazyParser<X>(factory).Cast();
+            return new LazyParser<Nil>(factory).Cast();
         }
         /// <summary>
         /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
@@ -184,7 +193,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser OrNot(Parser parser)
         {
-            return new OrNotParser<X>(parser).Cast();
+            return new OrNotParser<Nil>(parser).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
@@ -204,7 +213,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Or(Parser left, Parser right)
         {
-            return OrParser<X>.LeftAssoc(left, right).Cast();
+            return OrParser<Nil>.LeftAssoc(left, right).Cast();
         }
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
@@ -304,7 +313,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        public abstract ParseResult<X> Parse(ParserInput input);
+        public abstract ParseResult<Nil> Parse(ParserInput input);
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
@@ -312,9 +321,9 @@ namespace Unclazz.Parsec
         /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<X> Success(CharacterPosition position, bool canBacktrack = true)
+        protected ParseResult<Nil> Success(CharacterPosition position, bool canBacktrack = true)
         {
-            return ParseResult.OfSuccess<X>(position, canBacktrack: canBacktrack);
+            return ParseResult.OfSuccess<Nil>(position, canBacktrack: canBacktrack);
         }
         /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
@@ -324,10 +333,10 @@ namespace Unclazz.Parsec
         /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<X> Failure(CharacterPosition position,
+        protected ParseResult<Nil> Failure(CharacterPosition position,
             string message, bool canBacktrack = true)
         {
-            return ParseResult.OfFailure<X>(position, message, canBacktrack);
+            return ParseResult.OfFailure<Nil>(position, message, canBacktrack);
         }
         #endregion
 
@@ -337,7 +346,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<string> Capture()
         {
-            return new CaptureParser<X>(this);
+            return new CaptureParser<Nil>(this);
         }
         /// <summary>
         /// <see cref="Parser{T}.Cast{U}"/>と同義です。
@@ -346,7 +355,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Cast<T>()
         {
-            return new CastParser<X, T>(this);
+            return new CastParser<Nil, T>(this);
         }
         /// <summary>
         /// <see cref="Parser{T}.Cut"/>と同義です。
@@ -354,7 +363,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Cut()
         {
-            return new CutParser<X>(this).Cast();
+            return new CutParser<Nil>(this).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
@@ -363,7 +372,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Or(Parser another)
         {
-            return OrParser<X>.LeftAssoc(this, another).Cast();
+            return OrParser<Nil>.LeftAssoc(this, another).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.Or(Parser{T}, Parser{T}[])"/>と同義です。
@@ -373,7 +382,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Or(Parser another, params Parser[] andOthers)
         {
-            return OrParser<X>.LeftAssoc(this, another, andOthers).Cast();
+            return OrParser<Nil>.LeftAssoc(this, another, andOthers).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.OrNot"/>と同義です。
@@ -381,7 +390,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser OrNot()
         {
-            return new OrNotParser<X>(this).Cast();
+            return new OrNotParser<Nil>(this).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -391,7 +400,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Then<T>(Parser<T> another)
         {
-            return new ThenTakeRightParser<X, T>(this, another);
+            return new ThenTakeRightParser<Nil, T>(this, another);
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -400,7 +409,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Then(Parser another)
         {
-            return new ThenTakeRightParser<X, X>(this, another).Cast();
+            return new ThenTakeRightParser<Nil, Nil>(this, another).Cast();
         }
     }
 
@@ -503,7 +512,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser left, Parser<T> right)
         {
-            return new ThenTakeRightParser<X, T>(left, right);
+            return new ThenTakeRightParser<Nil, T>(left, right);
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -513,7 +522,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
-            return new ThenTakeLeftParser<T, X>(left, right);
+            return new ThenTakeLeftParser<T, Nil>(left, right);
         }
         #endregion
 
@@ -754,7 +763,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Then(Parser another)
         {
-            return new ThenTakeLeftParser<T, X>(this, another);
+            return new ThenTakeLeftParser<T, Nil>(this, another);
         }
     }
 }

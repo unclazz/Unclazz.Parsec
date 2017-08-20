@@ -27,9 +27,9 @@ namespace Unclazz.Parsec.CoreParsers
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
         readonly IParser<T> _original;
-        public override ParseResult<X> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
-            return _original.Parse(input).Cast<X>();
+            return _original.Parse(input).Cast<Nil>();
         }
         public override string ToString()
         {

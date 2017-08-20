@@ -7,7 +7,7 @@
             _ch = ch;
         }
         readonly char _ch;
-        public override ParseResult<X> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
             var p = input.Position;
             var actual = input.Read();

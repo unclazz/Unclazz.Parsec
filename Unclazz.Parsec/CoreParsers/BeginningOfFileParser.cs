@@ -2,7 +2,7 @@
 {
     sealed class BeginningOfFileParser : Parser
     {
-        public override ParseResult<X> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
             var p = input.Position;
             return p.Index == 0  ? Success(p)

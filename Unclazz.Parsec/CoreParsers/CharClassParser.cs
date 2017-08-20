@@ -11,7 +11,7 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly CharClasses.CharClass _clazz;
 
-        public override ParseResult<X> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
             var p = input.Position;
             var ch = (char)input.Read();

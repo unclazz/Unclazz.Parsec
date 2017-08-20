@@ -2,7 +2,7 @@
 {
     sealed class EndOfFileParser : Parser
     {
-        public override ParseResult<X> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
             return input.EndOfFile
                 ? Success(input.Position) : Failure(input.Position, 

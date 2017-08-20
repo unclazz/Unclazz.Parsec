@@ -21,7 +21,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _cut;
         readonly string _keyword;
 
-        public override ParseResult<X> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
             var p = input.Position;
             for (var i = 0; i < _keyword.Length; i++)

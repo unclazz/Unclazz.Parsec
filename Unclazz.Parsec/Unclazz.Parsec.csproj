@@ -68,11 +68,10 @@
     <Compile Include="CoreParsers\EndOfFileParser.cs" />
     <Compile Include="CoreParsers\MapParser.cs" />
     <Compile Include="CoreParsers\NotParser.cs" />
-    <Compile Include="CoreParsers\OptionalParser.cs" />
+    <Compile Include="CoreParsers\OrNotParser.cs" />
     <Compile Include="CoreParsers\OrParser.cs" />
     <Compile Include="ParsecUtility.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="ParserExtension.cs" />
     <Compile Include="ParserInput.cs" />
     <Compile Include="Readers\IResettableReader.cs" />
     <Compile Include="Readers\ITextReader.cs" />
@@ -87,9 +86,8 @@
     <Compile Include="CoreParsers\CaptureParser.cs" />
     <Compile Include="CoreParsers\CharParser.cs" />
     <Compile Include="CoreParsers\PassParser.cs" />
-    <Compile Include="CoreParsers\AddParser.cs" />
     <Compile Include="CoreParsers\KeywordParser.cs" />
-    <Compile Include="X.cs" />
+    <Compile Include="Nil.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
