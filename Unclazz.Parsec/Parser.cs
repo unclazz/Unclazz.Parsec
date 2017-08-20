@@ -696,44 +696,43 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
+        /// <para>
+        /// 4つの引数はいずれもオプションです。
+        /// 何も指定しなかった場合、0回以上で上限なしの繰り返しを表します。
+        /// <paramref name="exactly"/>を指定した場合はまさにその回数の繰り返しです。
+        /// <paramref name="min"/>および/もしくは<paramref name="max"/>を指定した場合は下限および/もしくは上限付きの繰り返しです。
+        /// </para>
         /// </summary>
         /// <param name="min">繰り返しの最小回数</param>
         /// <param name="max">繰り返しの最大回数</param>
-        /// <param name="sep">セパレーターのためのパーサー</param>
-        /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> Repeat(int min, int max, Parser sep = null)
-        {
-            return new RepeatMinMaxParser<T>(this, min, max, sep);
-        }
-        /// <summary>
-        /// シーケンスを読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="min">繰り返しの最小回数</param>
-        /// <param name="sep">セパレーターのためのパーサー</param>
-        /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> RepeatMin(int min, Parser sep = null)
-        {
-            return new RepeatMinMaxParser<T>(this, min, -1, sep);
-        }
-        /// <summary>
-        /// シーケンスを読み取るパーサーを生成します。
-        /// </summary>
-        /// <param name="max">繰り返しの最大回数</param>
-        /// <param name="sep">セパレーターのためのパーサー</param>
-        /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> RepeatMax(int max, Parser sep = null)
-        {
-            return new RepeatMinMaxParser<T>(this, 0, max, sep);
-        }
-        /// <summary>
-        /// シーケンスを読み取るパーサーを生成します。
-        /// </summary>
         /// <param name="exactly">繰り返しの回数</param>
         /// <param name="sep">セパレーターのためのパーサー</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> RepeatExactly(int exactly, Parser sep = null)
+        public Parser<IEnumerable<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return new RepeatExactlyParser<T>(this, exactly, sep);
+            // 後続処理のためexactlyだけはまず範囲チェック
+            if (exactly == 0 | exactly < -1) throw new ArgumentOutOfRangeException(nameof(exactly));
+            // exactlyが明示的に指定されているかチェック
+            if (exactly > 0)
+            {
+                //　指定されている場合
+                // min・maxが明示的に指定されているか（デフォルト値以外が設定されているか）をチェック
+                if (min != 0 || max != -1)
+                {
+                    // exactlyが明示的に指定され かつ min・maxがデフォルト値でない場合
+                    // 3値が整合性を持っているかチェックし、結果がNGの場合は引数の矛盾として例外スロー
+                    // OKの例：　(exactly = 3, min = 3, max = 3)
+                    // NGの例：　(exactly = 3, min = 2, max = 3)
+                    if (exactly != min || min != max) throw new ArgumentException(
+                        string.Format("conflicted arguments. exactly = {0}, but min = {1} and max = {2}.",
+                        exactly, min, max));
+                }
+                // チェックをパスした場合のみ、RepeatExactlyParserを返す
+                return new RepeatExactlyParser<T>(this, exactly, sep);
+            }
+            // exactlyが明示的に指定されていない場合
+            // RepeatMinMaxParserを返す
+            return new RepeatMinMaxParser<T>(this, min, max, sep);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
