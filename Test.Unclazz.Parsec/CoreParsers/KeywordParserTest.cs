@@ -33,7 +33,6 @@ namespace Test.Unclazz.Parsec
             {
                 Assert.That(pos.Index, Is.EqualTo(0));
                 Assert.That(cap.HasValue, Is.False);
-                Assert.That(() => cap.Value, Throws.InstanceOf<InvalidOperationException>());
             });
         }
         [TestCase("0123456789X", "1", true)]
@@ -55,7 +54,6 @@ namespace Test.Unclazz.Parsec
             {
                 Assert.That(pos.Index, Is.EqualTo(1));
                 Assert.That(cap.HasValue, Is.False);
-                Assert.That(() => cap.Value, Throws.InstanceOf<InvalidOperationException>());
             });
         }
         [TestCase("0123456789X", "1", true)]
@@ -77,7 +75,7 @@ namespace Test.Unclazz.Parsec
             {
                 Assert.That(pos.Index, Is.EqualTo(1));
                 Assert.That(cap.HasValue, Is.True);
-                Assert.That(cap.Value, Is.EqualTo(word));
+                Assert.That(cap.First(), Is.EqualTo(word));
             });
         }
         [TestCase("0123456789X", "X12", 1, true)]

@@ -23,8 +23,8 @@ namespace Test.Unclazz.Parsec
             // Assert
             Assert.That(cap0.HasValue, Is.False);
             Assert.That(cap1.HasValue, Is.False);
-            Assert.That(cap0.Value.Count(), Is.EqualTo(0));
-            Assert.That(cap1.Value.Count(), Is.EqualTo(0));
+            Assert.That(cap0.Count, Is.EqualTo(0));
+            Assert.That(cap1.Count, Is.EqualTo(0));
         }
         [Test]
         [Description("OfEmpty - Case #1 - 引数なしコンストラクタと同じ結果になること")]
@@ -38,8 +38,8 @@ namespace Test.Unclazz.Parsec
             // Assert
             Assert.That(cap0.HasValue, Is.False);
             Assert.That(cap1.HasValue, Is.False);
-            Assert.That(cap0.Value.Count(), Is.EqualTo(0));
-            Assert.That(cap1.Value.Count(), Is.EqualTo(0));
+            Assert.That(cap0.Count, Is.EqualTo(0));
+            Assert.That(cap1.Count, Is.EqualTo(0));
         }
         [Test]
         [Description("OfSingle - Case #1 - 値を1つだけ持つインスタンスを返すこと")]
@@ -53,8 +53,8 @@ namespace Test.Unclazz.Parsec
             // Assert
             Assert.That(cap0.HasValue, Is.True);
             Assert.That(cap1.HasValue, Is.True);
-            Assert.That(cap0.Value.Count(), Is.EqualTo(1));
-            Assert.That(cap1.Value.Count(), Is.EqualTo(1));
+            Assert.That(cap0.Count, Is.EqualTo(1));
+            Assert.That(cap1.Count, Is.EqualTo(1));
         }
         [Test]
         [Description("OfMultiple - Case #1 - 値を複数（引数で指定した数）持つインスタンスを返すこと")]
@@ -68,10 +68,10 @@ namespace Test.Unclazz.Parsec
             // Assert
             Assert.That(cap0.HasValue, Is.True);
             Assert.That(cap1.HasValue, Is.True);
-            Assert.That(cap0.Value.Count(), Is.EqualTo(3));
-            Assert.That(cap1.Value.Count(), Is.EqualTo(2));
-            Assert.That(cap0.Value.ToArray(), Is.EqualTo(new int[] { 123, 456, 789 }));
-            Assert.That(cap1.Value.ToArray(), Is.EqualTo(new string[] { "123", "456" }));
+            Assert.That(cap0.Count, Is.EqualTo(3));
+            Assert.That(cap1.Count, Is.EqualTo(2));
+            Assert.That(cap0.ToArray(), Is.EqualTo(new int[] { 123, 456, 789 }));
+            Assert.That(cap1.ToArray(), Is.EqualTo(new string[] { "123", "456" }));
         }
         [Test]
         [Description("Map - Case #1 - 空の場合は型パラメータの変更以外何も起きないこと")]
@@ -108,8 +108,8 @@ namespace Test.Unclazz.Parsec
             // Assert
             Assert.That(cap0_map.HasValue, Is.True);
             Assert.That(cap1_map.HasValue, Is.True);
-            Assert.That(cap0_map.Value.ToArray(), Is.EqualTo(new string[] { "123", "456" }));
-            Assert.That(cap1_map.Value.ToArray(), Is.EqualTo(new int[] { 123 }));
+            Assert.That(cap0_map.ToArray(), Is.EqualTo(new string[] { "123", "456" }));
+            Assert.That(cap1_map.ToArray(), Is.EqualTo(new int[] { 123 }));
         }
         [Test]
         [Description("ToString - Case #1 - 要素0、要素1、要素2以上、それぞれインスタンス内容を示す文字列が返されること")]

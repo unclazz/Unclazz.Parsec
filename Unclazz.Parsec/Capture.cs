@@ -79,7 +79,7 @@ namespace Unclazz.Parsec
         }
         Capture(T[] items)
         {
-            _hasValue = items.Length > 0;
+            _hasValue = (items != null && items.Length > 0);
             _items = items;
         }
 
@@ -87,14 +87,20 @@ namespace Unclazz.Parsec
         readonly T[] _items;
 
         /// <summary>
+        /// このインスタンスが保持している値のうち添字で指定されたものを返します。
+        /// </summary>
+        /// <param name="i">添字</param>
+        /// <returns>要素</returns>
+        public T this[int i] => _hasValue ? _items[i] : throw new IndexOutOfRangeException();
+
+        /// <summary>
         /// 値を保持している場合<c>true</c>
         /// </summary>
         public bool HasValue => _hasValue;
         /// <summary>
-        /// 値を取得します。
-        /// このインスタンスが値を保持していない場合は例外をスローします。
+        /// このインスタンスが保持している値の要素数です。
         /// </summary>
-        public IEnumerable<T> Value => _hasValue ? _items : _empty;
+        public int Count => _hasValue ? _items.Length : 0;
         /// <summary>
         /// 指定された要素を追加した新しいインスタンスを返します。
         /// </summary>

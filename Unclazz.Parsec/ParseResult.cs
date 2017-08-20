@@ -59,7 +59,7 @@ namespace Unclazz.Parsec
     /// インスタンスはコンパニオン・オブジェクト<see cref="ParseResult"/>の提供する静的ファクトリーメソッドにより得られます。
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public struct ParseResult<T> : IEnumerable<Capture<T>>
+    public struct ParseResult<T>
     {
         static readonly IEnumerable<Capture<T>> _empty = new Capture<T>[0];
 
@@ -230,27 +230,6 @@ namespace Unclazz.Parsec
             {
                 return ParseResult.OfFailure<U>(Position, Message, !_cut);
             }
-        }
-        /// <summary>
-        /// 列挙子を返します。
-        /// パースが成功している場合、列挙子は唯一の要素としてパース結果の値を列挙します。
-        /// パースが失敗している場合、列挙子はいかなる値も列挙しません。
-        /// </summary>
-        /// <returns>列挙子</returns>
-        public IEnumerator<Capture<T>> GetEnumerator()
-        {
-            if (Successful)
-            {
-                return ((IEnumerable<Capture<T>>)new Capture<T>[] { Capture }).GetEnumerator();
-            }
-            else
-            {
-                return _empty.GetEnumerator();
-            }
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
         /// <summary>
         /// このインスタンスの文字列表現を返します。
