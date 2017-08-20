@@ -33,7 +33,7 @@ namespace Unclazz.Parsec
             {
                 s = string.Format("'{0}'", (char)ch);
             }
-            return string.Format("{0} (codepoint = {1})", s, ch);
+            return string.Format("{0}({1})", s, ch);
         }
         public static string ValueToString<T>(T _value)
         {
