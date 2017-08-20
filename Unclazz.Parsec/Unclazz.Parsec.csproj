@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreParsers\CastParser.cs" />
-    <Compile Include="CoreParsers\LogParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="CoreParsers\LazyParser.cs" />

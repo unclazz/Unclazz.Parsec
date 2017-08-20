@@ -7,8 +7,43 @@ using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
 {
+    /// <summary>
+    /// パーサーを表すインターフェースです。
+    /// <para>
+    /// このインターフェースの実装を宣言する2つの抽象クラスとそこから派生した多くの具象クラスが存在しています。
+    /// 抽象クラスの1つ<see cref="Parser"/>はパース結果の型が<see cref="X"/>であるパーサーです。
+    /// <see cref="Parser"/>はパースの成否判定だけを行うパーサーです。
+    /// <see cref="X"/>は実際にはインスタンスを持たないクラスであり、
+    /// <see cref="Parser.Parse(ParserInput)"/>が返す<see cref="ParseResult{T}"/>は
+    /// パース結果の成否にかかわらず常に値を持たないインスタンスです（<see cref="ParseResult{T}.Capture"/>が空のシーケンスを返す）。
+    /// パース結果を文字列やその他の型のインスタンスとして取得する必要がある場合は<see cref="Parser{T}"/>のインスタンスを使用します。
+    /// この型のインスタンスは<see cref="Parser.Capture"/>メソッドや<see cref="Parser"/>および<see cref="Parser{T}"/>が公開する
+    /// 各種のメンバーを利用して得ることができます。
+    /// </para>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IParser<T>
     {
+        /// <summary>
+        /// パースを行います。
+        /// <para>
+        /// パーサーの具象クラスを実装する場合、このメソッドを実装する必要があります。
+        /// パース成否は<see cref="ParseResult{T}"/>のインスタンスで表されます。
+        /// このメソッドはいかなる場合も<c>null</c>を返してはなりません。
+        /// またこのメソッドは原則として例外スローを行ってはなりません。
+        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
+        /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知される必要があります。
+        /// </para>
+        /// <para>
+        /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
+        /// 多くのパーサーでは<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Capture{T}"/>は値を含みません。
+        /// 例外は<c>Parser&lt;string&gt;.Map&lt;T&gt;(T)</c>と<c>Parser&lt;char&gt;.Map&lt;T&gt;(T)</c>で、
+        /// これらのメソッドが返すパーサーのパース結果は値を含んでいます。
+        /// それ以外で値のキャプチャが必要な場合は<c>Parser&lt;string&gt;.Capture()</c>を使用します。
+        /// </para>
+        /// </summary>
+        /// <param name="input">入力データ</param>
+        /// <returns>パース結果</returns>
         ParseResult<T> Parse(ParserInput input);
     }
 
@@ -40,19 +75,58 @@ namespace Unclazz.Parsec
             new CharsWhileInParser(CharClass.Between((char)0, (char)31) + (char)127, 0);
         #endregion
 
+        #region 演算子オーバーロードの宣言
+        /// <summary>
+        /// <see cref="Parser.Not{T}(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="operand">元になるパーサー</param>
+        /// <returns>新しいインスタンス</returns>
         public static Parser operator !(Parser operand)
         {
             return new NotParser<X>(operand).Cast();
         }
+        /// <summary>
+        /// <see cref="Parser.Then(Parser)"/>と同義です。
+        /// </summary>
+        /// <param name="left">元になるパーサー</param>
+        /// <param name="right">元になるパーサー</param>
+        /// <returns>新しいインスタンス</returns>
         public static Parser operator &(Parser left, Parser right)
         {
             return left.Then(right);
         }
+        /// <summary>
+        /// <see cref="Parser.Or(Parser)"/>と同義です。
+        /// </summary>
+        /// <param name="left">元になるパーサー</param>
+        /// <param name="right">元になるパーサー</param>
+        /// <returns>新しいインスタンス</returns>
         public static Parser operator |(Parser left, Parser right)
         {
             return OrParser<X>.LeftAssoc(left, right).Cast();
         }
+        #endregion
 
+        #region 静的ファクトリーメソッドの宣言
+        /// <summary>
+        /// パーサーのパース結果成否を反転させるパーサーを生成します。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="operand">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<T> Not<T>(Parser<T> operand)
+        {
+            return new NotParser<T>(operand);
+        }
+        /// <summary>
+        /// パーサーのパース結果成否を反転させるパーサーを生成します。
+        /// </summary>
+        /// <param name="operand">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser Not(Parser operand)
+        {
+            return new NotParser<X>(operand).Cast();
+        }
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
@@ -63,17 +137,74 @@ namespace Unclazz.Parsec
         {
             return new DelegateParser<T>(func);
         }
+        /// <summary>
+        /// デリゲートをもとにパーサーを生成します。
+        /// </summary>
+        /// <param name="func">パースの実処理を行うデリゲート</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser For(Func<ParserInput, ParseResult<X>> func)
         {
             return new DelegateParser<X>(func).Cast();
         }
+        /// <summary>
+        /// デリゲートを使用してパーサーを生成します。
+        /// デリゲートはパースの直前になるまで実行されません。
+        /// </summary>
+        /// <typeparam name="T">パーサーが返す値の型</typeparam>
+        /// <param name="factory">パーサーを生成するデリゲート</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> Lazy<T>(Func<Parser<T>> factory)
         {
             return new LazyParser<T>(factory);
         }
+        /// <summary>
+        /// デリゲートを使用してパーサーを生成します。
+        /// デリゲートはパースの直前になるまで実行されません。
+        /// </summary>
+        /// <param name="factory">パーサーを生成するデリゲート</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser Lazy(Func<Parser> factory)
         {
             return new LazyParser<X>(factory).Cast();
+        }
+        /// <summary>
+        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="parser">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<T> Optional<T>(Parser<T> parser)
+        {
+            return new OptionalParser<T>(parser);
+        }
+        /// <summary>
+        /// <see cref="Optional{T}(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="parser">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser Optional(Parser parser)
+        {
+            return new OptionalParser<X>(parser).Cast();
+        }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
+        {
+            return OrParser<T>.LeftAssoc(left, right);
+        }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元になるパーサー</param>
+        /// <param name="right">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser Or(Parser left, Parser right)
+        {
+            return OrParser<X>.LeftAssoc(left, right).Cast();
         }
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
@@ -144,95 +275,32 @@ namespace Unclazz.Parsec
             return new CharsWhileInParser(clazz, min);
         }
         /// <summary>
-        /// パーサーのパース結果成否を反転させるパーサーを生成します。
-        /// <para>
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-        /// </para>
+        /// 指定したキーワードにのみマッチするパーサーを生成します。
+        /// オプションのパラメータによりカット（トラックバックの無効化）を行う文字位置を指定できます。
+        /// パース処理がこの文字位置の以降に進んだ時、
+        /// 直前の<see cref="Parser{T}.Or(Parser{T})"/>を起点とするトラックバックは無効になります。
         /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="operand">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Not<T>(Parser<T> operand)
-        {
-            return new NotParser<T>(operand);
-        }
-        public static Parser Not(Parser operand)
-        {
-            return new NotParser<X>(operand).Cast();
-        }
-        /// <summary>
-        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
-        /// <para>
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="parser">元になるパーサー</param>
-        /// <returns></returns>
-        public static Parser<T> Optional<T>(Parser<T> parser)
-        {
-            return new OptionalParser<T>(parser);
-        }
-        /// <summary>
-        /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
-        /// <para>
-        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
-        /// その結果がそのまま新しいパーサーの返す結果となります。
-        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
-        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
-        /// </para>
-        /// <para>演算子<c>|</c>とインスタンス・メソッド<see cref="Parser{T}.Or(Parser{T})"/>のグループと
-        /// 静的メソッド<see cref="Parser.Or{T}(Parser{T}, Parser{T})"/>はいずれも右結合です。
-        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
-        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
-        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
-        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="left">左被演算子</param>
-        /// <param name="right">右被演算子</param>
-        /// <returns></returns>
-        public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
-        {
-            return OrParser<T>.LeftAssoc(left, right);
-        }
-        public static Parser Or(Parser left, Parser right)
-        {
-            return OrParser<X>.LeftAssoc(left, right).Cast();
-        }
-        /// <summary>
-        /// 指定した文字列にのみマッチするパーサーを生成します。
-        /// </summary>
-        /// <param name="keyword">文字列</param>
+        /// <param name="keyword">キーワード</param>
+        /// <param name="cutIndex">カットを行う文字位置</param>
         /// <returns>新しいパーサー</returns>
         public static Parser Keyword(string keyword, int cutIndex = -1)
         {
             return new KeywordParser(keyword, cutIndex);
         }
+        /// <summary>
+        /// 指定したキーワードのいずれかにのみマッチするパーサーを生成します。
+        /// </summary>
+        /// <param name="keywords">キーワード</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser StringIn(params string[] keywords)
         {
             return new StringInParser(keywords);
         }
+        #endregion
 
         #region 具象クラス実装者のためのメンバーの宣言
         /// <summary>
         /// パースを行います。
-        /// <para>
-        /// パーサーの具象クラスを実装する場合、このメソッドを実装する必要があります。
-        /// パース成否は<see cref="ParseResult{T}"/>のインスタンスで表されます。
-        /// このメソッドはいかなる場合も<c>null</c>を返してはなりません。
-        /// またこのメソッドはいかなる場合も例外スローを行ってはなりません。
-        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
-        /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知される必要があります。
-        /// </para>
-        /// <para>
-        /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
-        /// 多くのパーサーでは<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Capture{T}"/>は値を含みません。
-        /// 例外は<c>Parser&lt;string&gt;.Map&lt;T&gt;(T)</c>と<c>Parser&lt;char&gt;.Map&lt;T&gt;(T)</c>で、
-        /// これらのメソッドが返すパーサーのパース結果は値を含んでいます。
-        /// それ以外で値のキャプチャが必要な場合は<c>Parser&lt;string&gt;.Capture()</c>を使用します。
-        /// </para>
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
@@ -241,7 +309,6 @@ namespace Unclazz.Parsec
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="capture">パース結果を内包する可能性のある<see cref="Capture{T}"/>インスタンス</param>
         /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
@@ -264,38 +331,73 @@ namespace Unclazz.Parsec
         }
         #endregion
 
+        /// <summary>
+        /// <see cref="Parser{T}.Capture"/>と同義です。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
         public Parser<string> Capture()
         {
             return new CaptureParser<X>(this);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Cast{U}"/>と同義です。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <returns>新しいパーサー</returns>
         public Parser<T> Cast<T>()
         {
             return new CastParser<X, T>(this);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Cut"/>と同義です。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
         public Parser Cut()
         {
             return new CutParser<X>(this).Cast();
         }
-        public Parser<T> Map<T>(Func<X,T> transform, bool canThrow = false)
-        {
-            return new MapParser<X, T>(this, transform, canThrow);
-        }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="another">別のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser Or(Parser another)
         {
             return OrParser<X>.LeftAssoc(this, another).Cast();
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T}, Parser{T}[])"/>と同義です。
+        /// </summary>
+        /// <param name="another">別のパーサー</param>
+        /// <param name="andOthers">その他のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser Or(Parser another, params Parser[] andOthers)
         {
             return OrParser<X>.LeftAssoc(this, another, andOthers).Cast();
         }
+        /// <summary>
+        /// <see cref="Parser{T}.OrNot"/>と同義です。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
         public Parser OrNot()
         {
             return new OptionalParser<X>(this).Cast();
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <typeparam name="T">任意の型</typeparam>
+        /// <param name="another">別のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser<T> Then<T>(Parser<T> another)
         {
             return new ThenRightParser<X, T>(this, another);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="another">別のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser Then(Parser another)
         {
             return new ThenRightParser<X, X>(this, another).Cast();
@@ -315,13 +417,18 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
-        /// デリゲートをもとにパーサーを生成します。
+        /// <see cref="Parser.For{T}(Func{ParserInput, ParseResult{T}})"/>と同義です。
         /// </summary>
-        /// <param name="func">デリゲート</param>
+        /// <param name="func">パース処理を行うデリゲート</param>
         public static implicit operator Parser<T>(Func<ParserInput, ParseResult<T>> func)
         {
             return Parser.For(func);
         }
+        /// <summary>
+        /// <see cref="Parser.Lazy{T}(Func{Parser{T}})"/>と同義です。
+        /// </summary>
+        /// <param name="factory">パーサーを返すデリゲート</param>
+        /// <returns>新しいパーサー</returns>
         public static implicit operator Parser<T>(Func<Parser<T>> factory)
         {
             return Parser.Lazy(factory);
@@ -339,58 +446,71 @@ namespace Unclazz.Parsec
             return Parser.Not<T>(operand);
         }
         /// <summary>
-        /// いずれか片方のパースが成功すれば全体の結果も成功とするパーサーを生成します。
-        /// <para>
-        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
-        /// その結果がそのまま新しいパーサーの返す結果となります。
-        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
-        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
-        /// </para>
-        /// <para>演算子<c>|</c>とインスタンス・メソッド<see cref="Parser{T}.Or(Parser{T})"/>のグループと
-        /// 静的メソッド<see cref="Parser.Or{T}(Parser{T}, Parser{T})"/>はいずれも右結合です。
-        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
-        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
-        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
-        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
-        /// </para>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
         /// </summary>
-        /// <param name="left">元になるパーサー</param>
-        /// <param name="right"><paramref name="left"/>のパース失敗時のみ使用されるパーサー</param>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, Parser<T> right)
         {
             return OrParser<T>.LeftAssoc(left, right);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, Parser right)
         {
             return OrParser<T>.LeftAssoc(left, right.Cast<T>());
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser left, Parser<T> right)
         {
             return OrParser<T>.LeftAssoc(left.Cast<T>(), right);
         }
         /// <summary>
-        /// 左側のパーサーのパースが失敗したら右側の値をパース結果とするパーサーを生成します。
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
         /// </summary>
-        /// <param name="left">元になるパーサー</param>
-        /// <param name="right"><paramref name="left"/>のパース失敗時にパース結果として使用される値</param>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, T right)
         {
             return OrParser<T>.LeftAssoc(left, new PassParser<T>(right));
         }
-        //public static Parser<IEnumerable<T>> operator +(Parser<T> left, Parser<T> right)
-        //{
-        //    return new AddParser<T>(left, right);
-        //}
+        /// <summary>
+        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser<T> right)
         {
             return left.Then(right);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser left, Parser<T> right)
         {
             return left.Then(right);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="left">元のパーサー</param>
+        /// <param name="right">元のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
             return left.Then(right);
@@ -467,9 +587,9 @@ namespace Unclazz.Parsec
         /// <summary>
         /// このパーサーの読み取り結果型を変更した新しいパーサーを生成します。
         /// <para>
-        /// このメソッドが返すパーサーは<see cref="Parser{T}.Map{U}(Func{string, U}, bool)"/>が返すパーサーと異なり、
+        /// このメソッドが返すパーサーは<see cref="Parser{T}.Map{U}(Func{T, U}, bool)"/>が返すパーサーと異なり、
         /// 値のキャプチャを行いません。仮に元になるパーサーがキャプチャをサポートするものであっても、
-        /// このメソッドが返す新しいパーサーはその値を破棄したからの<see cref="Capture{T}"/>を返すものとなります。
+        /// このメソッドが返す新しいパーサーは空の<see cref="Capture{T}"/>を返すものとなります。
         /// </para>
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
@@ -478,6 +598,10 @@ namespace Unclazz.Parsec
         {
             return new CastParser<T, U>(this);
         }
+        /// <summary>
+        /// <see cref="Cast{U}"/>と同義です。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
         public Parser Cast()
         {
             return new CastParser<T>(this);
@@ -536,16 +660,27 @@ namespace Unclazz.Parsec
         /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
         /// </para>
         /// </summary>
-        /// <param name="another"></param>
+        /// <param name="another">別のパーサー</param>
         /// <returns>バックトラック機能をサポートする新しいパーサー</returns>
         public Parser<T> Or(Parser<T> another)
         {
             return OrParser<T>.LeftAssoc(this, another);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義ですが、
+        /// 複数のパーサーを一括指定することができます。
+        /// </summary>
+        /// <param name="another">別のパーサー</param>
+        /// <param name="andOthers">その他のパーサー</param>
+        /// <returns>バックトラック機能をサポートする新しいパーサー</returns>
         public Parser<T> Or(Parser<T> another, params Parser<T>[] andOthers)
         {
             return OrParser<T>.LeftAssoc(this, another, andOthers);
         }
+        /// <summary>
+        /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
         public Parser<T> OrNot()
         {
             return new OptionalParser<T>(this);
@@ -587,17 +722,35 @@ namespace Unclazz.Parsec
         {
             return new RepeatExactlyParser<T>(this, exactly, sep);
         }
+        /// <summary>
+        /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
+        /// <para>
+        /// 例えば<c>var p2 = p0.Then(p1); p2.Parse(...);</c>というコードがあったとき、
+        /// p0のパースが成功した場合は、引き続きp1のパースが実行されます。
+        /// p1が成功した場合はp2の結果も成功となります。p1が失敗した場合はp2の結果も失敗です。
+        /// p0が失敗した場合はp1は実行されず、p2の結果は失敗となります。
+        /// </para>
+        /// <para>
+        /// 元になるパーサー（p0やp1）が値をキャプチャしないパーサーであれば
+        /// 新しいパーサー（p2）もまた値をキャプチャしないパーサーとなります。
+        /// 元になるパーサーが値をキャプチャするパーサーであれば
+        /// 新しいパーサーもまた値をキャプチャするパーサーとなります。
+        /// </para>
+        /// </summary>
+        /// <param name="another">別のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser<T> Then(Parser<T> another)
         {
             return new AdditiveParser<T>(this, another);
         }
+        /// <summary>
+        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// </summary>
+        /// <param name="another">別のパーサー</param>
+        /// <returns>新しいパーサー</returns>
         public Parser<T> Then(Parser another)
         {
             return new ThenLeftParser<T, X>(this, another);
-        }
-        public Parser<T> Log(Action<string> logger)
-        {
-            return new LogParser<T>(this, logger);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Example.Unclazz.Parcec
         {
             var a = Char('a');
             var b = Char('b').Cast<string>();
-            var c = Char('c').Map(x => 123);
+            var c = Char('c').Cast<int>();
             var a_b = a.Then(b);
             var b_a = b.Then(a);
             var a_c = a.Then(c);
