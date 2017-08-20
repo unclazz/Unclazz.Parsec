@@ -48,5 +48,12 @@ namespace Unclazz.Parsec.CharClasses
         {
             return new CharactersCharClass(Characters.Concat(new[] { ch }).Distinct().ToArray());
         }
+        public override string ToString()
+        {
+            return string.Format("CharacterClass({0})",
+                Characters.Aggregate(new StringBuilder(),
+                (b, c) => (b.Length > 0 ? b.Append(", ") : b)
+                .Append(ParsecUtility.CharToString(c))));
+        }
     }
 }

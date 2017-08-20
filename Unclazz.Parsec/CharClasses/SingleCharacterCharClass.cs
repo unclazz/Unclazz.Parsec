@@ -30,5 +30,10 @@ namespace Unclazz.Parsec.CharClasses
         {
             return new CharactersCharClass(Character, ch);
         }
+        public override string ToString()
+        {
+            return string.Format("CharacterClass(exaclty {0})",
+                ParsecUtility.CharToString(Character));
+        }
     }
 }

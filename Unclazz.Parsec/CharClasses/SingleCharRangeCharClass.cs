@@ -43,5 +43,11 @@ namespace Unclazz.Parsec.CharClasses
         {
             return CharRangesCharClass.AnyOf(CharRange, range);
         }
+        public override string ToString()
+        {
+            return string.Format("CharacterClass({0} to {1})",
+                ParsecUtility.CharToString(CharRange.Start),
+                ParsecUtility.CharToString(CharRange.End));
+        }
     }
 }

@@ -14,15 +14,15 @@ namespace Unclazz.Parsec.CoreParsers
         public override ParseResult<Nil> Parse(ParserInput input)
         {
             var p = input.Position;
-            var ch = (char)input.Read();
-            if (_clazz.Contains(ch))
+            var ch = input.Read();
+            if (0 <= ch && _clazz.Contains((char)ch))
             {
                 return Success(p);
             }
             else
             {
-                return Failure(p, string.Format("expected a member of " +
-                    "{0} but found '{1}' (code = {2})", _clazz, ch, (int)ch));
+                return Failure(p, string.Format("expected a member of {0} but found {1}.", 
+                    _clazz, ParsecUtility.CharToString(ch)));
             }
         }
         public override string ToString()
