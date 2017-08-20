@@ -81,8 +81,7 @@
     <Compile Include="Readers\ResettableReader.cs" />
     <Compile Include="Readers\AbstractTextReader.cs" />
     <Compile Include="Readers\TextReaderProxy.cs" />
-    <Compile Include="CoreParsers\RepeatExactlyParser.cs" />
-    <Compile Include="CoreParsers\RepeatMinMaxParser.cs" />
+    <Compile Include="CoreParsers\RepeatParser.cs" />
     <Compile Include="CoreParsers\CaptureParser.cs" />
     <Compile Include="CoreParsers\CharParser.cs" />
     <Compile Include="CoreParsers\PassParser.cs" />
