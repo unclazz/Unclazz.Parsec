@@ -173,18 +173,18 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="parser">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> Optional<T>(Parser<T> parser)
+        public static Parser<T> OrNot<T>(Parser<T> parser)
         {
-            return new OptionalParser<T>(parser);
+            return new OrNotParser<T>(parser);
         }
         /// <summary>
-        /// <see cref="Optional{T}(Parser{T})"/>と同義です。
+        /// <see cref="OrNot{T}(Parser{T})"/>と同義です。
         /// </summary>
         /// <param name="parser">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Optional(Parser parser)
+        public static Parser OrNot(Parser parser)
         {
-            return new OptionalParser<X>(parser).Cast();
+            return new OrNotParser<X>(parser).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
@@ -381,7 +381,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser OrNot()
         {
-            return new OptionalParser<X>(this).Cast();
+            return new OrNotParser<X>(this).Cast();
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -391,7 +391,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Then<T>(Parser<T> another)
         {
-            return new ThenRightParser<X, T>(this, another);
+            return new ThenTakeRightParser<X, T>(this, another);
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -400,7 +400,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Then(Parser another)
         {
-            return new ThenRightParser<X, X>(this, another).Cast();
+            return new ThenTakeRightParser<X, X>(this, another).Cast();
         }
     }
 
@@ -493,7 +493,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser<T> right)
         {
-            return left.Then(right);
+            return new ThenAdditiveParser<T>(left, right);
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -503,7 +503,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser left, Parser<T> right)
         {
-            return left.Then(right);
+            return new ThenTakeRightParser<X, T>(left, right);
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -513,7 +513,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
-            return left.Then(right);
+            return new ThenTakeLeftParser<T, X>(left, right);
         }
         #endregion
 
@@ -683,7 +683,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> OrNot()
         {
-            return new OptionalParser<T>(this);
+            return new OrNotParser<T>(this);
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
@@ -745,7 +745,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Then(Parser<T> another)
         {
-            return new AdditiveParser<T>(this, another);
+            return new ThenAdditiveParser<T>(this, another);
         }
         /// <summary>
         /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
@@ -754,7 +754,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Then(Parser another)
         {
-            return new ThenLeftParser<T, X>(this, another);
+            return new ThenTakeLeftParser<T, X>(this, another);
         }
     }
 }

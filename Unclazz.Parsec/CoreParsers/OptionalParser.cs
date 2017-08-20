@@ -2,9 +2,9 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class OptionalParser<T> : Parser<T>
+    sealed class OrNotParser<T> : Parser<T>
     {
-        internal OptionalParser(IParser<T> original)
+        internal OrNotParser(IParser<T> original)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
@@ -27,7 +27,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         public override string ToString()
         {
-            return string.Format("Optional({0})", _original);
+            return string.Format("OrNot({0})", _original);
         }
     }
 }
