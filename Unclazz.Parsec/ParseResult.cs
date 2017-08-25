@@ -34,7 +34,7 @@ namespace Unclazz.Parsec
         /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>
         /// を起点としたバックトラックを無効化する場合<c>false</c></param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
-        public static ParseResult<T> OfSuccess<T>(CharacterPosition position, 
+        public static ParseResult<T> OfSuccess<T>(CharacterPosition position,
             Capture<T> capture = new Capture<T>(), bool canBacktrack = true)
         {
             return new ParseResult<T>(true, position, capture, null, !canBacktrack);
@@ -63,8 +63,8 @@ namespace Unclazz.Parsec
     {
         static readonly IEnumerable<Capture<T>> _empty = new Capture<T>[0];
 
-        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, Capture<T>.OfEmpty(), m, c) { }
-        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, Capture<T>.OfSingle(v), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Capture<T>(), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Capture<T>(v), m, c) { }
         internal ParseResult(bool s, CharacterPosition p, Capture<T> c, string m, bool cut)
         {
             _capture = c;

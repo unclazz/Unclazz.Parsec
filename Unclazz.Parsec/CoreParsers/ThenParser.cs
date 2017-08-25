@@ -79,47 +79,4 @@ namespace Unclazz.Parsec.CoreParsers
             return string.Format("Then({0}, {1})", Left, Right);
         }
     }
-    /// <summary>
-    /// 2つのパーサーを連結するパーサーです。
-    /// 元になったパーサーのいずれか/いずれもが結果値を持つものであった場合、
-    /// このパーサーの結果値にはそれらが統合されたものになります。
-    /// </summary>
-    /// <typeparam name="T">元のパーサーの結果型（両側）</typeparam>
-    sealed class ThenAdditiveParser<T> : Parser<T>
-    {
-        internal ThenAdditiveParser(Parser<T> left, Parser<T> right)
-        {
-            Left = left ?? throw new ArgumentNullException(nameof(left));
-            Right = right ?? throw new ArgumentNullException(nameof(right));
-        }
-
-        public Parser<T> Left { get; }
-        public Parser<T> Right { get; }
-
-        public override ParseResult<T> Parse(ParserInput input)
-        {
-            var p = input.Position;
-            var leftResult = Left.Parse(input);
-            if (leftResult.Successful)
-            {
-                var rightResult = Right.Parse(input);
-                var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
-
-                if (rightResult.Successful)
-                {
-                    return Success(p, capture: leftResult.Capture + rightResult.Capture,
-                        canBacktrack: canBacktrack);
-                }
-                else
-                {
-                    return rightResult.AllowBacktrack(canBacktrack);
-                }
-            }
-            return leftResult;
-        }
-        public override string ToString()
-        {
-            return string.Format("Then({0}, {1})", Left, Right);
-        }
-    }
 }

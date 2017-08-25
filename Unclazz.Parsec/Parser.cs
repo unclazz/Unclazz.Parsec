@@ -405,7 +405,7 @@ namespace Unclazz.Parsec
             return RepeatParser<Nil>.Create(this, min, max, exactly, sep).Cast();
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="another">別のパーサー</param>
@@ -415,7 +415,7 @@ namespace Unclazz.Parsec
             return new ThenTakeRightParser<Nil, T>(this, another);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
@@ -516,17 +516,17 @@ namespace Unclazz.Parsec
             return OrParser<T>.LeftAssoc(left, new PassParser<T>(right));
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> operator &(Parser<T> left, Parser<T> right)
+        public static Parser<Tuple<T, T>> operator &(Parser<T> left, Parser<T> right)
         {
-            return new ThenAdditiveParser<T>(left, right);
+            return new DoubleParser<T, T>(left, right);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -536,7 +536,7 @@ namespace Unclazz.Parsec
             return new ThenTakeRightParser<Nil, T>(left, right);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -560,10 +560,11 @@ namespace Unclazz.Parsec
         /// </para>
         /// <para>
         /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
-        /// 多くのパーサーでは<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Capture{T}"/>は値を含みません。
-        /// 例外は<c>Parser&lt;string&gt;.Map&lt;T&gt;(T)</c>と<c>Parser&lt;char&gt;.Map&lt;T&gt;(T)</c>で、
-        /// これらのメソッドが返すパーサーのパース結果は値を含んでいます。
-        /// それ以外で値のキャプチャが必要な場合は<c>Parser&lt;string&gt;.Capture()</c>を使用します。
+        /// 多くのパーサーはパースした値をキャプチャしません。
+        /// これらのパーサーのパース結果の<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Capture{T}"/>は値を含みません。
+        /// <see cref="Parser{T}.Map{U}(Func{T, U}, bool)"/>は、元になるパーサー（レシーバー）が
+        /// 値をキャプチャするものである場合のみ、値を返すパーサーを生成して返します。
+        /// 値のキャプチャが必要な場合は<see cref="Parser{T}.Capture"/>を使用します。
         /// </para>
         /// </summary>
         /// <param name="input">入力データ</param>
@@ -573,14 +574,26 @@ namespace Unclazz.Parsec
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="capture">パース結果を内包する可能性のある<see cref="Capture{T}"/>インスタンス</param>
+        /// <param name="capture">パースされた値を内包する可能性のある<see cref="Capture{T}"/>インスタンス</param>
         /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Success(CharacterPosition position, 
+        protected ParseResult<T> Success(CharacterPosition position,
             Capture<T> capture = new Capture<T>(), bool canBacktrack = true)
         {
             return ParseResult.OfSuccess(position, capture, canBacktrack);
+        }
+        /// <summary>
+        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
+        /// </summary>
+        /// <param name="position">パース開始時の文字位置</param>
+        /// <param name="value">パースされた値</param>
+        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
+        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
+        /// <returns>パース成功を表すインスタンス</returns>
+        protected ParseResult<T> Success(CharacterPosition position, T value, bool canBacktrack = true)
+        {
+            return ParseResult.OfSuccess(position, value, canBacktrack);
         }
         /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
@@ -667,24 +680,6 @@ namespace Unclazz.Parsec
             return new MapParser<T, U>(this, transform, canThrow);
         }
         /// <summary>
-        /// 読み取り結果の<see cref="Capture{T}"/>にアキュームレータ関数を適用するパーサーを返します。
-        /// <para>
-        /// このメソッドが返すパーサーは関数<paramref name="accumulator"/>が例外をスローした場合、
-        /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
-        /// この挙動を変更し、関数がスローした例外をそのまま再スローさせたい場合は
-        /// <paramref name="canThrow"/>に<c>true</c>を指定します。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="U">シードの型</typeparam>
-        /// <param name="seed">シード</param>
-        /// <param name="accumulator">アキュームレータ関数</param>
-        /// <param name="canThrow"><paramref name="accumulator"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
-        /// <returns>新しいパーサー</returns>
-        public Parser<U> Aggregate<U>(U seed, Func<U,T,U> accumulator, bool canThrow = false)
-        {
-            return new AggregateParser<T,U>(this, seed, accumulator, canThrow);
-        }
-        /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
         /// <para>
         /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
@@ -739,7 +734,7 @@ namespace Unclazz.Parsec
         /// <param name="exactly">繰り返しの回数</param>
         /// <param name="sep">セパレーターのためのパーサー</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IEnumerable<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
+        public Parser<IList<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             return RepeatParser<T>.Create(this, min, max, exactly, sep);
 
@@ -761,12 +756,16 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> Then(Parser<T> another)
+        public Parser<Tuple<T,U>> Then<U>(Parser<U> another)
         {
-            return new ThenAdditiveParser<T>(this, another);
+            return new DoubleParser<T,U>(this, another);
+        }
+        public Parser<Tuple<T, T2, T3>> Then<T2, T3>(Parser<Tuple<T2, T3>> another)
+        {
+            return new AndDoubleParser<T, T2, T3>(this, another);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then(Parser{T})"/>と同義です。
+        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
@@ -782,6 +781,14 @@ namespace Unclazz.Parsec
         public Parser<T> Log(Action<string> logger)
         {
             return new LogParser<T>(this, logger);
+        }
+    }
+
+    public static class ParserExtension
+    {
+        public static Parser<Tuple<T1, T2, T3>> Then<T1, T2, T3>(this Parser<Tuple<T1, T2>> self, Parser<T3> another)
+        {
+            return new DoubleAndParser<T1, T2, T3>(self, another);
         }
     }
 }

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unclazz.Commons.Json;
 using Unclazz.Parsec;
-using Unclazz.Parsec.CharClasses;
 using static Unclazz.Parsec.Parser;
 
 namespace Example.Unclazz.Parcec
@@ -14,127 +12,93 @@ namespace Example.Unclazz.Parcec
     {
         static void Main(string[] args)
         {
-            var a = Char('a');
-            var b = Char('b').Cast<string>();
-            var c = Char('c').Cast<int>();
-            var a_b = a.Then(b);
-            var b_a = b.Then(a);
-            var a_c = a.Then(c);
-            var c_a = c.Then(a);
-            var b_c = b.Cast<int>().Then(c);
+            var parser = new ExpressionParser();
+            var input = args.Aggregate(new StringBuilder(),
+                (b, a) => b.Append(a)).ToString();
 
-
-            //var p = new JsonExprParser();
-            //Console.WriteLine("parsed = {0}", (p).Parse(args[0]));
+            parser.Parse(input)
+                .IfSuccessful(c => Console.WriteLine("result = {0}", c.Value), 
+                m => Console.WriteLine("error = {0}", m));
         }
     }
 
-    //sealed class JsonExprParser : Parser<IJsonObject>
-    //{
-    //    readonly static Parser<IJsonObject> _null = new JsonNullParser();
-    //    readonly static Parser<IJsonObject> _boolean = new JsonBooleanParser();
-    //    readonly static Parser<IJsonObject> _number = new JsonNumberParser();
-    //    readonly static Parser<IJsonObject> _string = new JsonStringParser();
-    //    readonly static Parser<string> space = CharsWhileIn(" \r\n", min: 0);
-    //    readonly static Parser<string> _comma = space & Char(',');
+    sealed class ExpressionParser : Parser<double>
+    {
+        readonly static Parser space = CharsWhileIn(" \r\n", min: 0);
+        readonly static Parser<string> addSub = CharIn("+-").Capture();
+        readonly static Parser<string> mulDiv = CharIn("*/").Capture();
+        readonly static Parser parenLeft = space & Char('(');
+        readonly static Parser parenRight = space & Char(')');
+        readonly static Parser<double> number = space & (new NumberParser());
 
-    //    readonly Parser<IJsonObject> _exprNoRecur = _null | _boolean | _string | _number;
+        public override ParseResult<double> Parse(ParserInput input)
+        {
+            return (Expr() & space & EndOfFile).Parse(input);
+        }
+        Parser<double> Expr()
+        {
+            var term = Lazy<double>(Term);
+            var opRights = (addSub.Cut().Then(term)).Repeat();
+            return (term.Then(opRights)).Map(Eval);
+        }
+        Parser<double> Term()
+        {
+            var factor = Lazy<double>(Factor);
+            var opRights = (mulDiv.Cut().Then(factor)).Repeat();
+            return (factor.Then(opRights)).Map(Eval);
+        }
+        Parser<double> Factor()
+        {
+            var expr = Lazy<double>(Expr);
+            return number | (parenLeft.Cut() & expr & parenRight);
+        }
 
-    //    Parser<IJsonObject> Array()
-    //    {
-    //        return (space.Then(Char('['))
-    //            .CastThen((Lazy(Object) | Lazy(Array) | _string | _number | _null | _boolean)
-    //            .RepeatMin(0, sep: _comma))
-    //            .Relay(space & Char(']')).Map(a => JsonObject.Of(a)));
-    //    }
-    //    Parser<IJsonObject> Object()
-    //    {
-    //        return Keyword("{}").Map(a => JsonObject.OfNull());
-    //    }
+        double Eval(Tuple<double, IList<Tuple<string, double>>> tree)
+        {
+            var leftSeed = tree.Item1;
+            var opRights = tree.Item2;
+            return opRights.Aggregate(leftSeed, Eval_Accumulator);
+        }
 
-    //    public override ParseResult<IJsonObject> Parse(ParserInput input)
-    //    {
-    //        return Array().Parse(input);
-    //    }
-    //}
+        double Eval_Accumulator(double left, Tuple<string, double> opRight)
+        {
+            if (opRight.Item1 == "+")
+            {
+                return left + opRight.Item2;
+            }
+            else if (opRight.Item1 == "-")
+            {
+                return left - opRight.Item2;
+            }
+            else if (opRight.Item1 == "*")
+            {
+                return left * opRight.Item2;
+            }
+            else if (opRight.Item1 == "/")
+            {
+                return left / opRight.Item2;
+            }
+            throw new Exception("unknown operator.");
+        }
+        public override string ToString()
+        {
+            return Expr().ToString();
+        }
+    }
 
-    //sealed class JsonNullParser : Parser<IJsonObject>
-    //{
-    //    readonly static Parser<string> space = CharsWhileIn(" \r\n", min: 0);
-    //    readonly static Parser<IJsonObject> _null = 
-    //        (space & Keyword("null", cutIndex: 1))
-    //        .Map(a => JsonObject.OfNull());
+    sealed class NumberParser : Parser<double>
+    {
+        readonly static Parser sign = CharIn("+-").OrNot();
+        readonly static Parser digits = CharsWhileIn("0123456789", min: 0);
+        readonly static Parser integral = Char('0') | (CharBetween('1', '9') & digits);
+        readonly static Parser fractional = Char('.') & digits;
+        readonly static Parser exponent = CharIn("eE") & (sign) & (digits);
+        readonly static Parser<double> number = ((integral & fractional.OrNot() &
+            exponent.OrNot()).Capture()).Map(double.Parse);
 
-    //    void Log(string message)
-    //    {
-    //        Console.WriteLine(">>> null: {0}", message);
-    //    }
-
-    //    public override ParseResult<IJsonObject> Parse(ParserInput input)
-    //    {
-    //        var r = _null.Log(Log).Parse(input);
-    //        return r;
-    //    }
-    //}
-
-    //sealed class JsonBooleanParser : Parser<IJsonObject>
-    //{
-    //    readonly static Parser<string> space = CharsWhileIn(" \r\n", min: 0);
-    //    readonly static Parser<IJsonObject> _boolean = 
-    //        (space & StringIn("true", "false").Capture())
-    //        .Map(a => JsonObject.Of(a == "true"));
-
-    //    void Log(string message)
-    //    {
-    //        Console.WriteLine(">>> boolean: {0}", message);
-    //    }
-
-    //    public override ParseResult<IJsonObject> Parse(ParserInput input)
-    //    {
-    //        return _boolean.Log(Log).Parse(input);
-    //    }
-    //}
-
-    //sealed class JsonNumberParser : Parser<IJsonObject>
-    //{
-    //    readonly static Parser<string> space = CharsWhileIn(" \r\n", min: 0);
-    //    readonly static Parser<string> sign = CharIn("+-").OrNot();
-    //    readonly static Parser<string> digits = CharsWhileIn("0123456789");
-    //    readonly static Parser<string> integral = Char('0') | (CharBetween('1', '9') & digits);
-    //    readonly static Parser<string> fractional = Char('.') & digits;
-    //    readonly static Parser<string> exponent = CharIn("eE") & (sign) & (digits);
-    //    readonly static Parser<IJsonObject> number = (space & (sign & integral & fractional.OrNot() &
-    //        exponent.OrNot()).Capture()).Map(double.Parse).Map(JsonObject.Of);
-
-    //    void Log(string message)
-    //    {
-    //        Console.WriteLine(">>> number: {0}", message);
-    //    }
-
-    //    public override ParseResult<IJsonObject> Parse(ParserInput input)
-    //    {
-    //        return number.Log(Log).Parse(input);
-    //    }
-    //}
-
-    //sealed class JsonStringParser : Parser<IJsonObject>
-    //{
-    //    readonly static Parser<string> space = CharsWhileIn(" \r\n", min: 0);
-    //    readonly static Parser<string> strChars = CharsWhileIn(!CharClass.AnyOf("\"\\"));
-    //    readonly static Parser<string> hexDigit = CharBetween('0', '9') | CharBetween('a', 'f') | CharBetween('A', 'Z');
-    //    readonly static Parser<string> unicodeEscape = Char('u') & hexDigit & hexDigit & hexDigit & hexDigit;
-    //    readonly static Parser<string> escape = Char('\\') & (CharIn("\"/\\bfnrt") | unicodeEscape);
-    //    readonly static Parser<IJsonObject> _string = (space & Char('"').Cut() & 
-    //        (strChars | escape).RepeatMin(0).Capture() & Char('"')).Map(JsonObject.Of);
-
-    //    void Log(string message)
-    //    {
-    //        Console.WriteLine(">>> string: {0}", message);
-    //    }
-
-    //    public override ParseResult<IJsonObject> Parse(ParserInput input)
-    //    {
-    //        return _string.Log(Log).Parse(input);
-    //    }
-    //}
+        public override ParseResult<double> Parse(ParserInput input)
+        {
+            return number.Parse(input);
+        }
+    }
 }

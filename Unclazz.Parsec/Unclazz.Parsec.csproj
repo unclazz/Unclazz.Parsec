@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreParsers\AggregateParser.cs" />
     <Compile Include="CoreParsers\CastParser.cs" />
+    <Compile Include="CoreParsers\DoubleParser.cs" />
     <Compile Include="CoreParsers\LogParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />

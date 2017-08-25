@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    abstract class RepeatParser<T> : Parser<IEnumerable<T>>
+
+    abstract class RepeatParser<T> : Parser<IList<T>>
     {
         public static RepeatParser<T> Create(IParser<T> parser, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
@@ -31,7 +32,11 @@ namespace Unclazz.Parsec.CoreParsers
             // RepeatMinMaxParserを返す
             return new RepeatMinMaxParser<T>(parser, min, max, sep);
         }
+
+
+
     }
+
     sealed class RepeatExactlyParser<T> : RepeatParser<T>
     {
         internal RepeatExactlyParser(IParser<T> original, int exactly, Parser sep)
@@ -40,16 +45,21 @@ namespace Unclazz.Parsec.CoreParsers
             if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
             _exactly = exactly;
             _sep = sep;
+            _capture = typeof(T) != typeof(Nil);
         }
 
         readonly IParser<T> _original;
         readonly int _exactly;
         readonly Parser _sep;
+        readonly bool _capture;
 
-        public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
+        public override ParseResult<IList<T>> Parse(ParserInput input)
         {
+            // キャプチャ・モードの場合
+            // 元のパーサーがキャプチャした内容を格納するためキューを初期化
+            var list = _capture ? new List<T>() : null;
             // パース開始時の文字位置を記憶
-            var p = input.Position;
+            var pos = input.Position;
             // 予め指定された回数のパースを試みる
             for (var i = 0; i < _exactly; i++)
             {
@@ -71,9 +81,13 @@ namespace Unclazz.Parsec.CoreParsers
                 {
                     return Failure(mainResult.Position, mainResult.Message);
                 }
+
+                // キャプチャ・モードの場合
+                // 元のパーサーがキャプチャした内容をキューに追加
+                if (_capture) mainResult.Capture.IfHasValue(list.Add);
             }
             // ループを無事抜けたならパースは成功
-            return Success(p);
+            return _capture ? Success(pos, list) : Success(pos);
         }
         public override string ToString()
         {
@@ -102,17 +116,22 @@ namespace Unclazz.Parsec.CoreParsers
             _min = min;
             _max = max;
             _sep = sep;
+            _capture = typeof(T) != typeof(Nil);
         }
 
         readonly int _min;
         readonly int _max;
         readonly IParser<T> _original;
         readonly Parser _sep;
+        readonly bool _capture;
 
-        public override ParseResult<IEnumerable<T>> Parse(ParserInput input)
+        public override ParseResult<IList<T>> Parse(ParserInput input)
         {
+            // キャプチャ・モードの場合
+            // 元のパーサーがキャプチャした内容を格納するためキューを初期化
+            var list = _capture ? new List<T>() : null;
             // パース開始時の文字位置を記憶
-            var p = input.Position;
+            var pos = input.Position;
             // 予め指定された回数のパースを試みる
             for (var i = 1; i <= _max; i++)
             {
@@ -150,10 +169,14 @@ namespace Unclazz.Parsec.CoreParsers
                     return Failure(r.Position, r.Message);
                 }
 
+                // キャプチャ・モードの場合
+                // 元のパーサーがキャプチャした内容をキューに追加
+                if (_capture) r.Capture.IfHasValue(list.Add);
+
                 // min ＜ ループ回数 ならリセットのための準備を解除
                 if (_min < i) input.Unmark();
             }
-            return Success(p);
+            return _capture ? Success(pos, list) : Success(pos);
         }
 
         public override string ToString()
