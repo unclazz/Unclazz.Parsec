@@ -36,7 +36,7 @@ namespace Unclazz.Parsec
         /// </para>
         /// <para>
         /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
-        /// 多くのパーサーでは<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Capture{T}"/>は値を含みません。
+        /// 多くのパーサーでは<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Optional{T}"/>は値を含みません。
         /// 例外は<c>Parser&lt;string&gt;.Map&lt;T&gt;(T)</c>と<c>Parser&lt;char&gt;.Map&lt;T&gt;(T)</c>で、
         /// これらのメソッドが返すパーサーのパース結果は値を含んでいます。
         /// それ以外で値のキャプチャが必要な場合は<c>Parser&lt;string&gt;.Capture()</c>を使用します。
@@ -561,7 +561,7 @@ namespace Unclazz.Parsec
         /// <para>
         /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
         /// 多くのパーサーはパースした値をキャプチャしません。
-        /// これらのパーサーのパース結果の<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Capture{T}"/>は値を含みません。
+        /// これらのパーサーのパース結果の<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Optional{T}"/>は値を含みません。
         /// <see cref="Parser{T}.Map{U}(Func{T, U}, bool)"/>は、元になるパーサー（レシーバー）が
         /// 値をキャプチャするものである場合のみ、値を返すパーサーを生成して返します。
         /// 値のキャプチャが必要な場合は<see cref="Parser{T}.Capture"/>を使用します。
@@ -574,12 +574,12 @@ namespace Unclazz.Parsec
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="capture">パースされた値を内包する可能性のある<see cref="Capture{T}"/>インスタンス</param>
+        /// <param name="capture">パースされた値を内包する可能性のある<see cref="Optional{T}"/>インスタンス</param>
         /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
         protected ParseResult<T> Success(CharacterPosition position,
-            Capture<T> capture = new Capture<T>(), bool canBacktrack = true)
+            Optional<T> capture = new Optional<T>(), bool canBacktrack = true)
         {
             return ParseResult.OfSuccess(position, capture, canBacktrack);
         }
@@ -632,7 +632,7 @@ namespace Unclazz.Parsec
         /// <para>
         /// このメソッドが返すパーサーは<see cref="Parser{T}.Map{U}(Func{T, U}, bool)"/>が返すパーサーと異なり、
         /// 値のキャプチャを行いません。仮に元になるパーサーがキャプチャをサポートするものであっても、
-        /// このメソッドが返す新しいパーサーは空の<see cref="Capture{T}"/>を返すものとなります。
+        /// このメソッドが返す新しいパーサーは空の<see cref="Optional{T}"/>を返すものとなります。
         /// </para>
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
@@ -663,7 +663,7 @@ namespace Unclazz.Parsec
             return new CutParser<T>(this);
         }
         /// <summary>
-        /// 読み取り結果の<see cref="Capture{T}"/>が内包する各要素に関数を提供するパーサーを生成します。
+        /// 読み取り結果の<see cref="Optional{T}"/>が内包する各要素に関数を提供するパーサーを生成します。
         /// <para>
         /// このメソッドが返すパーサーは関数<paramref name="transform"/>が例外をスローした場合、
         /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。

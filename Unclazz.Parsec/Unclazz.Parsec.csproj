@@ -49,7 +49,7 @@
     <Compile Include="CoreParsers\LazyParser.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
-    <Compile Include="Capture.cs" />
+    <Compile Include="Optional.cs" />
     <Compile Include="CharacterPosition.cs" />
     <Compile Include="CoreParsers\CharClassParser.cs" />
     <Compile Include="CharClasses\CharRange.cs" />

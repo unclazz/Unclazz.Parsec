@@ -30,7 +30,7 @@ namespace Unclazz.Parsec.CoreParsers
             }
 
             var cap = new Tuple<T1, T2>(leftResult.Capture.OrElse(default(T1)), rightResult.Capture.OrElse(default(T2)));
-            return Success(p, capture: new Capture<Tuple<T1, T2>>(cap), canBacktrack: canBacktrack);
+            return Success(p, capture: new Optional<Tuple<T1, T2>>(cap), canBacktrack: canBacktrack);
         }
         public override string ToString()
         {

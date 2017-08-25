@@ -11,7 +11,7 @@
 
         public override ParseResult<T> Parse(ParserInput input)
         {
-            return Success(input.Position, new Capture<T>(_value));
+            return Success(input.Position, new Optional<T>(_value));
         }
 
         public override string ToString()

@@ -35,7 +35,7 @@ namespace Unclazz.Parsec
         /// を起点としたバックトラックを無効化する場合<c>false</c></param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
         public static ParseResult<T> OfSuccess<T>(CharacterPosition position,
-            Capture<T> capture = new Capture<T>(), bool canBacktrack = true)
+            Optional<T> capture = new Optional<T>(), bool canBacktrack = true)
         {
             return new ParseResult<T>(true, position, capture, null, !canBacktrack);
         }
@@ -61,11 +61,11 @@ namespace Unclazz.Parsec
     /// <typeparam name="T"></typeparam>
     public struct ParseResult<T>
     {
-        static readonly IEnumerable<Capture<T>> _empty = new Capture<T>[0];
+        static readonly IEnumerable<Optional<T>> _empty = new Optional<T>[0];
 
-        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Capture<T>(), m, c) { }
-        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Capture<T>(v), m, c) { }
-        internal ParseResult(bool s, CharacterPosition p, Capture<T> c, string m, bool cut)
+        internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Optional<T>(), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Optional<T>(v), m, c) { }
+        internal ParseResult(bool s, CharacterPosition p, Optional<T> c, string m, bool cut)
         {
             _capture = c;
             _message = m;
@@ -74,15 +74,15 @@ namespace Unclazz.Parsec
             _cut = cut;
         }
 
-        readonly Capture<T> _capture;
+        readonly Optional<T> _capture;
         readonly string _message;
         readonly bool _cut;
 
         /// <summary>
-        /// パース結果を格納する<see cref="Capture{T}"/>インスタンスです。
+        /// パース結果を格納する<see cref="Optional{T}"/>インスタンスです。
         /// パースが失敗している場合は例外をスローします。
         /// </summary>
-        public Capture<T> Capture
+        public Optional<T> Capture
         {
             get
             {
@@ -146,7 +146,7 @@ namespace Unclazz.Parsec
         /// パースが成功している場合は引数で指定されたアクションを実行します。
         /// </summary>
         /// <param name="act">アクション</param>
-        public void IfSuccessful(Action<Capture<T>> act)
+        public void IfSuccessful(Action<Optional<T>> act)
         {
             if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Capture);
         }
@@ -154,7 +154,7 @@ namespace Unclazz.Parsec
         /// パースが成功している場合は引数で指定されたアクションを実行します。
         /// </summary>
         /// <param name="act">アクション</param>
-        public void IfSuccessful(Action<CharacterPosition, Capture<T>> act)
+        public void IfSuccessful(Action<CharacterPosition, Optional<T>> act)
         {
             if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Position, Capture);
         }
@@ -164,7 +164,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="act">成功している場合に実行されるアクション</param>
         /// <param name="orElse">失敗している場合に実行されるアクション</param>
-        public void IfSuccessful(Action<Capture<T>> act, Action<string> orElse)
+        public void IfSuccessful(Action<Optional<T>> act, Action<string> orElse)
         {
             if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Capture);
             else (orElse ?? throw new ArgumentNullException(nameof(orElse)))(Message);
@@ -175,7 +175,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="act">成功している場合に実行されるアクション</param>
         /// <param name="orElse">失敗している場合に実行されるアクション</param>
-        public void IfSuccessful(Action<Capture<T>, CharacterPosition> act, Action<string, CharacterPosition> orElse)
+        public void IfSuccessful(Action<Optional<T>, CharacterPosition> act, Action<string, CharacterPosition> orElse)
         {
             if (Successful) (act ?? throw new ArgumentNullException(nameof(act)))(Capture, Position);
             else (orElse ?? throw new ArgumentNullException(nameof(orElse)))(Message, Position);
@@ -216,7 +216,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// パース結果の型パラメータを変更します。
-        /// これに伴い<see cref="Capture{T}"/>が内包する値は破棄されます。
+        /// これに伴い<see cref="Optional{T}"/>が内包する値は破棄されます。
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
         /// <returns>型パラメータを変更した結果</returns>
@@ -224,7 +224,7 @@ namespace Unclazz.Parsec
         {
             if (Successful)
             {
-                return ParseResult.OfSuccess<U>(Position, new Capture<U>(), !_cut);
+                return ParseResult.OfSuccess<U>(Position, new Optional<U>(), !_cut);
             }
             else
             {

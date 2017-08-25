@@ -25,7 +25,7 @@ namespace Unclazz.Parsec.CoreParsers
             {
                 input.Reset();
                 input.Unmark();
-                return Success(p, capture: new Capture<T>(),
+                return Success(p, capture: new Optional<T>(),
                     canBacktrack: originalResult.CanBacktrack);
             }
         }

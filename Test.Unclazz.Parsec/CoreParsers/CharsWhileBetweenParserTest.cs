@@ -31,7 +31,7 @@ namespace Test.Unclazz.Parsec
             Assert.That(result.Successful, Is.EqualTo(expectedResult));
             result.IfSuccessful((cap, pos) =>
             {
-                Assert.That(cap.HasValue, Is.False);
+                Assert.That(cap.Present, Is.False);
                 Assert.That(pos.Index, Is.EqualTo(0));
                 Assert.That(input.Position.Index, Is.EqualTo(expectedIndex));
             }, (message, pos) =>
@@ -57,7 +57,7 @@ namespace Test.Unclazz.Parsec
             Assert.That(result.Successful, Is.EqualTo(expectedResult));
             result.IfSuccessful((cap, pos) =>
             {
-                Assert.That(cap.HasValue, Is.False);
+                Assert.That(cap.Present, Is.False);
                 Assert.That(pos.Index, Is.EqualTo(0));
             }, (message, pos) =>
             {
