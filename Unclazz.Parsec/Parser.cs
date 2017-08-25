@@ -584,18 +584,6 @@ namespace Unclazz.Parsec
             return ParseResult.OfSuccess(position, capture, canBacktrack);
         }
         /// <summary>
-        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
-        /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="value">パースされた値</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Success(CharacterPosition position, T value, bool canBacktrack = true)
-        {
-            return ParseResult.OfSuccess(position, value, canBacktrack);
-        }
-        /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
