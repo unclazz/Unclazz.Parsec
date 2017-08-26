@@ -8,11 +8,22 @@ namespace Unclazz.Parsec.CoreParsers
         internal CastParser(IParser<T> original)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
+            _hasDefault = false;
+        }
+        internal CastParser(IParser<T> original, U defaultValue)
+        {
+            _original = original ?? throw new ArgumentNullException(nameof(original));
+            _hasDefault = true;
+            _default = defaultValue;
         }
         readonly IParser<T> _original;
+        readonly bool _hasDefault;
+        readonly U _default;
         public override ParseResult<U> Parse(ParserInput input)
         {
-            return _original.Parse(input).Cast<U>();
+            return _hasDefault 
+                ? _original.Parse(input).Cast<U>().Attach(_default) 
+                :  _original.Parse(input).Cast<U>();
         }
         public override string ToString()
         {

@@ -47,6 +47,7 @@
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="CoreParsers\LazyParser.cs" />
+    <Compile Include="ParserExtension.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Optional.cs" />
