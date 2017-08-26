@@ -64,7 +64,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator !(Parser operand)
         {
-            return new NotParser<Nil>(operand).Cast();
+            return new NotParser<Nil>(operand);
         }
         /// <summary>
         /// <see cref="Parser.Then(Parser)"/>と同義です。
@@ -172,7 +172,7 @@ namespace Unclazz.Parsec
         /// </para>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> operator !(Parser<T> operand)
+        public static Parser operator !(Parser<T> operand)
         {
             return Not<T>(operand);
         }
