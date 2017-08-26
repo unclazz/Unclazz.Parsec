@@ -11,6 +11,7 @@ namespace Unclazz.Parsec
     /// </summary>
     public static class ParserExtension
     {
+        #region Aggregate系の拡張メソッド
         public static Parser<TSource> Aggregate<TSource>(this Parser<IList<TSource>> self, Func<TSource, TSource, TSource> func)
         {
             return self.Map(ls => ls.Aggregate(func));
@@ -26,6 +27,9 @@ namespace Unclazz.Parsec
         {
             return self.Map(ls => ls.Aggregate(seed, func, resultSelector));
         }
+        #endregion
+
+        #region Cast系の拡張メソッド
         /// <summary>
         /// <see cref="Parser{T}.Cast{U}"/>と同義です。
         /// </summary>
@@ -52,6 +56,9 @@ namespace Unclazz.Parsec
         {
             return new CastParser<T>(self);
         }
+        #endregion
+
+        #region Cut系の拡張メソッド
         /// <summary>
         /// <see cref="Parser{T}.Cut"/>と同義です。
         /// </summary>
@@ -73,6 +80,8 @@ namespace Unclazz.Parsec
         {
             return new CutParser<T>(self);
         }
+        #endregion
+
         /// <summary>
         /// デバッグたのめパース処理前後の情報をログ出力するパーサーを返します。
         /// </summary>
@@ -91,6 +100,8 @@ namespace Unclazz.Parsec
         {
             return new LogParser<T>(self, logger);
         }
+
+        #region Or系の拡張メソッド
         /// <summary>
         /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
         /// </summary>
@@ -159,6 +170,9 @@ namespace Unclazz.Parsec
         {
             return new OrNotParser<T>(self);
         }
+        #endregion
+
+        #region Repeat系の拡張メソッド
         /// <summary>
         /// <see cref="Parser{T}.Repeat(int, int, int, Parser)"/>と同義です。
         /// </summary>
@@ -189,6 +203,9 @@ namespace Unclazz.Parsec
         {
             return RepeatParser<T>.Create(self, min, max, exactly, sep);
         }
+        #endregion
+
+        #region Then系の拡張メソッド
         /// <summary>
         /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
         /// </summary>
@@ -246,5 +263,6 @@ namespace Unclazz.Parsec
         {
             return new DoubleAndParser<T1, T2, T3>(self, another);
         }
+        #endregion
     }
 }
