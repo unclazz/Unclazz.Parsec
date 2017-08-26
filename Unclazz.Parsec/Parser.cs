@@ -58,7 +58,7 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
-        /// <see cref="Parser.Not{T}(Parser{T})"/>と同義です。
+        /// <see cref="Parsers.Not(Parser)"/>と同義です。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいインスタンス</returns>
@@ -67,17 +67,7 @@ namespace Unclazz.Parsec
             return new NotParser<Nil>(operand);
         }
         /// <summary>
-        /// <see cref="Parser.Then(Parser)"/>と同義です。
-        /// </summary>
-        /// <param name="left">元になるパーサー</param>
-        /// <param name="right">元になるパーサー</param>
-        /// <returns>新しいインスタンス</returns>
-        public static Parser operator &(Parser left, Parser right)
-        {
-            return left.Then(right);
-        }
-        /// <summary>
-        /// <see cref="Parser.Or(Parser)"/>と同義です。
+        /// <see cref="ParserExtension.Or(Parser, Parser)"/>と同義です。
         /// </summary>
         /// <param name="left">元になるパーサー</param>
         /// <param name="right">元になるパーサー</param>
@@ -85,6 +75,16 @@ namespace Unclazz.Parsec
         public static Parser operator |(Parser left, Parser right)
         {
             return OrParser<Nil>.LeftAssoc(left, right).Cast();
+        }
+        /// <summary>
+        /// <see cref="ParserExtension.Then(Parser, Parser)"/>と同義です。
+        /// </summary>
+        /// <param name="left">元になるパーサー</param>
+        /// <param name="right">元になるパーサー</param>
+        /// <returns>新しいインスタンス</returns>
+        public static Parser operator &(Parser left, Parser right)
+        {
+            return left.Then(right);
         }
         #endregion
 
@@ -99,7 +99,7 @@ namespace Unclazz.Parsec
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
         protected ParseResult<Nil> Success(CharacterPosition position, bool canBacktrack = true)
@@ -111,7 +111,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
         protected ParseResult<Nil> Failure(CharacterPosition position,
@@ -148,7 +148,7 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
-        /// <see cref="Parser.For{T}(Func{ParserInput, ParseResult{T}})"/>と同義です。
+        /// <see cref="Parsers.For{T}(Func{ParserInput, ParseResult{T}})"/>と同義です。
         /// </summary>
         /// <param name="func">パース処理を行うデリゲート</param>
         public static implicit operator Parser<T>(Func<ParserInput, ParseResult<T>> func)
@@ -156,7 +156,7 @@ namespace Unclazz.Parsec
             return For(func);
         }
         /// <summary>
-        /// <see cref="Parser.Lazy{T}(Func{Parser{T}})"/>と同義です。
+        /// <see cref="Parsers.Lazy{T}(Func{Parser{T}})"/>と同義です。
         /// </summary>
         /// <param name="factory">パーサーを返すデリゲート</param>
         /// <returns>新しいパーサー</returns>
@@ -165,11 +165,8 @@ namespace Unclazz.Parsec
             return Lazy(factory);
         }
         /// <summary>
-        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
+        /// <see cref="Parsers.Not{T}(Parser{T})"/>と同義です。
         /// </summary>
-        /// <para>
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-        /// </para>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
         public static Parser operator !(Parser<T> operand)
@@ -177,7 +174,7 @@ namespace Unclazz.Parsec
             return Not<T>(operand);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -187,7 +184,7 @@ namespace Unclazz.Parsec
             return OrParser<T>.LeftAssoc(left, right);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -197,7 +194,7 @@ namespace Unclazz.Parsec
             return OrParser<T>.LeftAssoc(left, right.Cast<T>());
         }
         /// <summary>
-        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -207,17 +204,17 @@ namespace Unclazz.Parsec
             return OrParser<T>.LeftAssoc(left.Cast<T>(), right);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
+        /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
-        /// <param name="right">元のパーサー</param>
+        /// <param name="right">元のパーサーのパースが失敗したとき新しいパーサーの返す値として使用される値</param>
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, T right)
         {
             return OrParser<T>.LeftAssoc(left, new PassParser<T>(right));
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
+        /// <see cref="ParserExtension.Then{T, U}(Parser{T}, Parser{U})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -227,7 +224,7 @@ namespace Unclazz.Parsec
             return new DoubleParser<T, T>(left, right);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
+        /// <see cref="ParserExtension.Then{T}(Parser, Parser{T})"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -237,7 +234,7 @@ namespace Unclazz.Parsec
             return new ThenTakeRightParser<Nil, T>(left, right);
         }
         /// <summary>
-        /// <see cref="Parser{T}.Then{U}(Parser{U})"/>と同義です。
+        /// <see cref="ParserExtension.Then{T}(Parser{T}, Parser)"/>と同義です。
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
@@ -259,14 +256,6 @@ namespace Unclazz.Parsec
         /// 正常・異常を問わずこのメソッド内で起こったことはすべて
         /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
-        /// <para>
-        /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
-        /// 多くのパーサーはパースした値をキャプチャしません。
-        /// これらのパーサーのパース結果の<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Optional{T}"/>は値を含みません。
-        /// <see cref="Parser{T}.Map{U}(Func{T, U}, bool)"/>は、元になるパーサー（レシーバー）が
-        /// 値をキャプチャするものである場合のみ、値を返すパーサーを生成して返します。
-        /// 値のキャプチャが必要な場合は<see cref="Parser{T}.Capture"/>を使用します。
-        /// </para>
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
@@ -276,7 +265,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="capture">パースされた値を内包する可能性のある<see cref="Optional{T}"/>インスタンス</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
         protected ParseResult<T> Success(CharacterPosition position,
@@ -289,7 +278,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
         protected ParseResult<T> Failure(CharacterPosition position, 
