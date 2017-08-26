@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="CoreParsers\CaptureParserTest.cs" />
     <Compile Include="CoreParsers\CastParserTest.cs" />
+    <Compile Include="CoreParsers\CharParserTest.cs" />
     <Compile Include="OptionalTest.cs" />
     <Compile Include="CharacterPositionTest.cs" />
     <Compile Include="CharClasses\CharactersCharClassTest.cs" />
