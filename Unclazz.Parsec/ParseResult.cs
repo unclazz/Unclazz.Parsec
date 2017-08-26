@@ -19,7 +19,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="value">パース結果の値</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックを無効化する</param>
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックは有効</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
         public static ParseResult<T> OfSuccess<T>(CharacterPosition position, T value, bool canBacktrack = true)
         {
@@ -31,8 +31,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="capture">パース結果の値</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>
-        /// を起点としたバックトラックを無効化する場合<c>false</c></param>
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックは有効</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
         public static ParseResult<T> OfSuccess<T>(CharacterPosition position,
             Optional<T> capture = new Optional<T>(), bool canBacktrack = true)
@@ -45,8 +44,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パース結果の型</typeparam>
         /// <param name="position">パース開始時の文字位置</param>
         /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<see cref="Parser{T}.Or(Parser{T})"/>を
-        /// 起点としたバックトラックを無効化する場合<c>false</c></param>
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックは有効</param>
         /// <returns><see cref="ParseResult{T}"/>インスタンス</returns>
         public static ParseResult<T> OfFailure<T>(CharacterPosition position, string message, bool canBacktrack = true)
         {
@@ -111,7 +109,7 @@ namespace Unclazz.Parsec
         /// </summary>
         public bool Successful { get; }
         /// <summary>
-        /// 直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点としたバックトラックが可能かどうかを示します。
+        /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックが可能かどうかを示します。
         /// </summary>
         public bool CanBacktrack => !_cut;
 
@@ -133,8 +131,7 @@ namespace Unclazz.Parsec
             return new ParseResult<T>(Successful, Position, _message, _cut);
         }
         /// <summary>
-        /// 直近の<see cref="Parser{T}.Or(Parser{T})"/>を起点とする
-        /// バックトラックの設定を変更した新しいインスタンスを返します。
+        /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラック有効無効を変更した新しいインスタンスを返します。
         /// </summary>
         /// <param name="allow">バックトラックを可能にする場合は<c>true</c></param>
         /// <returns>新しいインスタンス</returns>
@@ -198,7 +195,6 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// パース結果に引数で指定された関数を適用します。
-        /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
         /// </summary>
         /// <typeparam name="U">結果の型</typeparam>
         /// <param name="transform">関数</param>
