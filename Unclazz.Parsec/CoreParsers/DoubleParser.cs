@@ -13,7 +13,7 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<T1> Left { get; }
         public Parser<T2> Right { get; }
 
-        public override ParseResult<Tuple<T1, T2>> Parse(ParserInput input)
+        public override ParseResult<Tuple<T1, T2>> Parse(Reader input)
         {
             var p = input.Position;
             var leftResult = Left.Parse(input);
@@ -48,7 +48,7 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<T1> Left { get; }
         public Parser<Tuple<T2, T3>> Right { get; }
 
-        public override ParseResult<Tuple<T1, T2, T3>> Parse(ParserInput input)
+        public override ParseResult<Tuple<T1, T2, T3>> Parse(Reader input)
         {
             var p = input.Position;
             var leftResult = Left.Parse(input);
@@ -86,7 +86,7 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<Tuple<T1, T2>> Left { get; }
         public Parser<T3> Right { get; }
 
-        public override ParseResult<Tuple<T1, T2, T3>> Parse(ParserInput input)
+        public override ParseResult<Tuple<T1, T2, T3>> Parse(Reader input)
         {
             var p = input.Position;
             var leftResult = Left.Parse(input);

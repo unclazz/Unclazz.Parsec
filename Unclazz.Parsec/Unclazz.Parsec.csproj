@@ -78,7 +78,7 @@
     <Compile Include="CoreParsers\OrParser.cs" />
     <Compile Include="ParsecUtility.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="ParserInput.cs" />
+    <Compile Include="Reader.cs" />
     <Compile Include="Readers\IResettableReader.cs" />
     <Compile Include="Readers\ITextReader.cs" />
     <Compile Include="ParseResult.cs" />

@@ -10,7 +10,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         readonly Func<IParser<T>> _factory;
         IParser<T> _cache;
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<T> Parse(Reader input)
         {
             return (_cache ?? (_cache = _factory())).Parse(input);
         }

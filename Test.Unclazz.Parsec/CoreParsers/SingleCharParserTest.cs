@@ -11,7 +11,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case1()
         {
             // Arrange
-            var input = ParserInput.FromString("hello");
+            var input = Reader.From("hello");
             var parser = Char('a');
 
             // Act
@@ -25,7 +25,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case2()
         {
             // Arrange
-            var input = ParserInput.FromString("hello");
+            var input = Reader.From("hello");
             var parser = Char('h');
 
             // Act

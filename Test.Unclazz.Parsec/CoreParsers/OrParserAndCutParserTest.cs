@@ -17,7 +17,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = Keyword("012A", 2) | Keyword("01B3") | Keyword("0C23");
-            ParserInput i = "0123";
+            Reader i = "0123";
 
             // Act
             var r = p.Parse(i);
@@ -31,7 +31,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = Keyword("012A", 2) | (Keyword("01B3") | Keyword("0C23"));
-            ParserInput i = "0123";
+            Reader i = "0123";
 
             // Act
             var r = p.Parse(i);
@@ -45,7 +45,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = Keyword("0123A", 3) | Keyword("012B4", 2) | Keyword("01C34", 1);
-            ParserInput i = "01234";
+            Reader i = "01234";
 
             // Act
             var r = p.Parse(i);
@@ -59,7 +59,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = Keyword("0123A", 3) | (Keyword("012B4", 2) | Keyword("01C34", 1));
-            ParserInput i = "01234";
+            Reader i = "01234";
 
             // Act
             var r = p.Parse(i);
@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = CutStringAt("012A", 2) | Keyword("01B3") | Keyword("0C23");
-            ParserInput i = "0123";
+            Reader i = "0123";
 
             // Act
             var r = p.Parse(i);
@@ -87,7 +87,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = CutStringAt("012A", 2) | (Keyword("01B3") | Keyword("0C23"));
-            ParserInput i = "0123";
+            Reader i = "0123";
 
             // Act
             var r = p.Parse(i);
@@ -101,7 +101,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = CutStringAt("0123A", 3) | CutStringAt("012B4", 2) | CutStringAt("01C34", 1);
-            ParserInput i = "01234";
+            Reader i = "01234";
 
             // Act
             var r = p.Parse(i);
@@ -115,7 +115,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p = CutStringAt("0123A", 3) | (CutStringAt("012B4", 2) | CutStringAt("01C34", 1));
-            ParserInput i = "01234";
+            Reader i = "01234";
 
             // Act
             var r = p.Parse(i);

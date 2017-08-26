@@ -19,7 +19,7 @@ namespace Unclazz.Parsec.CoreParsers
         public IParser<L> Left { get; }
         public IParser<R> Right { get; }
 
-        public override ParseResult<L> Parse(ParserInput input)
+        public override ParseResult<L> Parse(Reader input)
         {
             var leftResult = Left.Parse(input);
             if (leftResult.Successful)
@@ -61,7 +61,7 @@ namespace Unclazz.Parsec.CoreParsers
         public IParser<L> Left { get; }
         public IParser<R> Right { get; }
 
-        public override ParseResult<R> Parse(ParserInput input)
+        public override ParseResult<R> Parse(Reader input)
         {
             var p = input.Position;
             var leftResult = Left.Parse(input);

@@ -11,7 +11,7 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly IParser<T> _original;
 
-        public override ParseResult<Nil> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(Reader input)
         {
             input.Mark();
             var p = input.Position;

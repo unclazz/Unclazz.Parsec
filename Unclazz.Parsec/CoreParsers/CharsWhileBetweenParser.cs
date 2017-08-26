@@ -17,7 +17,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly char _start;
         readonly char _end;
 
-        public override ParseResult<Nil> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(Reader input)
         {
             var p = input.Position;
             var count = 0;

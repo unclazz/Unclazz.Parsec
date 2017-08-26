@@ -9,7 +9,7 @@
 
         readonly T _value;
 
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<T> Parse(Reader input)
         {
             return Success(input.Position, new Optional<T>(_value));
         }

@@ -34,7 +34,7 @@ namespace Test.Unclazz.Parsec.Readers
 
             // Assert
             Repeats(r.Read, readCountAfterMark);
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo(willMarkOn < text.Length ? text[willMarkOn] : -1));
         }
 
@@ -53,7 +53,7 @@ namespace Test.Unclazz.Parsec.Readers
 
             // Assert
             Repeats(r.Read, readCountAfterMark);
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo(text[willMarkOn]));
         }
 
@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec.Readers
             // Assert
             Repeats(r.Read, readCountAfterMark);
             r.Unmark();
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo(text[willMarkOn]));
         }
 
@@ -94,7 +94,7 @@ namespace Test.Unclazz.Parsec.Readers
             Repeats(r.Read, readCountAfterMark);
             r.Unmark();
             r.Unmark();
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo(text[willMarkOn + readCountAfterMark]));
         }
 
@@ -134,7 +134,7 @@ namespace Test.Unclazz.Parsec.Readers
             Assert.That(r.Peek(), Is.EqualTo('9'));
 
             r.Unmark();
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo('3'));
             Assert.That(ReadsAll(r), Is.EqualTo("3456789X"));
         }
@@ -164,7 +164,7 @@ namespace Test.Unclazz.Parsec.Readers
             Assert.That(r.Peek(), Is.EqualTo('8'));
 
             r.Unmark();
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo('4'));
             Assert.That(ReadsAll(r), Is.EqualTo("456789X"));
         }
@@ -196,7 +196,7 @@ namespace Test.Unclazz.Parsec.Readers
             Repeats(r.Read, 2);
             Assert.That(r.Peek(), Is.EqualTo('8'));
 
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Peek(), Is.EqualTo('6'));
             Assert.That(ReadsAll(r), Is.EqualTo("6789X"));
         }
@@ -224,7 +224,7 @@ namespace Test.Unclazz.Parsec.Readers
                 if (willResetOn == r.Position.Index)
                 {
                     // Act
-                    r.Reset();
+                    r.Reset(false);
 
                     // Assert
                     Assert.That(r.Position.Index, Is.EqualTo(willMarkOn));
@@ -255,7 +255,7 @@ namespace Test.Unclazz.Parsec.Readers
             }
 
             // Act
-            r.Reset();
+            r.Reset(false);
 
             // Assert
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn));
@@ -279,13 +279,13 @@ namespace Test.Unclazz.Parsec.Readers
             Repeats(r.Read, 2);
             Assert.That((char)r.Peek(), Is.EqualTo('4'));
 
-            r.Reset();
+            r.Reset(false);
             Assert.That((char)r.Peek(), Is.EqualTo('2'));
 
             Repeats(r.Read, 2);
             Assert.That((char)r.Peek(), Is.EqualTo('4'));
 
-            r.Reset();
+            r.Reset(false);
             Assert.That((char) r.Peek(), Is.EqualTo('2'));
 
             Repeats(r.Read, 2);
@@ -294,7 +294,7 @@ namespace Test.Unclazz.Parsec.Readers
             Repeats(r.Read, 2);
             Assert.That((char)r.Peek(), Is.EqualTo('6'));
 
-            r.Reset();
+            r.Reset(false);
             Assert.That((char)r.Peek(), Is.EqualTo('2'));
         }
         [TestCase("0123456789X", 3, 3)]
@@ -314,7 +314,7 @@ namespace Test.Unclazz.Parsec.Readers
             // Assert
             Assert.That(cap, Is.EqualTo(text.Substring(willMarkOn, readCountAfterMark)));
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
         }
         [TestCase("0123456789X", 3, 3)]
@@ -334,7 +334,7 @@ namespace Test.Unclazz.Parsec.Readers
             // Assert
             Assert.That(cap, Is.EqualTo(text.Substring(willMarkOn, readCountAfterMark)));
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn + readCountAfterMark));
-            r.Reset();
+            r.Reset(false);
             Assert.That(r.Position.Index, Is.EqualTo(willMarkOn));
         }
     }

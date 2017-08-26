@@ -54,7 +54,7 @@ namespace Unclazz.Parsec.Readers
             }
             return null;
         }
-        public void Reset()
+        public void Reset(bool unmark)
         {
             if (_marked)
             {
@@ -95,6 +95,7 @@ namespace Unclazz.Parsec.Readers
                     // なにか良からぬことが起きている
                     throw new InvalidOperationException();
                 }
+                if (unmark) Unmark();
             }
         }
 

@@ -11,7 +11,7 @@ namespace Unclazz.Parsec
     /// <see cref="Parser{T}"/>のコンパニオン・オブジェクトです。
     /// <para>
     /// この抽象クラスのから派生した具象パーサー・クラスは値のキャプチャを一切行いません。
-    /// メソッド<see cref="Parser.Parse(ParserInput)"/>はパースを行いその結果として<see cref="ParseResult{T}"/>を返しますが、
+    /// パーサーはパースを行いその結果として<see cref="ParseResult{T}"/>を返しますが、
     /// パース結果の成否と関係なく、<see cref="ParseResult{T}.Capture"/>は必ず空のシーケンスになります。
     /// </para>
     /// </summary>
@@ -57,9 +57,9 @@ namespace Unclazz.Parsec
         /// <see cref="string"/>としてキャプチャされ、それがラッパーとなる新しいパーサーが返す値となります。</para>
         /// <para>
         /// 内部的な動作はおおよそ次のように進みます。
-        /// パース処理本体が実行される前に<see cref="ParserInput.Mark"/>が呼び出されます。
-        /// パース処理本体が成功した場合は<see cref="ParserInput.Capture(bool)"/>が呼び出されます。
-        /// パース処理本体が失敗した場合は単に<see cref="ParserInput.Unmark"/>が呼び出されます。</para>
+        /// パース処理本体が実行される前に<see cref="Reader.Mark"/>が呼び出されます。
+        /// パース処理本体が成功した場合は<see cref="Reader.Capture(bool)"/>が呼び出されます。
+        /// パース処理本体が失敗した場合は単に<see cref="Reader.Unmark"/>が呼び出されます。</para>
         /// </summary>
         /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
         public Parser<string> Capture()
@@ -76,10 +76,10 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
-        /// <see cref="Parsers.For{T}(Func{ParserInput, ParseResult{T}})"/>と同義です。
+        /// <see cref="Parsers.For{T}(Func{Reader, ParseResult{T}})"/>と同義です。
         /// </summary>
         /// <param name="func">パース処理を行うデリゲート</param>
-        public static implicit operator Parser<T>(Func<ParserInput, ParseResult<T>> func)
+        public static implicit operator Parser<T>(Func<Reader, ParseResult<T>> func)
         {
             return For(func);
         }
@@ -130,6 +130,14 @@ namespace Unclazz.Parsec
         public static Parser<T> operator |(Parser left, Parser<T> right)
         {
             return OrParser<T>.LeftAssoc(left.Cast<T>(), right);
+        }
+        public static Parser<Nil> operator |(Parser<Nil> left, Parser<T> right)
+        {
+            return null;
+        }
+        public static Parser<Nil> operator |(Parser<T> left, Parser<Nil> right)
+        {
+            return null;
         }
         /// <summary>
         /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。

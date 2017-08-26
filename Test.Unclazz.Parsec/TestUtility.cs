@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unclazz.Parsec;
 using Unclazz.Parsec.Readers;
 
 namespace Test.Unclazz.Parsec
 {
     static class TestUtility
     {
+        public static void ConsumesAll(Reader r)
+        {
+            while (!r.EndOfFile) r.Read();
+        }
         public static void ConsumesAll(ITextReader r)
         {
             while (!r.EndOfFile) r.Read();
@@ -23,6 +28,15 @@ namespace Test.Unclazz.Parsec
         public static void Repeats<T>(Func<T> func, int times)
         {
             Repeats(() => { func(); }, times);
+        }
+        public static string ReadsAll(Reader r)
+        {
+            var buff = new StringBuilder();
+            while (!r.EndOfFile)
+            {
+                buff.Append((char)r.Read());
+            }
+            return buff.ToString();
         }
         public static string ReadsAll(ITextReader r)
         {

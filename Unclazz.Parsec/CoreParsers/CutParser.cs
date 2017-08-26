@@ -11,7 +11,7 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly IParser<T> _original;
 
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<T> Parse(Reader input)
         {
             var r = _original.Parse(input);
             if (r.Successful) return r.AllowBacktrack(false);

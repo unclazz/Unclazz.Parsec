@@ -41,7 +41,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             var p0 = new KeywordParser(word, -1);
             var p1 = new RepeatExactlyParser<Nil>(p0, count, null);
-            ParserInput input = TestUtility.Repeats(word, count + 1);
+            Reader input = TestUtility.Repeats(word, count + 1);
 
             // Act
             var r1 = p1.Parse(input);
@@ -59,7 +59,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             var p0 = new KeywordParser(word, -1);
             var p1 = new RepeatExactlyParser<Nil>(p0, count, sep: Keyword(sep));
-            ParserInput input = TestUtility.Repeats(word, count + 1, sep: sep);
+            Reader input = TestUtility.Repeats(word, count + 1, sep: sep);
 
             // Act
             var r1 = p1.Parse(input);
@@ -76,7 +76,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             var p0 = new KeywordParser(word, -1);
             var p1 = new RepeatExactlyParser<Nil>(p0, count, sep: Keyword(sep));
-            ParserInput input = TestUtility.Repeats(word, count - 1, sep: sep) + sep + "__________";
+            Reader input = TestUtility.Repeats(word, count - 1, sep: sep) + sep + "__________";
 
             // Act
             var r1 = p1.Parse(input);

@@ -17,7 +17,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Func<T, U> _transform;
         readonly bool _canThrow;
 
-        public override ParseResult<U> Parse(ParserInput input)
+        public override ParseResult<U> Parse(Reader input)
         {
             var r = _source.Parse(input);
             try

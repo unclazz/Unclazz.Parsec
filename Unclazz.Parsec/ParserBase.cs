@@ -19,7 +19,7 @@
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        public abstract ParseResult<T> Parse(ParserInput input);
+        public abstract ParseResult<T> Parse(Reader input);
 
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。

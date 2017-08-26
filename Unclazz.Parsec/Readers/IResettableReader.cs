@@ -24,7 +24,7 @@ namespace Unclazz.Parsec.Readers
     /// <see cref="Mark"/>と同じ回数だけ<see cref="Unmark"/>を呼び出します。
     /// </para>
     /// </summary>
-    public interface IResettableReader : ITextReader
+    interface IResettableReader : ITextReader
     {
         /// <summary>
         /// 現在の文字位置に印をつけます。
@@ -39,7 +39,8 @@ namespace Unclazz.Parsec.Readers
         /// あらかじめ印をつけておいた文字位置に戻ります。
         /// まだ<see cref="Mark"/>が呼び出された実績がない場合、このメソッドは何も行わず、例外もスローしません。
         /// </summary>
-        void Reset();
+        /// <param name="unmark"><c>true</c>の場合リセット後に<see cref="Unmark"/>を行う</param>
+        void Reset(bool unmark);
         /// <summary>
         /// 直近<see cref="Mark"/>した文字位置から現在の文字位置までのコンテンツを返します。
         /// </summary>

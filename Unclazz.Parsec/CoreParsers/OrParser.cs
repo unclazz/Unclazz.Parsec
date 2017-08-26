@@ -49,7 +49,7 @@ namespace Unclazz.Parsec.CoreParsers
         internal IParser<T> Left { get; }
         internal IParser<T> Right { get; }
 
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<T> Parse(Reader input)
         {
             input.Mark();
             var leftResult = Left.Parse(input);

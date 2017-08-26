@@ -22,7 +22,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case1(string text, char start, char end, bool expectedResult, int expectedIndex)
         {
             // Arrange
-            var input = ParserInput.FromString(text);
+            var input = Reader.From(text);
             var parser = CharsWhileBetween(start, end);
 
             // Act
@@ -48,7 +48,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case2(string text, char start, char end, bool expectedResult, int minLength)
         {
             // Arrange
-            var input = ParserInput.FromString(text);
+            var input = Reader.From(text);
             var parser = CharsWhileBetween(start, end, minLength);
 
             // Act

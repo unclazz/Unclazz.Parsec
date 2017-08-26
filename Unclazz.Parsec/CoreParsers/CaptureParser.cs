@@ -11,12 +11,9 @@ namespace Unclazz.Parsec.CoreParsers
     /// それがこのラッパーとなる新しいパーサーが返す値となります。</para>
     /// <para>
     /// 内部的な動作はおおよそ次のように進みます。
-    /// パース処理本体が実行される前に<see cref="ParserInput.Mark"/>が呼び出されます。
-    /// パース処理本体が成功した場合は<see cref="ParserInput.Capture(bool)"/>が呼び出されます。
-    /// パース処理本体が失敗した場合は単に<see cref="ParserInput.Unmark"/>が呼び出されます。</para>
-    /// <para>
-    /// <see cref="Parser{T}.Cut"/>によるバックトラック可否設定は引き継がれます。
-    /// </para>
+    /// パース処理本体が実行される前に<see cref="Reader.Mark"/>が呼び出されます。
+    /// パース処理本体が成功した場合は<see cref="Reader.Capture(bool)"/>が呼び出されます。
+    /// パース処理本体が失敗した場合は単に<see cref="Reader.Unmark"/>が呼び出されます。</para>
     /// </summary>
     /// <typeparam name="T">任意の型</typeparam>
     sealed class CaptureParser<T> : Parser<string>
@@ -37,7 +34,7 @@ namespace Unclazz.Parsec.CoreParsers
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        public override ParseResult<string> Parse(ParserInput input)
+        public override ParseResult<string> Parse(Reader input)
         {
             input.Mark();
             var r = _parse.Parse(input);

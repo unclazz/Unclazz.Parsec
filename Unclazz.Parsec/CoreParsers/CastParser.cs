@@ -19,7 +19,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly IParser<T> _original;
         readonly bool _hasDefault;
         readonly U _default;
-        public override ParseResult<U> Parse(ParserInput input)
+        public override ParseResult<U> Parse(Reader input)
         {
             return _hasDefault 
                 ? _original.Parse(input).Cast<U>().Attach(_default) 
@@ -38,7 +38,7 @@ namespace Unclazz.Parsec.CoreParsers
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
         readonly IParser<T> _original;
-        public override ParseResult<Nil> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(Reader input)
         {
             return _original.Parse(input).Cast<Nil>();
         }

@@ -4,14 +4,14 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class DelegateParser<T> : Parser<T>
     {
-        internal DelegateParser(Func<ParserInput, ParseResult<T>> func)
+        internal DelegateParser(Func<Reader, ParseResult<T>> func)
         {
             _delegate = func ?? throw new ArgumentNullException(nameof(func));
         }
 
-        readonly Func<ParserInput, ParseResult<T>> _delegate;
+        readonly Func<Reader, ParseResult<T>> _delegate;
 
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<T> Parse(Reader input)
         {
             return _delegate(input);
         }

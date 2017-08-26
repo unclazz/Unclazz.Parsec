@@ -48,7 +48,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             var p0 = Keyword(word);
             var p1 = new RepeatMinMaxParser<Nil>(p0, min, max, null);
             string text = TestUtility.Repeats(word, wordRepeatCount);
-            ParserInput input = text;
+            Reader input = text;
 
             // Act
             var r1 = p1.Parse(input);
@@ -69,7 +69,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             var p0 = Keyword(word);
             var p1 = new RepeatMinMaxParser<Nil>(p0, min, max, Char('$'));
             string text = TestUtility.Repeats(word, wordRepeatCount, "$");
-            ParserInput input = text;
+            Reader input = text;
 
             // Act
             var r1 = p1.Parse(input);

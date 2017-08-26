@@ -22,7 +22,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case1(string text, string word, bool expectedResult)
         {
             // Arrange
-            var input = ParserInput.FromString(text);
+            var input = Reader.From(text);
             var parser = Keyword(word);
 
             // Act
@@ -42,7 +42,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case2(string text, string word, bool expectedResult)
         {
             // Arrange
-            var input = ParserInput.FromString(text);
+            var input = Reader.From(text);
             var parser = Keyword(word);
             input.Read();
 
@@ -63,7 +63,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case3(string text, string word, bool expectedResult)
         {
             // Arrange
-            var input = ParserInput.FromString(text);
+            var input = Reader.From(text);
             var parser = Keyword(word).Capture();
             input.Read();
 
@@ -91,7 +91,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case4(string text, string keyword, int cutIndex, bool canBacktrack)
         {
             // Arrange
-            var input = ParserInput.FromString(text);
+            var input = Reader.From(text);
             var parser = Keyword(keyword, cutIndex);
 
             // Act
@@ -107,7 +107,7 @@ namespace Test.Unclazz.Parsec
         public void Parse_Case5(int cutIndex)
         {
             // Arrange
-            var input = ParserInput.FromString("0123456789X");
+            var input = Reader.From("0123456789X");
             var parser = Keyword("012X456", cutIndex: cutIndex);
 
             // Act

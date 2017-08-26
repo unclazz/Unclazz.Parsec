@@ -51,7 +51,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case1()
         {
             // Arrange
-            var input = ParserInput.FromString("hello");
+            var input = Reader.From("hello");
             var parser = StringIn("hallo", "helo");
 
             // Act
@@ -72,7 +72,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case2(string text, string[] keywords, bool expectedResult)
         {
             // Arrange
-            var input = ParserInput.FromString("hellox");
+            var input = Reader.From("hellox");
             var parser = StringIn(keywords);
 
             // Act

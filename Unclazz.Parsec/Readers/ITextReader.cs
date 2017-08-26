@@ -12,7 +12,7 @@ namespace Unclazz.Parsec.Readers
     /// このインターフェースは<see cref="System.IO.TextReader"/>のインターフェースとしての再定義を行うものです。
     /// </para>
     /// </summary>
-    public interface ITextReader : IDisposable
+    interface ITextReader : IDisposable
     {
         /// <summary>
         /// データソースから現在の文字位置の文字を読み取って返します。

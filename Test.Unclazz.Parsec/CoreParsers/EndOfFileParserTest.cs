@@ -15,7 +15,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         [Test]
         public void Parse_Case1()
         {
-            var input = ParserInput.FromString("hello");
+            var input = Reader.From("hello");
             var parser = EndOfFile;
             Assert.That(parser.Parse(input).Successful, Is.False);
             Assert.That(input.Position.Index, Is.EqualTo(0));
@@ -23,21 +23,21 @@ namespace Test.Unclazz.Parsec.CoreParsers
         [Test]
         public void Parse_Case2()
         {
-            var input = ParserInput.FromString("h");
+            var input = Reader.From("h");
             var parser = EndOfFile;
             Assert.That(parser.Parse(input).Successful, Is.False);
         }
         [Test]
         public void Parse_Case3()
         {
-            var input = ParserInput.FromString(string.Empty);
+            var input = Reader.From(string.Empty);
             var parser = EndOfFile;
             Assert.That(parser.Parse(input).Successful, Is.True);
         }
         [Test]
         public void Parse_Case4()
         {
-            var input = ParserInput.FromString("hello");
+            var input = Reader.From("hello");
             var parser = EndOfFile;
             TestUtility.ConsumesAll(input);
             Assert.That(parser.Parse(input).Successful, Is.True);

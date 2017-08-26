@@ -53,7 +53,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Parser _sep;
         readonly bool _capture;
 
-        public override ParseResult<IList<T>> Parse(ParserInput input)
+        public override ParseResult<IList<T>> Parse(Reader input)
         {
             // キャプチャ・モードの場合
             // 元のパーサーがキャプチャした内容を格納するためキューを初期化
@@ -125,7 +125,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Parser _sep;
         readonly bool _capture;
 
-        public override ParseResult<IList<T>> Parse(ParserInput input)
+        public override ParseResult<IList<T>> Parse(Reader input)
         {
             // キャプチャ・モードの場合
             // 元のパーサーがキャプチャした内容を格納するためキューを初期化

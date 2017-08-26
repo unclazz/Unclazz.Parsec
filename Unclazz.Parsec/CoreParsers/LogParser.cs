@@ -13,7 +13,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly IParser<T> _target;
         readonly Action<string> _logger;
 
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<T> Parse(Reader input)
         {
             try
             {
