@@ -24,16 +24,15 @@ namespace Example.Unclazz.Parcec
 
     sealed class ExpressionParser : Parser<double>
     {
-        readonly static Parser space = CharsWhileIn(" \r\n", min: 0);
         readonly static Parser<string> addSub = CharIn("+-").Capture();
         readonly static Parser<string> mulDiv = CharIn("*/").Capture();
-        readonly static Parser parenLeft = space & Char('(');
-        readonly static Parser parenRight = space & Char(')');
-        readonly static Parser<double> number = space & (new NumberParser());
+        readonly static Parser parenLeft = Char('(');
+        readonly static Parser parenRight = Char(')');
+        readonly static Parser<double> number = new NumberParser();
 
         public override ParseResult<double> Parse(ParserInput input)
         {
-            return (Expr() & space & EndOfFile).Parse(input);
+            return (Expr() & EndOfFile).Parse(input);
         }
         Parser<double> Expr()
         {
@@ -79,10 +78,6 @@ namespace Example.Unclazz.Parcec
                 return left / opRight.Item2;
             }
             throw new Exception("unknown operator.");
-        }
-        public override string ToString()
-        {
-            return Expr().ToString();
         }
     }
 
