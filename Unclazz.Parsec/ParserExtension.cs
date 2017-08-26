@@ -11,6 +11,21 @@ namespace Unclazz.Parsec
     /// </summary>
     public static class ParserExtension
     {
+        public static Parser<TSource> Aggregate<TSource>(this Parser<IList<TSource>> self, Func<TSource, TSource, TSource> func)
+        {
+            return self.Map(ls => ls.Aggregate(func));
+        }
+        public static Parser<TAccumulate> Aggregate<TSource, TAccumulate>
+            (this Parser<IList<TSource>> self, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+        {
+            return self.Map(ls => ls.Aggregate(seed, func));
+        }
+        public static Parser<TResult> Aggregate<TSource, TAccumulate, TResult>
+            (this Parser<IList<TSource>> self, TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate, TResult> resultSelector)
+        {
+            return self.Map(ls => ls.Aggregate(seed, func, resultSelector));
+        }
         /// <summary>
         /// <see cref="Parser{T}.Cast{U}"/>と同義です。
         /// </summary>
@@ -230,21 +245,6 @@ namespace Unclazz.Parsec
         public static Parser<Tuple<T1, T2, T3>> Then<T1, T2, T3>(this Parser<Tuple<T1, T2>> self, Parser<T3> another)
         {
             return new DoubleAndParser<T1, T2, T3>(self, another);
-        }
-        public static Parser<TSource> Aggregate<TSource>(this Parser<IList<TSource>> self, Func<TSource, TSource, TSource> func)
-        {
-            return self.Map(ls => ls.Aggregate(func));
-        }
-        public static Parser<TAccumulate> Aggregate<TSource, TAccumulate>
-            (this Parser<IList<TSource>> self, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
-        {
-            return self.Map(ls => ls.Aggregate(seed, func));
-        }
-        public static Parser<TResult> Aggregate<TSource, TAccumulate,TResult>
-            (this Parser<IList<TSource>> self, TAccumulate seed, 
-            Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate,TResult> resultSelector)
-        {
-            return self.Map(ls => ls.Aggregate(seed, func, resultSelector));
         }
     }
 }
