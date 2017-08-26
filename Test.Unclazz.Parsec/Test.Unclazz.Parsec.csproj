@@ -52,6 +52,7 @@
     <Compile Include="CoreParsers\CharParserTest.cs" />
     <Compile Include="CoreParsers\DelegateParserTest.cs" />
     <Compile Include="CoreParsers\DoubleParserTest.cs" />
+    <Compile Include="CoreParsers\MapParserTest.cs" />
     <Compile Include="OptionalTest.cs" />
     <Compile Include="CharacterPositionTest.cs" />
     <Compile Include="CharClasses\CharactersCharClassTest.cs" />
