@@ -5,6 +5,9 @@ using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
 {
+    /// <summary>
+    /// パーサーの静的ファクトリー・メソッドを提供するユーティリティです。
+    /// </summary>
     public static class Parsers
     {
         #region 定義済みパーサーを提供するプロパティの宣言
@@ -90,45 +93,6 @@ namespace Unclazz.Parsec
             return new LazyParser<Nil>(factory).Cast();
         }
         /// <summary>
-        /// パーサーのパース失敗時に結果を反転させるパーサーを生成します。
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="parser">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> OrNot<T>(Parser<T> parser)
-        {
-            return new OrNotParser<T>(parser);
-        }
-        /// <summary>
-        /// <see cref="OrNot{T}(Parser{T})"/>と同義です。
-        /// </summary>
-        /// <param name="parser">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser OrNot(Parser parser)
-        {
-            return new OrNotParser<Nil>(parser).Cast();
-        }
-        /// <summary>
-        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
-        /// </summary>
-        /// <param name="left">元のパーサー</param>
-        /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Or<T>(Parser<T> left, Parser<T> right)
-        {
-            return OrParser<T>.LeftAssoc(left, right);
-        }
-        /// <summary>
-        /// <see cref="Parser{T}.Or(Parser{T})"/>と同義です。
-        /// </summary>
-        /// <param name="left">元になるパーサー</param>
-        /// <param name="right">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Or(Parser left, Parser right)
-        {
-            return OrParser<Nil>.LeftAssoc(left, right).Cast();
-        }
-        /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="ch">文字</param>
@@ -198,9 +162,10 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// 指定したキーワードにのみマッチするパーサーを生成します。
-        /// オプションのパラメータによりカット（トラックバックの無効化）を行う文字位置を指定できます。
-        /// パース処理がこの文字位置の以降に進んだ時、
-        /// 直前の<see cref="Parser{T}.Or(Parser{T})"/>を起点とするトラックバックは無効になります。
+        /// <para>
+        /// <paramref name="cutIndex"/>によりカット（トラックバックの無効化）を行う文字位置を指定できます。
+        /// パース処理がこの文字位置の以降に進んだ時、直前の<c>|</c>や<c>Or(...)</c>を起点とするトラックバックは無効になります。
+        /// </para>
         /// </summary>
         /// <param name="keyword">キーワード</param>
         /// <param name="cutIndex">カットを行う文字位置</param>
