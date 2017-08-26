@@ -2,7 +2,7 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class NotParser<T> : NilParser
+    sealed class NotParser<T> : Parser
     {
         internal NotParser(Parser<T> original)
         {

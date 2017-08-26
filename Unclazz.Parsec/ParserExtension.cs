@@ -6,7 +6,7 @@ using Unclazz.Parsec.CoreParsers;
 namespace Unclazz.Parsec
 {
     /// <summary>
-    /// パーサー・クラス<see cref="NilParser"/>および<see cref="Parser{T}"/>のための拡張メソッドを提供する静的クラスです。
+    /// パーサー・クラス<see cref="Parser"/>および<see cref="Parser{T}"/>のための拡張メソッドを提供する静的クラスです。
     /// <para>このクラスで提供されるメソッドの多くは、双方のクラスに共通する名前を持ちながらも少しずつシグネチャや機能の異なるものです。</para>
     /// </summary>
     public static class ParserExtension
@@ -94,7 +94,7 @@ namespace Unclazz.Parsec
             return new CaptureParser<Nil>(self);
         }
         /// <summary>
-        /// <see cref="NilParser"/>を<see cref="Parser{T}"/>に変換します。
+        /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
         /// <para>
         /// 変換後の新しいパーサーは返す値の型の情報こそ持っていますが、値のキャプチャは行いません。
         /// </para>
@@ -106,7 +106,7 @@ namespace Unclazz.Parsec
             return new CastParser<Nil, T>(self);
         }
         /// <summary>
-        /// <see cref="NilParser"/>を<see cref="Parser{T}"/>に変換します。
+        /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
         /// <para>
         /// 引数で指定された値は変換後の新しいパーサーがキャプチャする値として使用されます。
         /// </para>
@@ -120,7 +120,7 @@ namespace Unclazz.Parsec
             return new CastParser<Nil, T>(self, defaultValue);
         }
         /// <summary>
-        /// <see cref="Parser{T}"/>を<see cref="NilParser"/>に変換します。
+        /// <see cref="Parser{T}"/>を<see cref="Parser"/>に変換します。
         /// <para>
         /// 元のパーサーが値をキャプチャするものであっても変換後のパーサーはあくまでも値をキャプチャしないパーサーとなります。
         /// 元のパーサーがキャプチャした値は破棄されます。
@@ -129,7 +129,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="self">レシーバー</param>
         /// <returns>新しいパーサー</returns>
-        public static NilParser Cast<T>(this Parser<T> self)
+        public static Parser Cast<T>(this Parser<T> self)
         {
             return new CastParser<T>(self);
         }
@@ -145,7 +145,7 @@ namespace Unclazz.Parsec
         /// </para>
         /// </summary>
         /// <returns>新しいパーサー</returns>
-        public static NilParser Cut(this Parser<Nil> self)
+        public static Parser Cut(this Parser<Nil> self)
         {
             return new CutParser<Nil>(self).Cast();
         }
@@ -170,7 +170,7 @@ namespace Unclazz.Parsec
         /// <param name="self"></param>
         /// <param name="logger">ログ出力そのものを行うアクション</param>
         /// <returns>新しいパーサー</returns>
-        public static NilParser Log(this NilParser self, Action<string> logger)
+        public static Parser Log(this Parser self, Action<string> logger)
         {
             return new LogParser<Nil>(self, logger).Cast();
         }
@@ -204,7 +204,7 @@ namespace Unclazz.Parsec
         /// <param name="self">レシーバー</param>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static NilParser Or(this NilParser self, NilParser another)
+        public static Parser Or(this Parser self, Parser another)
         {
             return OrParser<Nil>.LeftAssoc(self, another).Cast();
         }
@@ -234,7 +234,7 @@ namespace Unclazz.Parsec
         /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
         /// </summary>
         /// <returns>新しいパーサー</returns>
-        public static NilParser OrNot(this NilParser self)
+        public static Parser OrNot(this Parser self)
         {
             return new OrNotParser<Nil>(self).Cast();
         }
@@ -264,7 +264,7 @@ namespace Unclazz.Parsec
         /// <param name="exactly">繰り返しの回数</param>
         /// <param name="sep">セパレーターのためのパーサー</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public static NilParser Repeat(this NilParser self, int min = 0, int max = -1, int exactly = -1, NilParser sep = null)
+        public static Parser Repeat(this Parser self, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             return RepeatParser<Nil>.Create(self, min, max, exactly, sep).Cast();
         }
@@ -283,7 +283,7 @@ namespace Unclazz.Parsec
         /// <param name="exactly">繰り返しの回数</param>
         /// <param name="sep">セパレーターのためのパーサー</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public static Parser<IList<T>> Repeat<T>(this Parser<T> self, int min = 0, int max = -1, int exactly = -1, NilParser sep = null)
+        public static Parser<IList<T>> Repeat<T>(this Parser<T> self, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             return RepeatParser<T>.Create(self, min, max, exactly, sep);
         }
@@ -302,7 +302,7 @@ namespace Unclazz.Parsec
         /// <param name="self">レシーバー</param>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> Then<T>(this NilParser self, Parser<T> another)
+        public static Parser<T> Then<T>(this Parser self, Parser<T> another)
         {
             return new ThenTakeRightParser<Nil, T>(self, another);
         }
@@ -318,7 +318,7 @@ namespace Unclazz.Parsec
         /// <param name="self">レシーバー</param>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static NilParser Then(this NilParser self, NilParser another)
+        public static Parser Then(this Parser self, Parser another)
         {
             return new ThenTakeRightParser<Nil, Nil>(self, another).Cast();
         }
@@ -350,7 +350,7 @@ namespace Unclazz.Parsec
         /// <param name="self">レシーバー</param>
         /// <param name="another">別のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> Then<T>(this Parser<T> self, NilParser another)
+        public static Parser<T> Then<T>(this Parser<T> self, Parser another)
         {
             return new ThenTakeLeftParser<T, Nil>(self, another);
         }

@@ -2,7 +2,7 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class CharClassParser : NilParser
+    sealed class CharClassParser : Parser
     {
         internal CharClassParser(CharClasses.CharClass clazz)
         {

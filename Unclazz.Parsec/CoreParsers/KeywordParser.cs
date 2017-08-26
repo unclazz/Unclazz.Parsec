@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class KeywordParser : NilParser
+    sealed class KeywordParser : Parser
     {
         internal KeywordParser(string keyword) : this(keyword, -1) { }
         internal KeywordParser(string keyword, int cutIndex)

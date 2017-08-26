@@ -124,7 +124,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(r.Message, Does.StartWith("expected 'A'"));
             Assert.That(r.CanBacktrack, Is.True);
         }
-        NilParser CutStringAt(string s, int cutIndex)
+        Parser CutStringAt(string s, int cutIndex)
         {
             return Keyword(s.Substring(0, cutIndex)).Cut() & Keyword(s.Substring(cutIndex));
         }

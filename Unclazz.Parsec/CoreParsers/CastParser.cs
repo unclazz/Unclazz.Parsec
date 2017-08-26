@@ -31,7 +31,7 @@ namespace Unclazz.Parsec.CoreParsers
                 ParsecUtility.TypeToString(typeof(U)));
         }
     }
-    sealed class CastParser<T> : NilParser
+    sealed class CastParser<T> : Parser
     {
         internal CastParser(Parser<T> original)
         {

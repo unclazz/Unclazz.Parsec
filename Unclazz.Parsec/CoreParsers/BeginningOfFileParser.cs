@@ -1,6 +1,6 @@
 ﻿namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class BeginningOfFileParser : NilParser
+    sealed class BeginningOfFileParser : Parser
     {
         public override ParseResult<Nil> Parse(Reader input)
         {
