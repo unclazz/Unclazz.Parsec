@@ -85,8 +85,8 @@ namespace Test.Unclazz.Parsec
 
             // Act
             // Assert
-            Assert.That(cap0.ToString(), Is.EqualTo("Capture()"));
-            Assert.That(cap1.ToString(), Is.EqualTo("Capture(hello)"));
+            Assert.That(cap0.ToString(), Is.EqualTo("Optional()"));
+            Assert.That(cap1.ToString(), Is.EqualTo("Optional(hello)"));
         }
     }
 }
