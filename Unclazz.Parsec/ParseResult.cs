@@ -9,7 +9,9 @@ namespace Unclazz.Parsec
 {
     /// <summary>
     /// <see cref="ParseResult{T}"/>のコンパニオン・オブジェクトです。
+    /// <para>
     /// <see cref="ParseResult{T}"/>のインスタンスを生成するためのユーティリティとして機能します。
+    /// </para>
     /// </summary>
     public static class ParseResult
     {
@@ -53,14 +55,31 @@ namespace Unclazz.Parsec
     }
 
     /// <summary>
-    /// パース結果を表すクラスです。
-    /// インスタンスはコンパニオン・オブジェクト<see cref="ParseResult"/>の提供する静的ファクトリーメソッドにより得られます。
+    /// パース結果を表す構造体です。
+    /// <para>
+    /// インスタンスはコンパニオン・オブジェクト<see cref="ParseResult"/>が提供する静的ファクトリーメソッドにより得られます。
+    /// この構造体のインスタンスには3つの状態があります：
+    /// </para>
+    /// <list type="number">
+    /// <item>
+    ///     <term>パース失敗</term>
+    ///     <description><see cref="Successful"/>が<c>false</c>を返す。</description>
+    /// </item>
+    /// <item>
+    ///     <term>パース成功 - キャプチャなし</term>
+    ///     <description><see cref="Successful"/>が<c>true</c>を返し、
+    ///     <see cref="Capture"/>が空の（値なしの）<see cref="Optional{T}"/>を返す。</description>
+    /// </item>
+    /// <item>
+    ///     <term>パース成功 - キャプチャあり</term>
+    ///     <description><see cref="Successful"/>が<c>true</c>を返し、
+    ///     <see cref="Capture"/>が空でない（値ありの）<see cref="Optional{T}"/>を返す。</description>
+    /// </item>
+    /// </list>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">任意の型</typeparam>
     public struct ParseResult<T>
     {
-        static readonly IEnumerable<Optional<T>> _empty = new Optional<T>[0];
-
         internal ParseResult(bool s, CharacterPosition p, string m, bool c) : this(s, p, new Optional<T>(), m, c) { }
         internal ParseResult(bool s, CharacterPosition p, T v, string m, bool c) : this(s, p, new Optional<T>(v), m, c) { }
         internal ParseResult(bool s, CharacterPosition p, Optional<T> c, string m, bool cut)

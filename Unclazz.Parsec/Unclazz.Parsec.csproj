@@ -47,7 +47,8 @@
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="CoreParsers\LazyParser.cs" />
-    <Compile Include="NilParser.cs" />
+    <Compile Include="CoreParsers\TripleParser.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="Parsers.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
@@ -76,7 +77,7 @@
     <Compile Include="CoreParsers\OrNotParser.cs" />
     <Compile Include="CoreParsers\OrParser.cs" />
     <Compile Include="ParsecUtility.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="ParserT.cs" />
     <Compile Include="Reader.cs" />
     <Compile Include="Readers\IResettableReader.cs" />
     <Compile Include="Readers\ITextReader.cs" />

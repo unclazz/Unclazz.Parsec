@@ -8,15 +8,6 @@ namespace Unclazz.Parsec
 {
     /// <summary>
     /// パーサーを表す抽象クラスです。
-    /// <para>
-    /// この抽象クラスから派生した多くの抽象クラスと具象クラスが存在しています。
-    /// 抽象クラスの1つ<see cref="Parser"/>はパース結果の型が<see cref="Nil"/>であるパーサーです。
-    /// <see cref="Parser"/>はパースの成否判定だけを行うパーサーです。
-    /// <see cref="Nil"/>は実際にはインスタンスを持たないクラスであり、
-    /// パース結果<see cref="ParseResult{T}"/>はその成否にかかわらず常に値を持たないインスタンスです
-    /// （<see cref="ParseResult{T}.Capture"/>が空のシーケンスを返す）。
-    /// パース結果を文字列やその他の型のインスタンスとして取得する必要がある場合はこれ以外を使用します。
-    /// </para>
     /// </summary>
     /// <typeparam name="T">パース結果の型</typeparam>
     public abstract class Parser<T>

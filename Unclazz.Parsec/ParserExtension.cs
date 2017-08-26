@@ -368,7 +368,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<Tuple<T1, T2, T3>> Then<T1, T2, T3>(this Parser<T1> self, Parser<Tuple<T2, T3>> another)
         {
-            return new AndDoubleParser<T1, T2, T3>(self, another);
+            return TripleParser<T1, T2, T3>.Create(self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -384,7 +384,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<Tuple<T1, T2, T3>> Then<T1, T2, T3>(this Parser<Tuple<T1, T2>> self, Parser<T3> another)
         {
-            return new DoubleAndParser<T1, T2, T3>(self, another);
+            return TripleParser<T1, T2, T3>.Create(self, another);
         }
         #endregion
     }

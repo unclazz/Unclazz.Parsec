@@ -32,118 +32,127 @@ namespace Unclazz.Parsec.CoreParsers
             // RepeatMinMaxParserを返す
             return new RepeatMinMaxParser<T>(parser, min, max, sep);
         }
-
-
-
-    }
-
-    sealed class RepeatExactlyParser<T> : RepeatParser<T>
-    {
-        internal RepeatExactlyParser(Parser<T> original, int exactly, Parser<Nil> sep)
+        sealed class RepeatExactlyParser<T> : RepeatParser<T>
         {
-            _original = original ?? throw new ArgumentNullException(nameof(original));
-            if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
-            _exactly = exactly;
-            _sep = sep;
-            _capture = typeof(T) != typeof(Nil);
-        }
-
-        readonly Parser<T> _original;
-        readonly int _exactly;
-        readonly Parser<Nil> _sep;
-        readonly bool _capture;
-
-        public override ParseResult<IList<T>> Parse(Reader input)
-        {
-            // キャプチャ・モードの場合
-            // 元のパーサーがキャプチャした内容を格納するためキューを初期化
-            var list = _capture ? new List<T>() : null;
-            // パース開始時の文字位置を記憶
-            var pos = input.Position;
-            // 予め指定された回数のパースを試みる
-            for (var i = 0; i < _exactly; i++)
+            internal RepeatExactlyParser(Parser<T> original, int exactly, Parser<Nil> sep)
             {
-                // ループが2回目 かつ セパレーターのパーサーが指定されている場合
-                if (0 < i && _sep != null)
-                {
-                    // セパレーターのトークンのパース
-                    var sepResult = _sep.Parse(input);
-                    if (!sepResult.Successful)
-                    {
-                        return Failure(sepResult.Position, sepResult.Message);
-                    }
-                }
+                _original = original ?? throw new ArgumentNullException(nameof(original));
+                if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
+                _exactly = exactly;
+                _sep = sep;
+                _capture = typeof(T) != typeof(Nil);
+            }
 
-                // 主目的のトークンのパース
-                var mainResult = _original.Parse(input);
-                // 失敗の場合はそこでパースを中断
-                if (!mainResult.Successful)
-                {
-                    return Failure(mainResult.Position, mainResult.Message);
-                }
+            readonly Parser<T> _original;
+            readonly int _exactly;
+            readonly Parser<Nil> _sep;
+            readonly bool _capture;
 
+            public override ParseResult<IList<T>> Parse(Reader input)
+            {
                 // キャプチャ・モードの場合
-                // 元のパーサーがキャプチャした内容をキューに追加
-                if (_capture) mainResult.Capture.IfPresent(list.Add);
-            }
-            // ループを無事抜けたならパースは成功
-            return _capture ? Success(pos, list) : Success(pos);
-        }
-        public override string ToString()
-        {
-            if (_sep == null)
-            {
-                return string.Format("Repeat({0}, exactly = {1})", _original, _exactly);
-            }
-            else
-            {
-                return string.Format("Repeat({0}, exactly = {1}, sep = {2})", _original, _exactly, _sep);
-            }
-        }
-    }
-    sealed class RepeatMinMaxParser<T> : RepeatParser<T>
-    {
-        internal RepeatMinMaxParser(Parser<T> original, int min, int max, Parser<Nil> sep)
-        {
-            max = max == -1 ? int.MaxValue : max;
-            min = min == -1 ? 0 : min;
-
-            if (max < 1) throw new ArgumentOutOfRangeException(nameof(max));
-            if (min < 0) throw new ArgumentOutOfRangeException(nameof(max));
-            if (max <= min) throw new ArgumentOutOfRangeException("max <= min");
-
-            _original = original ?? throw new ArgumentNullException(nameof(original));
-            _min = min;
-            _max = max;
-            _sep = sep;
-            _capture = typeof(T) != typeof(Nil);
-        }
-
-        readonly int _min;
-        readonly int _max;
-        readonly Parser<T> _original;
-        readonly Parser<Nil> _sep;
-        readonly bool _capture;
-
-        public override ParseResult<IList<T>> Parse(Reader input)
-        {
-            // キャプチャ・モードの場合
-            // 元のパーサーがキャプチャした内容を格納するためキューを初期化
-            var list = _capture ? new List<T>() : null;
-            // パース開始時の文字位置を記憶
-            var pos = input.Position;
-            // 予め指定された回数のパースを試みる
-            for (var i = 1; i <= _max; i++)
-            {
-                // min ＜ ループ回数 ならリセットのための準備
-                if (_min < i) input.Mark();
-
-                // ループが2回目 かつ セパレーターのパーサーが指定されている場合
-                if (1 < i && _sep != null)
+                // 元のパーサーがキャプチャした内容を格納するためキューを初期化
+                var list = _capture ? new List<T>() : null;
+                // パース開始時の文字位置を記憶
+                var pos = input.Position;
+                // 予め指定された回数のパースを試みる
+                for (var i = 0; i < _exactly; i++)
                 {
-                    // セパレーターのトークンのパース
-                    var sepResult = _sep.Parse(input);
-                    if (!sepResult.Successful)
+                    // ループが2回目 かつ セパレーターのパーサーが指定されている場合
+                    if (0 < i && _sep != null)
+                    {
+                        // セパレーターのトークンのパース
+                        var sepResult = _sep.Parse(input);
+                        if (!sepResult.Successful)
+                        {
+                            return Failure(sepResult.Position, sepResult.Message);
+                        }
+                    }
+
+                    // 主目的のトークンのパース
+                    var mainResult = _original.Parse(input);
+                    // 失敗の場合はそこでパースを中断
+                    if (!mainResult.Successful)
+                    {
+                        return Failure(mainResult.Position, mainResult.Message);
+                    }
+
+                    // キャプチャ・モードの場合
+                    // 元のパーサーがキャプチャした内容をキューに追加
+                    if (_capture) mainResult.Capture.IfPresent(list.Add);
+                }
+                // ループを無事抜けたならパースは成功
+                return _capture ? Success(pos, list) : Success(pos);
+            }
+            public override string ToString()
+            {
+                if (_sep == null)
+                {
+                    return string.Format("Repeat({0}, exactly = {1})", _original, _exactly);
+                }
+                else
+                {
+                    return string.Format("Repeat({0}, exactly = {1}, sep = {2})", _original, _exactly, _sep);
+                }
+            }
+        }
+        sealed class RepeatMinMaxParser<T> : RepeatParser<T>
+        {
+            internal RepeatMinMaxParser(Parser<T> original, int min, int max, Parser<Nil> sep)
+            {
+                max = max == -1 ? int.MaxValue : max;
+                min = min == -1 ? 0 : min;
+
+                if (max < 1) throw new ArgumentOutOfRangeException(nameof(max));
+                if (min < 0) throw new ArgumentOutOfRangeException(nameof(max));
+                if (max <= min) throw new ArgumentOutOfRangeException("max <= min");
+
+                _original = original ?? throw new ArgumentNullException(nameof(original));
+                _min = min;
+                _max = max;
+                _sep = sep;
+                _capture = typeof(T) != typeof(Nil);
+            }
+
+            readonly int _min;
+            readonly int _max;
+            readonly Parser<T> _original;
+            readonly Parser<Nil> _sep;
+            readonly bool _capture;
+
+            public override ParseResult<IList<T>> Parse(Reader input)
+            {
+                // キャプチャ・モードの場合
+                // 元のパーサーがキャプチャした内容を格納するためキューを初期化
+                var list = _capture ? new List<T>() : null;
+                // パース開始時の文字位置を記憶
+                var pos = input.Position;
+                // 予め指定された回数のパースを試みる
+                for (var i = 1; i <= _max; i++)
+                {
+                    // min ＜ ループ回数 ならリセットのための準備
+                    if (_min < i) input.Mark();
+
+                    // ループが2回目 かつ セパレーターのパーサーが指定されている場合
+                    if (1 < i && _sep != null)
+                    {
+                        // セパレーターのトークンのパース
+                        var sepResult = _sep.Parse(input);
+                        if (!sepResult.Successful)
+                        {
+                            if (_min < i)
+                            {
+                                // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
+                                input.Reset();
+                                input.Unmark();
+                                break;
+                            }
+                            return Failure(sepResult.Position, sepResult.Message);
+                        }
+                    }
+
+                    var r = _original.Parse(input);
+                    if (!r.Successful)
                     {
                         if (_min < i)
                         {
@@ -152,42 +161,29 @@ namespace Unclazz.Parsec.CoreParsers
                             input.Unmark();
                             break;
                         }
-                        return Failure(sepResult.Position, sepResult.Message);
+                        return Failure(r.Position, r.Message);
                     }
-                }
 
-                var r = _original.Parse(input);
-                if (!r.Successful)
+                    // キャプチャ・モードの場合
+                    // 元のパーサーがキャプチャした内容をキューに追加
+                    if (_capture) r.Capture.IfPresent(list.Add);
+
+                    // min ＜ ループ回数 ならリセットのための準備を解除
+                    if (_min < i) input.Unmark();
+                }
+                return _capture ? Success(pos, list) : Success(pos);
+            }
+
+            public override string ToString()
+            {
+                if (_sep == null)
                 {
-                    if (_min < i)
-                    {
-                        // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
-                        input.Reset();
-                        input.Unmark();
-                        break;
-                    }
-                    return Failure(r.Position, r.Message);
+                    return string.Format("Repeat({0}, min = {1}, max = {2})", _original, _min, _max);
                 }
-
-                // キャプチャ・モードの場合
-                // 元のパーサーがキャプチャした内容をキューに追加
-                if (_capture) r.Capture.IfPresent(list.Add);
-
-                // min ＜ ループ回数 ならリセットのための準備を解除
-                if (_min < i) input.Unmark();
-            }
-            return _capture ? Success(pos, list) : Success(pos);
-        }
-
-        public override string ToString()
-        {
-            if (_sep == null)
-            {
-                return string.Format("Repeat({0}, min = {1}, max = {2})", _original, _min, _max);
-            }
-            else
-            {
-                return string.Format("Repeat({0}, min = {1}, max = {2}, sep = {3})", _original, _min, _max, _sep);
+                else
+                {
+                    return string.Format("Repeat({0}, min = {1}, max = {2}, sep = {3})", _original, _min, _max, _sep);
+                }
             }
         }
     }
