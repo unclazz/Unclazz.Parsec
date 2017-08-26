@@ -6,6 +6,7 @@ using static Unclazz.Parsec.Parsers;
 
 namespace Unclazz.Parsec
 {
+
     /// <summary>
     /// <see cref="Parser{T}"/>のコンパニオン・オブジェクトです。
     /// <para>
@@ -14,7 +15,7 @@ namespace Unclazz.Parsec
     /// パース結果の成否と関係なく、<see cref="ParseResult{T}.Capture"/>は必ず空のシーケンスになります。
     /// </para>
     /// </summary>
-    public abstract class Parser : IParser<Nil>
+    public abstract class Parser : ParserBase<Nil>
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
@@ -48,39 +49,6 @@ namespace Unclazz.Parsec
         }
         #endregion
 
-        #region 具象クラス実装者のためのメンバーの宣言
-        /// <summary>
-        /// パースを行います。
-        /// </summary>
-        /// <param name="input">入力データ</param>
-        /// <returns>パース結果</returns>
-        public abstract ParseResult<Nil> Parse(ParserInput input);
-        /// <summary>
-        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
-        /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<Nil> Success(CharacterPosition position, bool canBacktrack = true)
-        {
-            return ParseResult.OfSuccess<Nil>(position, canBacktrack: canBacktrack);
-        }
-        /// <summary>
-        /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
-        /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<Nil> Failure(CharacterPosition position,
-            string message, bool canBacktrack = true)
-        {
-            return ParseResult.OfFailure<Nil>(position, message, canBacktrack);
-        }
-        #endregion
-
         /// <summary>
         /// このパーサーの読み取り結果をキャプチャするパーサーを生成します。
         /// <para>
@@ -104,7 +72,7 @@ namespace Unclazz.Parsec
     /// パーサーを表す抽象クラスです。
     /// </summary>
     /// <typeparam name="T">パース結果の型</typeparam>
-    public abstract class Parser<T> : IParser<T>
+    public abstract class Parser<T> : ParserBase<T>
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
@@ -202,49 +170,6 @@ namespace Unclazz.Parsec
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
             return new ThenTakeLeftParser<T, Nil>(left, right);
-        }
-        #endregion
-
-        #region 具象クラス実装者のためのメンバーの宣言
-        /// <summary>
-        /// パースを行います。
-        /// <para>
-        /// パーサーの具象クラスを実装する場合、このメソッドを実装する必要があります。
-        /// パース成否は<see cref="ParseResult{T}"/>のインスタンスで表されます。
-        /// このメソッドはいかなる場合も<c>null</c>を返してはなりません。
-        /// またこのメソッドはいかなる場合も例外スローを行ってはなりません。
-        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
-        /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知される必要があります。
-        /// </para>
-        /// </summary>
-        /// <param name="input">入力データ</param>
-        /// <returns>パース結果</returns>
-        public abstract ParseResult<T> Parse(ParserInput input);
-        /// <summary>
-        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
-        /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="capture">パースされた値を内包する可能性のある<see cref="Optional{T}"/>インスタンス</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Success(CharacterPosition position,
-            Optional<T> capture = new Optional<T>(), bool canBacktrack = true)
-        {
-            return ParseResult.OfSuccess(position, capture, canBacktrack);
-        }
-        /// <summary>
-        /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
-        /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Failure(CharacterPosition position, 
-            string message, bool canBacktrack = true)
-        {
-            return ParseResult.OfFailure<T>(position, message, canBacktrack);
         }
         #endregion
 

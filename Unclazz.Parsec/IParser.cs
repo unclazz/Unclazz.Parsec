@@ -27,13 +27,6 @@
         /// 正常・異常を問わずこのメソッド内で起こったことはすべて
         /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
-        /// <para>
-        /// <see cref="ParseResult{T}.Position"/>はパース開始時の文字位置を返します。
-        /// 多くのパーサーでは<see cref="ParseResult{T}.Capture"/>プロパティが返す<see cref="Optional{T}"/>は値を含みません。
-        /// 例外は<c>Parser&lt;string&gt;.Map&lt;T&gt;(T)</c>と<c>Parser&lt;char&gt;.Map&lt;T&gt;(T)</c>で、
-        /// これらのメソッドが返すパーサーのパース結果は値を含んでいます。
-        /// それ以外で値のキャプチャが必要な場合は<c>Parser&lt;string&gt;.Capture()</c>を使用します。
-        /// </para>
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
