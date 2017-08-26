@@ -4,13 +4,13 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class LogParser<T> : Parser<T>
     {
-        internal LogParser(IParser<T> target, Action<string> logger)
+        internal LogParser(Parser<T> target, Action<string> logger)
         {
             _target = target ?? throw new ArgumentNullException(nameof(target));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        readonly IParser<T> _target;
+        readonly Parser<T> _target;
         readonly Action<string> _logger;
 
         public override ParseResult<T> Parse(Reader input)

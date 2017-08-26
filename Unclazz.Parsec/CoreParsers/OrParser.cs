@@ -4,7 +4,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class OrParser<T> : Parser<T>
     {
-        internal static OrParser<T> RightAssoc(IParser<T> left, IParser<T> right, params IParser<T>[] others)
+        internal static OrParser<T> RightAssoc(Parser<T> left, Parser<T> right, params Parser<T>[] others)
         {
             OrParser<T> tmpOr = RightAssoc(left, right);
             foreach (var other in others)
@@ -13,7 +13,7 @@ namespace Unclazz.Parsec.CoreParsers
             }
             return tmpOr;
         }
-        internal static OrParser<T> RightAssoc(IParser<T> left, IParser<T> right)
+        internal static OrParser<T> RightAssoc(Parser<T> left, Parser<T> right)
         {
             var leftOr = left as OrParser<T>;
             if (leftOr == null)
@@ -25,7 +25,7 @@ namespace Unclazz.Parsec.CoreParsers
                 return new OrParser<T>(leftOr.Left, new OrParser<T>(leftOr.Right, right));
             }
         }
-        internal static OrParser<T> LeftAssoc(IParser<T> left, IParser<T> right, params IParser<T>[] others)
+        internal static OrParser<T> LeftAssoc(Parser<T> left, Parser<T> right, params Parser<T>[] others)
         {
             OrParser<T> tmpOr = new OrParser<T>(left, right);
             foreach (var other in others)
@@ -40,14 +40,14 @@ namespace Unclazz.Parsec.CoreParsers
         }
 
 
-        OrParser(IParser<T> left, IParser<T> right)
+        OrParser(Parser<T> left, Parser<T> right)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
         }
 
-        internal IParser<T> Left { get; }
-        internal IParser<T> Right { get; }
+        internal Parser<T> Left { get; }
+        internal Parser<T> Right { get; }
 
         public override ParseResult<T> Parse(Reader input)
         {

@@ -2,14 +2,14 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class NotParser<T> : Parser
+    sealed class NotParser<T> : NilParser
     {
-        internal NotParser(IParser<T> original)
+        internal NotParser(Parser<T> original)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
-        readonly IParser<T> _original;
+        readonly Parser<T> _original;
 
         public override ParseResult<Nil> Parse(Reader input)
         {

@@ -4,12 +4,12 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class LazyParser<T> : Parser<T>
     {
-        internal LazyParser(Func<IParser<T>> factory)
+        internal LazyParser(Func<Parser<T>> factory)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
-        readonly Func<IParser<T>> _factory;
-        IParser<T> _cache;
+        readonly Func<Parser<T>> _factory;
+        Parser<T> _cache;
         public override ParseResult<T> Parse(Reader input)
         {
             return (_cache ?? (_cache = _factory())).Parse(input);

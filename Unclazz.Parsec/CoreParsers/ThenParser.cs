@@ -10,14 +10,14 @@ namespace Unclazz.Parsec.CoreParsers
     /// <typeparam name="R">元のパーサーの結果型（右側）</typeparam>
     sealed class ThenTakeLeftParser<L, R> : Parser<L>
     {
-        internal ThenTakeLeftParser(IParser<L> left, IParser<R> right)
+        internal ThenTakeLeftParser(Parser<L> left, Parser<R> right)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
         }
 
-        public IParser<L> Left { get; }
-        public IParser<R> Right { get; }
+        public Parser<L> Left { get; }
+        public Parser<R> Right { get; }
 
         public override ParseResult<L> Parse(Reader input)
         {
@@ -52,14 +52,14 @@ namespace Unclazz.Parsec.CoreParsers
     /// <typeparam name="R">元のパーサーの結果型（右側）</typeparam>
     sealed class ThenTakeRightParser<L, R> : Parser<R>
     {
-        internal ThenTakeRightParser(IParser<L> left, IParser<R> right)
+        internal ThenTakeRightParser(Parser<L> left, Parser<R> right)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
         }
 
-        public IParser<L> Left { get; }
-        public IParser<R> Right { get; }
+        public Parser<L> Left { get; }
+        public Parser<R> Right { get; }
 
         public override ParseResult<R> Parse(Reader input)
         {

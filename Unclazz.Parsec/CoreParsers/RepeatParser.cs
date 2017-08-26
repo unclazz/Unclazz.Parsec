@@ -6,7 +6,7 @@ namespace Unclazz.Parsec.CoreParsers
 
     abstract class RepeatParser<T> : Parser<IList<T>>
     {
-        public static RepeatParser<T> Create(IParser<T> parser, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
+        public static RepeatParser<T> Create(Parser<T> parser, int min = 0, int max = -1, int exactly = -1, Parser<Nil> sep = null)
         {
             // 後続処理のためexactlyだけはまず範囲チェック
             if (exactly == 0 | exactly < -1) throw new ArgumentOutOfRangeException(nameof(exactly));
@@ -39,7 +39,7 @@ namespace Unclazz.Parsec.CoreParsers
 
     sealed class RepeatExactlyParser<T> : RepeatParser<T>
     {
-        internal RepeatExactlyParser(IParser<T> original, int exactly, Parser sep)
+        internal RepeatExactlyParser(Parser<T> original, int exactly, Parser<Nil> sep)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
@@ -48,9 +48,9 @@ namespace Unclazz.Parsec.CoreParsers
             _capture = typeof(T) != typeof(Nil);
         }
 
-        readonly IParser<T> _original;
+        readonly Parser<T> _original;
         readonly int _exactly;
-        readonly Parser _sep;
+        readonly Parser<Nil> _sep;
         readonly bool _capture;
 
         public override ParseResult<IList<T>> Parse(Reader input)
@@ -103,7 +103,7 @@ namespace Unclazz.Parsec.CoreParsers
     }
     sealed class RepeatMinMaxParser<T> : RepeatParser<T>
     {
-        internal RepeatMinMaxParser(IParser<T> original, int min, int max, Parser sep)
+        internal RepeatMinMaxParser(Parser<T> original, int min, int max, Parser<Nil> sep)
         {
             max = max == -1 ? int.MaxValue : max;
             min = min == -1 ? 0 : min;
@@ -121,8 +121,8 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly int _min;
         readonly int _max;
-        readonly IParser<T> _original;
-        readonly Parser _sep;
+        readonly Parser<T> _original;
+        readonly Parser<Nil> _sep;
         readonly bool _capture;
 
         public override ParseResult<IList<T>> Parse(Reader input)

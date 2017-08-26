@@ -26,8 +26,8 @@ namespace Example.Unclazz.Parcec
     {
         readonly static Parser<string> addSub = CharIn("+-").Capture();
         readonly static Parser<string> mulDiv = CharIn("*/").Capture();
-        readonly static Parser parenLeft = Char('(');
-        readonly static Parser parenRight = Char(')');
+        readonly static NilParser parenLeft = Char('(');
+        readonly static NilParser parenRight = Char(')');
         readonly static Parser<double> number = new NumberParser();
 
         public override ParseResult<double> Parse(Reader input)
@@ -83,11 +83,11 @@ namespace Example.Unclazz.Parcec
 
     sealed class NumberParser : Parser<double>
     {
-        readonly static Parser sign = CharIn("+-").OrNot();
-        readonly static Parser digits = CharsWhileIn("0123456789", min: 0);
-        readonly static Parser integral = Char('0') | (CharBetween('1', '9') & digits);
-        readonly static Parser fractional = Char('.') & digits;
-        readonly static Parser exponent = CharIn("eE") & (sign) & (digits);
+        readonly static NilParser sign = CharIn("+-").OrNot();
+        readonly static NilParser digits = CharsWhileIn("0123456789", min: 0);
+        readonly static NilParser integral = Char('0') | (CharBetween('1', '9') & digits);
+        readonly static NilParser fractional = Char('.') & digits;
+        readonly static NilParser exponent = CharIn("eE") & (sign) & (digits);
         readonly static Parser<double> number = ((integral & fractional.OrNot() &
             exponent.OrNot()).Capture()).Map(double.Parse);
 

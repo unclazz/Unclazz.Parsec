@@ -3,7 +3,7 @@ using Unclazz.Parsec.CharClasses;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class CharsWhileBetweenParser : Parser
+    sealed class CharsWhileBetweenParser : NilParser
     {
         internal CharsWhileBetweenParser(char start, char end, int min)
         {

@@ -14,21 +14,21 @@ namespace Unclazz.Parsec
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
         /// </summary>
-        public static Parser BeginningOfFile { get; } = new BeginningOfFileParser();
+        public static NilParser BeginningOfFile { get; } = new BeginningOfFileParser();
         /// <summary>
         /// データソースの終端（EOF）にだけマッチするパーサーです。
         /// </summary>
-        public static Parser EndOfFile { get; } = new EndOfFileParser();
+        public static NilParser EndOfFile { get; } = new EndOfFileParser();
         /// <summary>
         /// 0文字以上の空白文字(コードポイント<c>32</c>）と
         /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
-        public static Parser WhileSpaceAndControls { get; } =
+        public static NilParser WhileSpaceAndControls { get; } =
             new CharsWhileInParser(CharClass.Between((char)0, (char)32) + (char)127, 0);
         /// <summary>
         /// 0文字以上の制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
-        public static Parser WhileControls { get; } =
+        public static NilParser WhileControls { get; } =
             new CharsWhileInParser(CharClass.Between((char)0, (char)31) + (char)127, 0);
         #endregion
 
@@ -39,7 +39,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Not<T>(Parser<T> operand)
+        public static NilParser Not<T>(Parser<T> operand)
         {
             return new NotParser<T>(operand);
         }
@@ -48,7 +48,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Not(Parser operand)
+        public static NilParser Not(NilParser operand)
         {
             return new NotParser<Nil>(operand);
         }
@@ -67,7 +67,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser For(Func<Reader, ParseResult<Nil>> func)
+        public static NilParser For(Func<Reader, ParseResult<Nil>> func)
         {
             return new DelegateParser<Nil>(func).Cast();
         }
@@ -88,7 +88,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="factory">パーサーを生成するデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Lazy(Func<Parser> factory)
+        public static NilParser Lazy(Func<NilParser> factory)
         {
             return new LazyParser<Nil>(factory).Cast();
         }
@@ -97,7 +97,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Char(char ch)
+        public static NilParser Char(char ch)
         {
             return new CharParser(ch);
         }
@@ -107,7 +107,7 @@ namespace Unclazz.Parsec
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharBetween(char start, char end)
+        public static NilParser CharBetween(char start, char end)
         {
             return new CharClassParser(CharClass.Between(start, end));
         }
@@ -116,7 +116,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharIn(CharClass clazz)
+        public static NilParser CharIn(CharClass clazz)
         {
             return new CharClassParser(clazz);
         }
@@ -125,7 +125,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharIn(IEnumerable<char> chars)
+        public static NilParser CharIn(IEnumerable<char> chars)
         {
             return new CharClassParser(CharClass.AnyOf(chars));
         }
@@ -136,7 +136,7 @@ namespace Unclazz.Parsec
         /// <param name="end">範囲の終了</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharsWhileBetween(char start, char end, int min = 1)
+        public static NilParser CharsWhileBetween(char start, char end, int min = 1)
         {
             return new CharsWhileBetweenParser(start, end, min);
         }
@@ -146,7 +146,7 @@ namespace Unclazz.Parsec
         /// <param name="chars">文字集合</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharsWhileIn(IEnumerable<char> chars, int min = 1)
+        public static NilParser CharsWhileIn(IEnumerable<char> chars, int min = 1)
         {
             return new CharsWhileInParser(CharClass.AnyOf(chars), min);
         }
@@ -156,7 +156,7 @@ namespace Unclazz.Parsec
         /// <param name="clazz">文字クラス</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharsWhileIn(CharClass clazz, int min = 1)
+        public static NilParser CharsWhileIn(CharClass clazz, int min = 1)
         {
             return new CharsWhileInParser(clazz, min);
         }
@@ -170,7 +170,7 @@ namespace Unclazz.Parsec
         /// <param name="keyword">キーワード</param>
         /// <param name="cutIndex">カットを行う文字位置</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Keyword(string keyword, int cutIndex = -1)
+        public static NilParser Keyword(string keyword, int cutIndex = -1)
         {
             return new KeywordParser(keyword, cutIndex);
         }
@@ -179,7 +179,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keywords">キーワード</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser StringIn(params string[] keywords)
+        public static NilParser StringIn(params string[] keywords)
         {
             return new StringInParser(keywords);
         }
