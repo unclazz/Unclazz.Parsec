@@ -1,22 +1,20 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 using Unclazz.Parsec;
 using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.CoreParsers
 {
     [TestFixture]
-    public class CaptureParserTest
+    public class CastParserTest
     {
         [Test]
         public void Parse_Case1()
         {
             // Arrange
             var kp = Keyword("0123");
-            var cp = kp.Capture();
+            var cp = kp.Cast<string>();
 
             // Act
             var res = cp.Parse("012XXXXX");
@@ -30,15 +28,14 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var cp = kp.Capture();
+            var cp = kp.Cast<string>();
 
             // Act
             var res = cp.Parse("0123XXXX");
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("0123"));
+            Assert.That(res.Capture.Present, Is.False);
         }
     }
 }
