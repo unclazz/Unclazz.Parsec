@@ -8,7 +8,7 @@ namespace Unclazz.Parsec
     /// このクラスは抽象クラス<see cref="Parser"/>の宣言の中で使用されています。
     /// <see cref="Parser"/>から派生した具象クラスは値のキャプチャを一切行いません。
     /// メソッド<see cref="Parser.Parse(ParserInput)"/>はパースを行いその結果として<see cref="ParseResult{T}"/>を返しますが、
-    /// パース結果の成否と関係なく、<see cref="ParseResult{T}.Capture"/>は必ず空のシーケンスになります。
+    /// パース結果の成否と関係なく、<see cref="ParseResult{T}.Capture"/>が参照する<see cref="Optional{T}"/>は決して値を持ちません。
     /// </para>
     /// </summary>
     public class Nil
