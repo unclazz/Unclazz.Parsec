@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parser;
+using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.CoreParsers
 {

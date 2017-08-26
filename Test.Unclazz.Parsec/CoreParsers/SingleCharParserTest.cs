@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using Unclazz.Parsec;
+using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.CoreParsers
 {
@@ -11,7 +12,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var input = ParserInput.FromString("hello");
-            var parser = Parser.Char('a');
+            var parser = Char('a');
 
             // Act
             var result = parser.Parse(input);
@@ -25,7 +26,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var input = ParserInput.FromString("hello");
-            var parser = Parser.Char('h');
+            var parser = Char('h');
 
             // Act
             var result = parser.Parse(input);

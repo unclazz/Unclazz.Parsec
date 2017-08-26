@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
+using static Unclazz.Parsec.Parsers;
 using Unclazz.Parsec.CoreParsers;
 
 namespace Test.Unclazz.Parsec
@@ -22,7 +23,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Keyword(word);
+            var parser = Keyword(word);
 
             // Act
             var result = parser.Parse(input);
@@ -42,7 +43,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Keyword(word);
+            var parser = Keyword(word);
             input.Read();
 
             // Act
@@ -63,7 +64,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Keyword(word).Capture();
+            var parser = Keyword(word).Capture();
             input.Read();
 
             // Act
@@ -91,7 +92,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.Keyword(keyword, cutIndex);
+            var parser = Keyword(keyword, cutIndex);
 
             // Act
             var result = parser.Parse(input);
@@ -107,7 +108,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString("0123456789X");
-            var parser = Parser.Keyword("012X456", cutIndex: cutIndex);
+            var parser = Keyword("012X456", cutIndex: cutIndex);
 
             // Act
             var result = parser.Parse(input);

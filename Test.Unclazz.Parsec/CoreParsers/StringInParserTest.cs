@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parser;
+using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.CoreParsers
 {
@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var input = ParserInput.FromString("hellox");
-            var parser = Parser.StringIn(keywords);
+            var parser = StringIn(keywords);
 
             // Act
             var result = parser.Parse(input);

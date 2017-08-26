@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parser;
+using static Unclazz.Parsec.Parsers;
 using System;
 using Unclazz.Parsec.CoreParsers;
 

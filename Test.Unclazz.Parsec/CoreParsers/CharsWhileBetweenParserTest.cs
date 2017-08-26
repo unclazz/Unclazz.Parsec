@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
+using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec
 {
@@ -22,7 +23,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.CharsWhileBetween(start, end);
+            var parser = CharsWhileBetween(start, end);
 
             // Act
             var result = parser.Parse(input);
@@ -48,7 +49,7 @@ namespace Test.Unclazz.Parsec
         {
             // Arrange
             var input = ParserInput.FromString(text);
-            var parser = Parser.CharsWhileBetween(start, end, minLength);
+            var parser = CharsWhileBetween(start, end, minLength);
 
             // Act
             var result = parser.Parse(input);

@@ -2,7 +2,7 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class NotParser<T> : Parser<T>
+    sealed class NotParser<T> : Parser
     {
         internal NotParser(IParser<T> original)
         {
@@ -11,7 +11,7 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly IParser<T> _original;
 
-        public override ParseResult<T> Parse(ParserInput input)
+        public override ParseResult<Nil> Parse(ParserInput input)
         {
             input.Mark();
             var p = input.Position;
@@ -25,8 +25,7 @@ namespace Unclazz.Parsec.CoreParsers
             {
                 input.Reset();
                 input.Unmark();
-                return Success(p, capture: new Optional<T>(),
-                    canBacktrack: originalResult.CanBacktrack);
+                return Success(p, canBacktrack: originalResult.CanBacktrack);
             }
         }
 
