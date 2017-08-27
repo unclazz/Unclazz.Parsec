@@ -4,8 +4,14 @@ using Unclazz.Parsec.CharClasses;
 
 namespace Unclazz.Parsec
 {
+    /// <summary>
+    /// 定義済みパーサーのファクトリーオブジェクトを表すインターフェースです。
+    /// </summary>
     public interface IParserFactory
     {
+        /// <summary>
+        /// このファクトリーで使用されるコンフィギュレーションです。
+        /// </summary>
         IParserConfiguration Configuration { get; }
 
         Parser Char(char ch);
