@@ -198,7 +198,11 @@ sealed class JsonExprParser : Parser<IJsonObject>
 
     public JsonExprParser()
     {
-        Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
+        // パーサーのコンフィギュレーションを変更。
+        // トークンに先行する空白文字とCRLFは無意味な文字として自動スキップさせる設定を行う。
+        // ※Cofigure(...)による設定はこのパーサーや、このパーサーが派生クラス実装者に公開している
+        // 各種ファクトリーメソッドから得られる定義済みパーサーのインスタンスに引き継がれる。
+        Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
 
         // JSON表現はObject・Arrayの要素としても登場。
         // 結果、jsonExpr・_array・_objectは再帰的関係を持つ。
