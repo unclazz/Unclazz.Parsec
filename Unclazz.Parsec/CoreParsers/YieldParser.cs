@@ -1,8 +1,8 @@
 ﻿namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class PassParser<T> : Parser<T>
+    sealed class YieldParser<T> : Parser<T>
     {
-        internal PassParser(IParserConfiguration conf, T value) : base(conf)
+        internal YieldParser(IParserConfiguration conf, T value) : base(conf)
         {
             _value = value;
         }
@@ -16,7 +16,7 @@
 
         public override string ToString()
         {
-            return string.Format("Pass({0})");
+            return string.Format("Yield({0})");
         }
     }
 }

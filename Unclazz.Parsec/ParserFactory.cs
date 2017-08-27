@@ -219,6 +219,19 @@ namespace Unclazz.Parsec
         {
             return new StringInParser(this, keywords);
         }
+        /// <summary>
+        /// 指定した値をキャプチャ結果とするパーサーを生成します。
+        /// <para>このパーサーは実際には読み取りは行わず、パース結果は必ず成功となります。
+        /// キャプチャを行わないパーサーに<c>&amp;</c>や<c>Then(...)</c>で結合することで、
+        /// そのパーサーの代わりにキャプチャ結果を作り出すように働きます。</para>
+        /// </summary>
+        /// <typeparam name="U">任意の型</typeparam>
+        /// <param name="value">キャプチャ結果となる値</param>
+        /// <returns>新しいパーサー</returns>
+        public Parser<U> Yield<U>(U value)
+        {
+            return new YieldParser<U>(this, value);
+        }
         #endregion
     }
 }

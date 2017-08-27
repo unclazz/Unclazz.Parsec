@@ -29,5 +29,6 @@ namespace Unclazz.Parsec
         Parser Not(Parser operand);
         Parser Not<T>(Parser<T> operand);
         Parser StringIn(params string[] keywords);
+        Parser<T> Yield<T>(T value);
     }
 }
