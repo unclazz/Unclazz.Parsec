@@ -45,6 +45,10 @@ namespace Unclazz.Parsec
         }
         #endregion
 
+        /// <summary>
+        /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
+        /// </summary>
+        /// <param name="conf"></param>
         protected Parser(IParserConfiguration conf) : base(conf) { }
     }
 }
