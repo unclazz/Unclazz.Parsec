@@ -1,6 +1,6 @@
 ﻿using Unclazz.Parsec;
 
-namespace Example.Unclazz.Parcec
+namespace Example.Unclazz.Parcec.Math
 {
     sealed class NumberParser : Parser<double>
     {
