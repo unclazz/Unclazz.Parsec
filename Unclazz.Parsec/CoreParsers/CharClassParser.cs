@@ -4,12 +4,12 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharClassParser : Parser
     {
-        internal CharClassParser(IParserConfiguration conf, CharClasses.CharClass clazz) : base(conf)
+        internal CharClassParser(IParserConfiguration conf, CharClass clazz) : base(conf)
         {
             _clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
         }
 
-        readonly CharClasses.CharClass _clazz;
+        readonly CharClass _clazz;
 
         protected override ParseResult<Nil> DoParse(Reader input)
         {

@@ -1,7 +1,7 @@
 ﻿using Unclazz.Commons.Json;
 using Unclazz.Parsec;
 
-namespace Example.Unclazz.Parcec
+namespace Example.Unclazz.Parsec
 {
     sealed class JsonNullParser : Parser<IJsonObject>
     {

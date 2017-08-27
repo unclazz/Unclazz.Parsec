@@ -1,11 +1,11 @@
-﻿using Example.Unclazz.Parcec.Math;
+﻿using Example.Unclazz.Parsec.Math;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
 
-namespace Example.Unclazz.Parcec
+namespace Example.Unclazz.Parsec
 {
     class Program
     {

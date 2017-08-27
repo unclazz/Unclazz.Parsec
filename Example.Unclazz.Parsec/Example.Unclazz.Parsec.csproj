@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{672A8E88-C720-4DD4-B146-5704D69839C1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example.Unclazz.Parcec</RootNamespace>
-    <AssemblyName>Example.Unclazz.Parcec</AssemblyName>
+    <RootNamespace>Example.Unclazz.Parsec</RootNamespace>
+    <AssemblyName>Example.Unclazz.Parsec</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

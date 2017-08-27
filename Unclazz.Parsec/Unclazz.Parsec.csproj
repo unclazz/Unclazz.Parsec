@@ -55,13 +55,13 @@
     <Compile Include="ParserFactory.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="Parsers.cs" />
-    <Compile Include="Readers\AutoDispose.cs" />
+    <Compile Include="AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Optional.cs" />
     <Compile Include="CharacterPosition.cs" />
     <Compile Include="CoreParsers\CharClassParser.cs" />
-    <Compile Include="CharClasses\CharRange.cs" />
-    <Compile Include="CharClasses\CharClass.cs" />
+    <Compile Include="CharRange.cs" />
+    <Compile Include="CharClass.cs" />
     <Compile Include="CharClasses\DelegateCharClass.cs" />
     <Compile Include="CharClasses\ComplementCharClass.cs" />
     <Compile Include="CharClasses\SingleCharRangeCharClass.cs" />

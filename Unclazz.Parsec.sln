@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unclazz.Parsec", "Unclazz.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Unclazz.Parsec", "Test.Unclazz.Parsec\Test.Unclazz.Parsec.csproj", "{B14E443D-30CC-42F4-B31A-9C3C49AC4A16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Unclazz.Parcec", "Example.Unclazz.Parcec\Example.Unclazz.Parcec.csproj", "{672A8E88-C720-4DD4-B146-5704D69839C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Unclazz.Parsec", "Example.Unclazz.Parsec\Example.Unclazz.Parsec.csproj", "{672A8E88-C720-4DD4-B146-5704D69839C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7D351E1A-1069-40EC-9A4D-26810D0150AF}"
 	ProjectSection(SolutionItems) = preProject

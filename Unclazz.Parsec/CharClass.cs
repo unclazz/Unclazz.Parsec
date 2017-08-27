@@ -4,8 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unclazz.Parsec.CharClasses;
 
-namespace Unclazz.Parsec.CharClasses
+namespace Unclazz.Parsec
 {
     /// <summary>
     /// 文字クラス（文字の概念的な集合）を表すクラスです。

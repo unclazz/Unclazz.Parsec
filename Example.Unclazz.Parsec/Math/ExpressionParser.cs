@@ -4,7 +4,7 @@ using System.Linq;
 using Unclazz.Parsec;
 using static Unclazz.Parsec.Parsers;
 
-namespace Example.Unclazz.Parcec.Math
+namespace Example.Unclazz.Parsec.Math
 {
     sealed class ExpressionParser : Parser<double>
     {

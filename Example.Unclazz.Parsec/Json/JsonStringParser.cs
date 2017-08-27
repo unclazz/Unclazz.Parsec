@@ -3,7 +3,7 @@ using Unclazz.Commons.Json;
 using Unclazz.Parsec;
 using Unclazz.Parsec.CharClasses;
 
-namespace Example.Unclazz.Parcec
+namespace Example.Unclazz.Parsec
 {
     sealed class JsonStringParser : Parser<IJsonObject>
     {
