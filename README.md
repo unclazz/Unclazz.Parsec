@@ -2,14 +2,33 @@
 
 C#によるパーサーコンビネーター・ライブラリーです。
 Scala言語で実装されたパーサーコンビネーター [FastParse](https://github.com/lihaoyi/fastparse)を参考にしつつ、
-C#言語の機能もしくは制約にあわせて構築されたAPIを公開しています。
+C#言語の機能もしくは制約にあわせてAPIを構築しています。
 
-# パーサー実装例
+## 主要コンポーネント
+
+次に示すのはこのライブラリの主要コンポーネントとなるクラスもしくは構造体です。
+これらはいずれも`Unclazz.Parsec`名前空間に属しています。
+
+ライブラリのユーザ開発者は抽象クラス`Parser<T>`・`Parser`の派生クラスを実装するか、
+`Parsers`ユーティリティが提供する静的ファクトリーメソッドを通じて得られる定義済みパーサーを組み合わせてパーサーを実装します。
+
+クラス|説明
+---|---
+`Parser<T>`|パーサーを表す抽象クラスです。型パラメータはパース結果の型を表します。
+`Parser`|`Parser<T>`の派生型の抽象クラスです。このパーサーのパース結果型は`Nil`です。ここから想像がつくかもしれませんが、このパーサーはパース成否に関わらず決して値のキャプチャを行いません。`Char(char)`や`StringIn(string[])`など多くのパーサーがこのクラスの派生型です。
+`Parsers`|定義済みパーサーの静的ファクトリーメソッドを提供するユーティリティです。`using static`ディレクティブの使用をおすすめします。
+`Reader`|パーサーの入力データとなるクラスです。このクラスが公開する静的ファクトリーメソッドを使い各種データ型からインスタンスを生成します。
+`ParseResult<T>`|パース結果を表す構造体です。`Successful`プロパティでパース成否を、`Capture`でキャプチャ結果を取得できます。
+`ParseResult`|`ParseResult<T>`のためのユーティリティです。
+`Optional`|Java 8 における同名クラスやScalaにおける`Option`と同じ役割を持つ構造体です。`ParseResult<T>.Capture`はこの構造体のインスタンスを返します。
+`Nil`|`Parser`派生型のパーサーの結果型の宣言に使用されているクラスです。このクラスはインスタンス化できません。
+
+## パーサー実装例
 
 `Example.Unclazz.Parsec`配下に若干のサンプルコードが用意されています。
 これらのコードもまた [FastParse](https://github.com/lihaoyi/fastparse) のドキュメンテーションを参考にしてつくられたものです。
 
-## 浮動小数点数
+### 浮動小数点数
 
 例えば次のコードは浮動小数点数のパーサーの実装例です：
 
@@ -60,7 +79,7 @@ var s2 = r.Successful; // returns false.
 var c2 = r.Capture; // throws InvalidOperationException.
 ```
 
-## JSON
+### JSON
 
 次に示すのはJSONパーサーの実装例です。パースをしながら順次JSONオブジェクトを構築していきます。
 JSONのデータ型を表すC#言語におけるオブジェクトとそのユーティリティとして
@@ -101,7 +120,7 @@ sealed class JsonBooleanParser : Parser<IJsonObject>
 }
 ```
 
-続いて、四則演算のときに登場した数値リテラルのパーサーです。ただし今回はパース結果の型が`IJsonObject`になっています：
+続いて、先程も登場した数値リテラルのパーサーです。ただし今回はパース結果の型が`IJsonObject`になっています：
 
 ```cs
 sealed class JsonNumberParser : Parser<IJsonObject>
@@ -181,7 +200,11 @@ sealed class JsonExprParser : Parser<IJsonObject>
 
     public JsonExprParser()
     {
-        Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
+        // パーサーのコンフィギュレーションを変更。
+        // トークンに先行する空白文字とCRLFは無意味な文字として自動スキップさせる設定を行う。
+        // ※Cofigure(...)による設定はこのパーサーや、このパーサーが派生クラス実装者に公開している
+        // 各種ファクトリーメソッドから得られる定義済みパーサーのインスタンスに引き継がれる。
+        Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
 
         // JSON表現はObject・Arrayの要素としても登場。
         // 結果、jsonExpr・_array・_objectは再帰的関係を持つ。
