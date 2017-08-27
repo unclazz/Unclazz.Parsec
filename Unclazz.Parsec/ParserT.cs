@@ -78,7 +78,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, T right)
         {
-            return OrParser<T>.LeftAssoc(left, new PassParser<T>(left._factory, right));
+            return OrParser<T>.LeftAssoc(left, new YieldParser<T>(left._factory, right));
         }
         /// <summary>
         /// <see cref="ParserExtension.Then{T, U}(Parser{T}, Parser{U})"/>と同義です。
@@ -277,26 +277,26 @@ namespace Unclazz.Parsec
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Not<U>(Parser<U> operand) => _factory.Not(operand);
+        protected Parser Not<U>(Parser<U> operand) => _factory.Not(operand);
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Not(Parser operand) => _factory.Not(operand);
+        protected Parser Not(Parser operand) => _factory.Not(operand);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<U> For<U>(Func<Reader, ParseResult<U>> func) => _factory.For(func);
+        protected Parser<U> For<U>(Func<Reader, ParseResult<U>> func) => _factory.For(func);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser For(Func<Reader, ParseResult<Nil>> func) => _factory.For(func);
+        protected Parser For(Func<Reader, ParseResult<Nil>> func) => _factory.For(func);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。
@@ -304,39 +304,39 @@ namespace Unclazz.Parsec
         /// <typeparam name="U">パーサーが返す値の型</typeparam>
         /// <param name="factory">パーサーを生成するデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<U> Lazy<U>(Func<Parser<U>> factory) => _factory.Lazy(factory);
+        protected Parser<U> Lazy<U>(Func<Parser<U>> factory) => _factory.Lazy(factory);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。
         /// </summary>
         /// <param name="factory">パーサーを生成するデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Lazy(Func<Parser> factory) => _factory.Lazy(factory);
+        protected Parser Lazy(Func<Parser> factory) => _factory.Lazy(factory);
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Char(char ch) => _factory.Char(ch);
+        protected Parser Char(char ch) => _factory.Char(ch);
         /// <summary>
         /// 指定された範囲に該当する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharBetween(char start, char end) => _factory.CharBetween(start, end);
+        protected Parser CharBetween(char start, char end) => _factory.CharBetween(start, end);
         /// <summary>
         /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharIn(CharClass clazz) => _factory.CharIn(clazz);
+        protected Parser CharIn(CharClass clazz) => _factory.CharIn(clazz);
         /// <summary>
         /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharIn(IEnumerable<char> chars) => _factory.CharIn(chars);
+        protected Parser CharIn(IEnumerable<char> chars) => _factory.CharIn(chars);
         /// <summary>
         /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>
@@ -344,21 +344,21 @@ namespace Unclazz.Parsec
         /// <param name="end">範囲の終了</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharsWhileBetween(char start, char end, int min = 1) => _factory.CharsWhileBetween(start, end, min);
+        protected Parser CharsWhileBetween(char start, char end, int min = 1) => _factory.CharsWhileBetween(start, end, min);
         /// <summary>
         /// 文字集合に属する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharsWhileIn(IEnumerable<char> chars, int min = 1) => _factory.CharsWhileIn(chars, min);
+        protected Parser CharsWhileIn(IEnumerable<char> chars, int min = 1) => _factory.CharsWhileIn(chars, min);
         /// <summary>
         /// 文字クラスに属する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharsWhileIn(CharClass clazz, int min = 1) => _factory.CharsWhileIn(clazz, min);
+        protected Parser CharsWhileIn(CharClass clazz, int min = 1) => _factory.CharsWhileIn(clazz, min);
         /// <summary>
         /// 指定したキーワードにのみマッチするパーサーを生成します。
         /// <para>
@@ -369,7 +369,7 @@ namespace Unclazz.Parsec
         /// <param name="keyword">キーワード</param>
         /// <param name="cutIndex">カットを行う文字位置</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Keyword(string keyword, int cutIndex = -1) => _factory.Keyword(keyword, cutIndex);
+        protected Parser Keyword(string keyword, int cutIndex = -1) => _factory.Keyword(keyword, cutIndex);
         /// <summary>
         /// 指定したキーワードのいずれかにのみマッチするパーサーを生成します。
         /// </summary>
