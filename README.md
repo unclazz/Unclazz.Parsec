@@ -35,32 +35,25 @@ C#言語の機能もしくは制約にあわせてAPIを構築しています。
 ```cs
 sealed class NumberParser : Parser<double>
 {
-    readonly Parser sign;
-    readonly Parser digits;
-    readonly Parser integral;
-    readonly Parser fractional;
-    readonly Parser exponent;
-    readonly Parser<double> number;
-
+    readonly Parser<double> _number;
     public NumberParser()
     {
-        sign = CharIn("+-").OrNot();
-        digits = CharsWhileIn("0123456789", min: 0);
-        integral = Char('0') | (CharBetween('1', '9') & digits);
-        fractional = Char('.') & digits;
-        exponent = CharIn("eE") & (sign) & (digits);
-
+        Parser sign = CharIn("+-").OrNot();
+        Parser digits = CharsWhileIn("0123456789", min: 0);
+        Parser integral = Char('0') | (CharBetween('1', '9') & digits);
+        Parser fractional = Char('.') & digits;
+        Parser exponent = CharIn("eE") & sign & digits;
         // 始まりの符号はあるかもしれない（ないかもしれない）
         // 整数は必須
         // 小数点以下はあるかもしれない（ないかもしれない）
         // 指数はあるかもしれない（ないかもしれない）
         // 以上の文字列をキャプチャし、浮動小数点数に変換
-        number = ((sign.OrNot() & integral & fractional.OrNot() & exponent.OrNot()).Capture()).Map(double.Parse);
+        Parser<string> raw = (sign & integral & fractional.OrNot() & exponent.OrNot()).Capture();
+        _number = raw.Map(double.Parse);
     }
-
     protected override ParseResult<double> DoParse(Reader input)
     {
-        return number.Parse(input);
+        return _number.Parse(input);
     }
 }
 ```
@@ -125,26 +118,26 @@ sealed class JsonBooleanParser : Parser<IJsonObject>
 ```cs
 sealed class JsonNumberParser : Parser<IJsonObject>
 {
-    readonly Parser<IJsonObject> number;
+    readonly Parser<IJsonObject> _number;
     public JsonNumberParser()
     {
         var sign = CharIn("+-").OrNot();
         var digits = CharsWhileIn("0123456789", min: 0);
         var integral = Char('0') | (CharBetween('1', '9') & digits);
         var fractional = Char('.') & digits;
-        var exponent = CharIn("eE") & (sign) & (digits);
+        var exponent = CharIn("eE") & sign & digits;
 
         // 始まりの符号はあるかもしれない（ないかもしれない）
         // 整数は必須
         // 小数点以下はあるかもしれない（ないかもしれない）
         // 指数はあるかもしれない（ないかもしれない）
         // 以上の文字列をキャプチャし、浮動小数点数に変換
-        number = ((sign.OrNot() & integral & fractional.OrNot() & exponent.OrNot()).Capture())
-            .Map(double.Parse).Map(JsonObject.Of);
+        var raw = (sign & integral & fractional.OrNot() & exponent.OrNot()).Capture();
+        _number = raw.Map(double.Parse).Map(JsonObject.Of);
     }
     protected override ParseResult<IJsonObject> DoParse(Reader input)
     {
-        return number.Parse(input);
+        return _number.Parse(input);
     }
 }
 ```
