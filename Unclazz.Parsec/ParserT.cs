@@ -375,7 +375,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keywords">キーワード</param>
         /// <returns>新しいパーサー</returns>
-        public Parser StringIn(params string[] keywords) => _factory.StringIn(keywords);
+        protected Parser StringIn(params string[] keywords) => _factory.StringIn(keywords);
         #endregion
     }
 }
