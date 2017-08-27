@@ -4,6 +4,10 @@ C#によるパーサーコンビネーター・ライブラリーです。
 Scala言語で実装されたパーサーコンビネーター [FastParse](https://github.com/lihaoyi/fastparse)を参考にしつつ、
 C#言語の機能もしくは制約にあわせて構築されたAPIを公開しています。
 
+# パーサー実装例
+
+## 四則演算
+
 `Example.Unclazz.Parsec`配下に若干のサンプルコードが用意されています。例えば次のコードは浮動小数点数のパーサーの実装例です：
 
 ```cs
@@ -47,3 +51,135 @@ var s2 = r.Successful; // returns false.
 var c2 = r.Capture; // throws InvalidOperationException.
 ```
 
+## JSON
+
+次に示すのはJSONパーサーの実装例です。パースをしながら順次JSONオブジェクトを構築していきます。
+JSONのデータ型を表すC#言語におけるオブジェクトとそのユーティリティとして
+[Unclazz.Commons.Json`](https://github.com/unclazz/Unclazz.Commons.Json)のインターフェースを利用しています
+（実際にはこのライブラリ自体がパーサーを持っているので恐るべき車輪の再発明ということになります）。
+
+まずは`null`・`true`・`false`のリテラルです：
+
+```cs
+sealed class JsonNullParser : Parser<IJsonObject>
+{
+    readonly Parser<IJsonObject> _null;
+    public JsonNullParser()
+    {
+        _null = Keyword("null", cutIndex: 1) & Yield(JsonObject.OfNull());
+    }
+    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    {
+        return _null.Parse(input);
+    }
+}
+sealed class JsonBooleanParser : Parser<IJsonObject>
+{
+    readonly Parser<IJsonObject> _boolean;
+    public JsonBooleanParser()
+    {
+        _boolean = StringIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
+    }
+    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    {
+        return _boolean.Parse(input);
+    }
+}
+```
+
+続いて、四則演算のときに登場した数値リテラルのパーサーです。ただし今回はパース結果の型が`IJsonObject`になっています：
+
+```cs
+sealed class JsonNumberParser : Parser<IJsonObject>
+{
+    readonly Parser<IJsonObject> number;
+    public JsonNumberParser()
+    {
+        var sign = CharIn("+-").OrNot();
+        var digits = CharsWhileIn("0123456789", min: 0);
+        var integral = Char('0') | (CharBetween('1', '9') & digits);
+        var fractional = Char('.') & digits;
+        var exponent = CharIn("eE") & (sign) & (digits);
+        number = ((sign.OrNot() & integral & fractional.OrNot() & exponent.OrNot()).Capture())
+            .Map(double.Parse).Map(JsonObject.Of);
+    }
+    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    {
+        return number.Parse(input);
+    }
+}
+```
+
+段々と複雑になってきますが、次は`String`型のリテラルを読み取るパーサーです
+（エスケープされた文字の逆エスケープに`Regex.Unescape`を使用しているのは我ながらちょっとどうなのかと思います）：
+
+```cs
+sealed class JsonStringParser : Parser<IJsonObject>
+{
+    readonly Parser<IJsonObject> _string;
+    public JsonStringParser()
+    {
+        var quote = Char('"');
+        var hexDigits = CharIn(CharClass.Between('0', '9') | CharClass.Between('a', 'f') | CharClass.Between('A', 'F'));
+        var unicodeEscape = Char('u').Then(hexDigits.Repeat(exactly: 4));
+        var escape = Char('\\') & (CharIn("\"/\\bfnrt") | unicodeEscape);
+        var stringChars = CharIn(!CharClass.AnyOf("\"\\"));
+        _string = (quote.Cut() & (stringChars | escape).Repeat().Capture() & quote)
+            .Map(Unescape).Map(JsonObject.Of);
+    }
+    string Unescape(string escaped)
+    {
+        return Regex.Unescape(escaped);
+    }
+    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    {
+        return _string.Parse(input);
+    }
+}
+```
+
+最後に`Array`型と`Object`型、そしてここまで構築してきた他のデータ型を解析するパーサーです。
+`Array`型と`Object`型のリテラルはその要素として自身を含むJSONオブジェクト表現を内包しています。
+このため1つのパーサーの中で2つのデータ型のリテラルとそれを含むJSONオブジェクト表現、それぞれのパーサーを組み立てています：
+
+```cs
+sealed class JsonExprParser : Parser<IJsonObject>
+{
+    static readonly Parser<IJsonObject> _null = new JsonNullParser();
+    static readonly Parser<IJsonObject> _boolean = new JsonBooleanParser();
+    static readonly Parser<IJsonObject> _number = new JsonNumberParser();
+    static readonly Parser<IJsonObject> _string = new JsonStringParser();
+
+    readonly Parser<IJsonObject> jsonExpr;
+    readonly Parser<IJsonObject> _object;
+    readonly Parser<IJsonObject> _array;
+
+    public JsonExprParser()
+    {
+        Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
+
+        jsonExpr = Lazy<IJsonObject>(JsonExpr);
+
+        var propPair = _string.Cut() & Char(':') & jsonExpr;
+        var comma = Char(',');
+
+        _array = (Char('[').Cut() & jsonExpr.Repeat(sep: comma) & Char(']')).Map(JsonObject.Of);
+        _object = (Char('{').Cut() & propPair.Repeat(sep: comma) & Char('}')).Map(PairsToObject);
+    }
+    Parser<IJsonObject> JsonExpr()
+    {
+        return _object | (_array | (_string | (_boolean | (_null | _number))));
+    }
+    IJsonObject PairsToObject(IList<Tuple<IJsonObject,IJsonObject>> pairs)
+    {
+        return pairs.Aggregate(JsonObject.Builder(),
+            (a0,a1) => a0.Append(a1.Item1.AsString(), a1.Item2),
+            a0 => a0.Build());
+    }
+
+    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    {
+        return jsonExpr.Parse(input);
+    }
+}
+```
