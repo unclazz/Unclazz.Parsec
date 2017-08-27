@@ -82,15 +82,29 @@ namespace Unclazz.Parsec.CharClasses
         {
             return Not(operand);
         }
-
+        /// <summary>
+        /// 述語関数を利用して文字クラスを生成します。
+        /// </summary>
+        /// <param name="func">ある文字がクラスに属するかを判定する述語関数</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass For(Func<char, bool> func)
         {
             return new DelegateCharClass(func);
         }
+        /// <summary>
+        /// ある文字クラスに属さない文字のクラス（集合の補集合）を生成します。
+        /// </summary>
+        /// <param name="clazz">元になる文字クラス</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass Not(CharClass clazz)
         {
             return new ComplementCharClass(clazz);
         }
+        /// <summary>
+        /// 文字集合から文字クラスを生成します。
+        /// </summary>
+        /// <param name="chars">文字集合</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass AnyOf(params char[] chars)
         {
             if (chars == null) throw new ArgumentNullException(nameof(chars));
@@ -104,39 +118,85 @@ namespace Unclazz.Parsec.CharClasses
                     return new CharactersCharClass(chars);
             }
         }
+        /// <summary>
+        /// 文字集合から文字クラスを生成します。
+        /// </summary>
+        /// <param name="chars">文字集合</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass AnyOf(IEnumerable<char> chars)
         {
             if (chars == null) throw new ArgumentNullException(nameof(chars));
             return AnyOf(chars.ToArray());
         }
+        /// <summary>
+        /// Unicodeカテゴリーから文字クラスを生成します。
+        /// </summary>
+        /// <param name="categories">Unicodeカテゴリー</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass AnyOf(params UnicodeCategory[] categories)
         {
             if (categories == null) throw new ArgumentNullException(nameof(categories));
             if (categories.Length == 0) throw new ArgumentException("category group is empty.");
             return new UnicodeCategoriesCharClass(categories);
         }
+        /// <summary>
+        /// 文字の範囲から文字クラスを生成します。
+        /// </summary>
+        /// <param name="start">範囲の始点</param>
+        /// <param name="end">範囲の終点</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass Between(char start, char end)
         {
             return new SingleCharRangeCharClass(CharRange.Between(start, end));
         }
+        /// <summary>
+        /// 文字から文字クラス（1文字のみがそのメンバーとなる文字クラス）を生成します。
+        /// </summary>
+        /// <param name="ch">文字</param>
+        /// <returns>新しい文字クラス</returns>
         public static CharClass Exactly(char ch)
         {
             return new SingleCharacterCharClass(ch);
         }
 
+        /// <summary>
+        /// この文字クラスが引数で指定された文字を含むかどうかをチェックします。
+        /// </summary>
+        /// <param name="ch">文字</param>
+        /// <returns>当該の文字を含む場合<c>true</c></returns>
         public abstract bool Contains(char ch);
-        public virtual CharClass Union(CharClass other)
+        /// <summary>
+        /// この文字クラスと別の文字クラスを統合した新しい文字クラスを生成します。
+        /// </summary>
+        /// <param name="another">別の文字クラス</param>
+        /// <returns>新しい文字クラス</returns>
+        public virtual CharClass Union(CharClass another)
         {
-            return new UnionCharClass(this, other);
+            return new UnionCharClass(this, another);
         }
+        /// <summary>
+        /// この文字クラスに引数で指定された文字を加えます。
+        /// </summary>
+        /// <param name="ch">文字</param>
+        /// <returns>新しい文字クラス</returns>
         public virtual CharClass Plus(char ch)
         {
             return new UnionCharClass(this, new SingleCharacterCharClass(ch));
         }
+        /// <summary>
+        /// この文字クラスに引数で指定された文字範囲を加えます。
+        /// </summary>
+        /// <param name="range">文字範囲</param>
+        /// <returns>新しい文字クラス</returns>
         public virtual CharClass Plus(CharRange range)
         {
             return new UnionCharClass(this, new SingleCharRangeCharClass(range));
         }
+        /// <summary>
+        /// この文字クラスに引数で指定されたUnicodeカテゴリーを加えます。
+        /// </summary>
+        /// <param name="cate">Unicodeカテゴリー</param>
+        /// <returns>新しい文字クラス</returns>
         public virtual CharClass Plus(UnicodeCategory cate)
         {
             return new UnionCharClass(this, new SingleUnicodeCategoryCharClass(cate));
