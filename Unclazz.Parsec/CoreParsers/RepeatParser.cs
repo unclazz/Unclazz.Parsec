@@ -26,15 +26,18 @@ namespace Unclazz.Parsec.CoreParsers
                         exactly, min, max));
                 }
                 // チェックをパスした場合のみ、RepeatExactlyParserを返す
-                return new RepeatExactlyParser<T>(parser, exactly, sep);
+                return new RepeatExactlyParser<T>(parser.Configuration, parser, exactly, sep);
             }
             // exactlyが明示的に指定されていない場合
             // RepeatMinMaxParserを返す
-            return new RepeatMinMaxParser<T>(parser, min, max, sep);
+            return new RepeatMinMaxParser<T>(parser.Configuration, parser, min, max, sep);
         }
+
+        internal RepeatParser(IParserConfiguration conf) : base(conf) { }
+
         sealed class RepeatExactlyParser<T> : RepeatParser<T>
         {
-            internal RepeatExactlyParser(Parser<T> original, int exactly, Parser<Nil> sep)
+            internal RepeatExactlyParser(IParserConfiguration conf, Parser<T> original, int exactly, Parser<Nil> sep) : base(conf)
             {
                 _original = original ?? throw new ArgumentNullException(nameof(original));
                 if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
@@ -48,7 +51,7 @@ namespace Unclazz.Parsec.CoreParsers
             readonly Parser<Nil> _sep;
             readonly bool _capture;
 
-            public override ParseResult<IList<T>> Parse(Reader input)
+            protected override ParseResult<IList<T>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
@@ -98,7 +101,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         sealed class RepeatMinMaxParser<T> : RepeatParser<T>
         {
-            internal RepeatMinMaxParser(Parser<T> original, int min, int max, Parser<Nil> sep)
+            internal RepeatMinMaxParser(IParserConfiguration conf, Parser<T> original, int min, int max, Parser<Nil> sep): base(conf)
             {
                 max = max == -1 ? int.MaxValue : max;
                 min = min == -1 ? 0 : min;
@@ -120,7 +123,7 @@ namespace Unclazz.Parsec.CoreParsers
             readonly Parser<Nil> _sep;
             readonly bool _capture;
 
-            public override ParseResult<IList<T>> Parse(Reader input)
+            protected override ParseResult<IList<T>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化

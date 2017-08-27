@@ -6,8 +6,8 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class KeywordParser : Parser
     {
-        internal KeywordParser(string keyword) : this(keyword, -1) { }
-        internal KeywordParser(string keyword, int cutIndex)
+        internal KeywordParser(IParserConfiguration conf, string keyword) : this(conf, keyword, -1) { }
+        internal KeywordParser(IParserConfiguration conf, string keyword, int cutIndex) : base(conf)
         {
             if (cutIndex < -1) throw new ArgumentOutOfRangeException(nameof(cutIndex));
             _cut = cutIndex;
@@ -21,7 +21,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _cut;
         readonly string _keyword;
 
-        public override ParseResult<Nil> Parse(Reader input)
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             var p = input.Position;
             for (var i = 0; i < _keyword.Length; i++)

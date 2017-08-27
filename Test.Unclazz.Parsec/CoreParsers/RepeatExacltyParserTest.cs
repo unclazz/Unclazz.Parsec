@@ -16,7 +16,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Constructor_Case1(string word, int count, bool okNg)
         {
             // Arrange
-            var p0 = new KeywordParser(word, -1);
+            var p0 = Keyword(word, -1);
 
             // Act
             // Assert
@@ -39,7 +39,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case1(string word, int count)
         {
             // Arrange
-            var p0 = new KeywordParser(word, -1);
+            var p0 = Keyword(word, -1);
             var p1 = RepeatParser<Nil>.Create(p0, exactly: count);
             Reader input = TestUtility.Repeats(word, count + 1);
 
@@ -57,7 +57,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case2(string word, string sep, int count)
         {
             // Arrange
-            var p0 = new KeywordParser(word, -1);
+            var p0 = Keyword(word, -1);
             var p1 = RepeatParser<Nil>.Create(p0, exactly: count, sep: Keyword(sep));
             Reader input = TestUtility.Repeats(word, count + 1, sep: sep);
 
@@ -74,7 +74,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case3(string word, string sep, int count)
         {
             // Arrange
-            var p0 = new KeywordParser(word, -1);
+            var p0 = Keyword(word, -1);
             var p1 = RepeatParser<Nil>.Create(p0, exactly: count, sep: Keyword(sep));
             Reader input = TestUtility.Repeats(word, count - 1, sep: sep) + sep + "__________";
 

@@ -91,7 +91,7 @@ namespace Unclazz.Parsec
         /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
         public static Parser<string> Capture(this Parser<Nil> self)
         {
-            return new CaptureParser<Nil>(self);
+            return new CaptureParser<Nil>(self.Configuration, self);
         }
         /// <summary>
         /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
@@ -103,7 +103,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Cast<T>(this Parser<Nil> self)
         {
-            return new CastParser<Nil, T>(self);
+            return new CastParser<Nil, T>(self.Configuration, self);
         }
         /// <summary>
         /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
@@ -131,7 +131,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Cast<T>(this Parser<T> self)
         {
-            return new CastParser<T>(self);
+            return new CastParser<T>(self.Configuration, self);
         }
         #endregion
 
@@ -147,7 +147,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Cut(this Parser<Nil> self)
         {
-            return new CutParser<Nil>(self).Cast();
+            return new CutParser<Nil>(self.Configuration, self).Cast();
         }
         /// <summary>
         /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックを無効化します。
@@ -160,30 +160,9 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Cut<T>(this Parser<T> self)
         {
-            return new CutParser<T>(self);
+            return new CutParser<T>(self.Configuration, self);
         }
         #endregion
-
-        /// <summary>
-        /// デバッグたのめパース処理前後の情報をログ出力するパーサーを返します。
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="logger">ログ出力そのものを行うアクション</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Log(this Parser self, Action<string> logger)
-        {
-            return new LogParser<Nil>(self, logger).Cast();
-        }
-        /// <summary>
-        /// デバッグたのめパース処理前後の情報をログ出力するパーサーを返します。
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="logger">ログ出力そのものを行うアクション</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Log<T>(this Parser<T> self, Action<string> logger)
-        {
-            return new LogParser<T>(self, logger);
-        }
 
         #region Or系の拡張メソッド
         /// <summary>
@@ -236,7 +215,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser OrNot(this Parser self)
         {
-            return new OrNotParser<Nil>(self).Cast();
+            return new OrNotParser<Nil>(self.Configuration, self).Cast();
         }
         /// <summary>
         /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
@@ -244,7 +223,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> OrNot<T>(this Parser<T> self)
         {
-            return new OrNotParser<T>(self);
+            return new OrNotParser<T>(self.Configuration, self);
         }
         #endregion
 
@@ -304,7 +283,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Then<T>(this Parser self, Parser<T> another)
         {
-            return new ThenTakeRightParser<Nil, T>(self, another);
+            return new ThenTakeRightParser<Nil, T>(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -320,7 +299,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Then(this Parser self, Parser another)
         {
-            return new ThenTakeRightParser<Nil, Nil>(self, another).Cast();
+            return new ThenTakeRightParser<Nil, Nil>(self.Configuration, self, another).Cast();
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -336,7 +315,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<Tuple<T, U>> Then<T, U>(this Parser<T> self, Parser<U> another)
         {
-            return new DoubleParser<T, U>(self, another);
+            return new DoubleParser<T, U>(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -352,7 +331,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Then<T>(this Parser<T> self, Parser another)
         {
-            return new ThenTakeLeftParser<T, Nil>(self, another);
+            return new ThenTakeLeftParser<T, Nil>(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。

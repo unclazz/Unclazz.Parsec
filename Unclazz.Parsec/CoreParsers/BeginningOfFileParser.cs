@@ -2,7 +2,8 @@
 {
     sealed class BeginningOfFileParser : Parser
     {
-        public override ParseResult<Nil> Parse(Reader input)
+        internal BeginningOfFileParser(IParserConfiguration conf) : base(conf) { }
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             var p = input.Position;
             return p.Index == 0  ? Success(p)

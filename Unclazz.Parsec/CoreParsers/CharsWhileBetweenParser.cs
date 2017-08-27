@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharsWhileBetweenParser : Parser
     {
-        internal CharsWhileBetweenParser(char start, char end, int min)
+        internal CharsWhileBetweenParser(IParserConfiguration conf, char start, char end, int min) : base(conf)
         {
             if (min < 0) throw new ArgumentOutOfRangeException(nameof(min));
             _min = min;
@@ -17,7 +17,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly char _start;
         readonly char _end;
 
-        public override ParseResult<Nil> Parse(Reader input)
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             var p = input.Position;
             var count = 0;

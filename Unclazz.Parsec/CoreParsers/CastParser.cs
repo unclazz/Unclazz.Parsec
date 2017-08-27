@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CastParser<T, U> : Parser<U>
     {
-        internal CastParser(Parser<T> original)
+        internal CastParser(IParserConfiguration conf, Parser<T> original) : base(conf)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _hasDefault = false;
@@ -19,7 +19,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Parser<T> _original;
         readonly bool _hasDefault;
         readonly U _default;
-        public override ParseResult<U> Parse(Reader input)
+        protected override ParseResult<U> DoParse(Reader input)
         {
             return _hasDefault 
                 ? _original.Parse(input).Cast<U>().Attach(_default) 
@@ -33,12 +33,12 @@ namespace Unclazz.Parsec.CoreParsers
     }
     sealed class CastParser<T> : Parser
     {
-        internal CastParser(Parser<T> original)
+        internal CastParser(IParserConfiguration conf, Parser<T> original) : base(conf)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
         readonly Parser<T> _original;
-        public override ParseResult<Nil> Parse(Reader input)
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             return _original.Parse(input).Cast<Nil>();
         }

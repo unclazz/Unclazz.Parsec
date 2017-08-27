@@ -2,12 +2,12 @@
 {
     sealed class CharParser : Parser
     {
-        internal CharParser(char ch)
+        internal CharParser(IParserConfiguration conf, char ch) : base(conf)
         {
             _ch = ch;
         }
         readonly char _ch;
-        public override ParseResult<Nil> Parse(Reader input)
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             var p = input.Position;
             var actual = input.Read();

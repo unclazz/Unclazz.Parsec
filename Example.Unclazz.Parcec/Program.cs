@@ -30,7 +30,7 @@ namespace Example.Unclazz.Parcec
         readonly static Parser parenRight = Char(')');
         readonly static Parser<double> number = new NumberParser();
 
-        public override ParseResult<double> Parse(Reader input)
+        protected override ParseResult<double> DoParse(Reader input)
         {
             return (Expr() & EndOfFile).Parse(input);
         }
@@ -91,7 +91,7 @@ namespace Example.Unclazz.Parcec
         readonly static Parser<double> number = ((integral & fractional.OrNot() &
             exponent.OrNot()).Capture()).Map(double.Parse);
 
-        public override ParseResult<double> Parse(Reader input)
+        protected override ParseResult<double> DoParse(Reader input)
         {
             return number.Parse(input);
         }

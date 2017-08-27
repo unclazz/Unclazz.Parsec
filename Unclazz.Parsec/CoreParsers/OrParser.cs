@@ -9,7 +9,8 @@ namespace Unclazz.Parsec.CoreParsers
             OrParser<T> tmpOr = RightAssoc(left, right);
             foreach (var other in others)
             {
-                tmpOr = new OrParser<T>(tmpOr.Left, new OrParser<T>(tmpOr.Right, right));
+                tmpOr = new OrParser<T>(tmpOr.Configuration, tmpOr.Left,
+                    new OrParser<T>(tmpOr.Configuration, tmpOr.Right, right));
             }
             return tmpOr;
         }
@@ -18,29 +19,30 @@ namespace Unclazz.Parsec.CoreParsers
             var leftOr = left as OrParser<T>;
             if (leftOr == null)
             {
-                return new OrParser<T>(left, right);
+                return new OrParser<T>(left.Configuration, left, right);
             }
             else
             {
-                return new OrParser<T>(leftOr.Left, new OrParser<T>(leftOr.Right, right));
+                return new OrParser<T>(left.Configuration, leftOr.Left, 
+                    new OrParser<T>(left.Configuration, leftOr.Right, right));
             }
         }
         internal static OrParser<T> LeftAssoc(Parser<T> left, Parser<T> right, params Parser<T>[] others)
         {
-            OrParser<T> tmpOr = new OrParser<T>(left, right);
+            OrParser<T> tmpOr = new OrParser<T>(left.Configuration, left, right);
             foreach (var other in others)
             {
-                tmpOr = new OrParser<T>(tmpOr, right);
+                tmpOr = new OrParser<T>(tmpOr.Configuration, tmpOr, right);
             }
             return tmpOr;
         }
         internal static OrParser<T> LeftAssoc(Parser<T> left, Parser<T> right)
         {
-            return new OrParser<T>(left, right);
+            return new OrParser<T>(left.Configuration, left, right);
         }
 
 
-        OrParser(Parser<T> left, Parser<T> right)
+        OrParser(IParserConfiguration conf, Parser<T> left, Parser<T> right) : base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -49,7 +51,7 @@ namespace Unclazz.Parsec.CoreParsers
         internal Parser<T> Left { get; }
         internal Parser<T> Right { get; }
 
-        public override ParseResult<T> Parse(Reader input)
+        protected override ParseResult<T> DoParse(Reader input)
         {
             input.Mark();
             var leftResult = Left.Parse(input);

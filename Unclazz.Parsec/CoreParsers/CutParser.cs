@@ -4,14 +4,14 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CutParser<T> : Parser<T>
     {
-        internal CutParser(Parser<T> original)
+        internal CutParser(IParserConfiguration conf, Parser<T> original) : base(conf)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
         readonly Parser<T> _original;
 
-        public override ParseResult<T> Parse(Reader input)
+        protected override ParseResult<T> DoParse(Reader input)
         {
             var r = _original.Parse(input);
             if (r.Successful) return r.AllowBacktrack(false);

@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharsWhileInParser : Parser
     {
-        internal CharsWhileInParser(CharClass clazz, int min)
+        internal CharsWhileInParser(IParserConfiguration conf, CharClass clazz, int min) : base(conf)
         {
             _clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
             if (min < 0) throw new ArgumentOutOfRangeException(nameof(min));
@@ -15,7 +15,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _min;
         readonly CharClass _clazz;
 
-        public override ParseResult<Nil> Parse(Reader input)
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             var p = input.Position;
             var count = 0;

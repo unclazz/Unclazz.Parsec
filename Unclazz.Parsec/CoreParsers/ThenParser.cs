@@ -10,7 +10,7 @@ namespace Unclazz.Parsec.CoreParsers
     /// <typeparam name="R">元のパーサーの結果型（右側）</typeparam>
     sealed class ThenTakeLeftParser<L, R> : Parser<L>
     {
-        internal ThenTakeLeftParser(Parser<L> left, Parser<R> right)
+        internal ThenTakeLeftParser(IParserConfiguration conf, Parser<L> left, Parser<R> right) : base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -19,7 +19,7 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<L> Left { get; }
         public Parser<R> Right { get; }
 
-        public override ParseResult<L> Parse(Reader input)
+        protected override ParseResult<L> DoParse(Reader input)
         {
             var leftResult = Left.Parse(input);
             if (leftResult.Successful)
@@ -52,7 +52,7 @@ namespace Unclazz.Parsec.CoreParsers
     /// <typeparam name="R">元のパーサーの結果型（右側）</typeparam>
     sealed class ThenTakeRightParser<L, R> : Parser<R>
     {
-        internal ThenTakeRightParser(Parser<L> left, Parser<R> right)
+        internal ThenTakeRightParser(IParserConfiguration conf, Parser<L> left, Parser<R> right) :base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -61,7 +61,7 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<L> Left { get; }
         public Parser<R> Right { get; }
 
-        public override ParseResult<R> Parse(Reader input)
+        protected override ParseResult<R> DoParse(Reader input)
         {
             var p = input.Position;
             var leftResult = Left.Parse(input);

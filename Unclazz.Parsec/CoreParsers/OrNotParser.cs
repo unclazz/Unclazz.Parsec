@@ -4,14 +4,14 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class OrNotParser<T> : Parser<T>
     {
-        internal OrNotParser(Parser<T> original)
+        internal OrNotParser(IParserConfiguration conf, Parser<T> original) : base(conf)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
         readonly Parser<T> _original;
 
-        public override ParseResult<T> Parse(Reader input)
+        protected override ParseResult<T> DoParse(Reader input)
         {
             input.Mark();
             var p = input.Position;

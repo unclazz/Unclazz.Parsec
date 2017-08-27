@@ -122,9 +122,9 @@ namespace Test.Unclazz.Parsec
             // Arrange
             // Act
             // Assert
-            var p0 = new KeywordParser("0123", -1);
-            var p2 = new KeywordParser("0123", 1);
-            var p3 = new KeywordParser("0123", 3);
+            var p0 = Keyword("0123", -1);
+            var p2 = Keyword("0123", 1);
+            var p3 = Keyword("0123", 3);
         }
         [Test]
         public void Constructor_Case2()
@@ -132,9 +132,9 @@ namespace Test.Unclazz.Parsec
             // Arrange
             // Act
             // Assert
-            Assert.That(() => new KeywordParser("0123", -2), Throws.InstanceOf<ArgumentOutOfRangeException>());
-            Assert.That(() => new KeywordParser("0123", 0), Throws.InstanceOf<ArgumentOutOfRangeException>());
-            Assert.That(() => new KeywordParser("0123", 5), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => Keyword("0123", -2), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => Keyword("0123", 0), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => Keyword("0123", 5), Throws.InstanceOf<ArgumentOutOfRangeException>());
         }
         [Test]
         public void Constructor_Case3()
@@ -142,14 +142,14 @@ namespace Test.Unclazz.Parsec
             // Arrange
             // Act
             // Assert
-            Assert.That(() => new KeywordParser("", -1), Throws.InstanceOf<ArgumentException>());
-            Assert.That(() => new KeywordParser(null), Throws.InstanceOf<ArgumentNullException>());
+            Assert.That(() => Keyword("", -1), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => Keyword(null), Throws.InstanceOf<ArgumentNullException>());
         }
         [Test]
         public void ToString_Case1()
         {
             // Arrange
-            var parser = new KeywordParser("0123", 2);
+            var parser = Keyword("0123", 2);
 
             // Act
             var result = parser.ToString();
@@ -161,7 +161,7 @@ namespace Test.Unclazz.Parsec
         public void ToString_Case2()
         {
             // Arrange
-            var parser = new KeywordParser("0123", -1);
+            var parser = Keyword("0123", -1);
 
             // Act
             var result = parser.ToString();

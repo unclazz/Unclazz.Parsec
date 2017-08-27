@@ -12,7 +12,7 @@ namespace Unclazz.Parsec.CoreParsers
                     .TakeWhile(a => a)
                     .Count();
         }
-        static Parser KeywordsParser(string[] keywords)
+        static Parser KeywordsParser(IParserConfiguration conf, string[] keywords)
         {
             Parser parser = null;
             var zip = keywords.Zip(keywords.Skip(1), (k0, k1) =>
@@ -21,16 +21,16 @@ namespace Unclazz.Parsec.CoreParsers
             {
                 var delta = zipElem.Keyword.Length - zipElem.CommonPrefixLength;
                 var cutIndex = Math.Min(zipElem.Keyword.Length, zipElem.CommonPrefixLength + 1);
-                var nextParser = new KeywordParser(zipElem.Keyword, cutIndex);
+                var nextParser = new KeywordParser(conf, zipElem.Keyword, cutIndex);
                 if (parser == null) parser = nextParser;
                 else parser = parser.Or(nextParser);
             }
-            if (parser == null) parser = new KeywordParser(keywords[0]);
-            else parser = parser.Or(new KeywordParser(keywords[keywords.Length - 1]));
+            if (parser == null) parser = new KeywordParser(conf, keywords[0]);
+            else parser = parser.Or(new KeywordParser(conf, keywords[keywords.Length - 1]));
             return parser;
         }
 
-        internal StringInParser(string[] keywords)
+        internal StringInParser(IParserConfiguration conf, string[] keywords) : base(conf)
         {
             var tmp = keywords ?? throw new ArgumentNullException(nameof(keywords));
             if (tmp.Length == 0) throw new ArgumentException(nameof(keywords) + " must not be empty.");
@@ -38,12 +38,12 @@ namespace Unclazz.Parsec.CoreParsers
             if (tmp.Any(k => k.Length == 0)) throw new ArgumentException(nameof(keywords) + " must not contain empty string.");
             tmp = tmp.OrderBy(k => k).Distinct().ToArray();
             _keywords = tmp;
-            _parser = KeywordsParser(tmp);
+            _parser = KeywordsParser(conf, tmp);
 
         }
         readonly string[] _keywords;
         readonly Parser _parser;
-        public override ParseResult<Nil> Parse(Reader input)
+        protected override ParseResult<Nil> DoParse(Reader input)
         {
             return _parser.Parse(input);
         }

@@ -77,7 +77,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, T right)
         {
-            return OrParser<T>.LeftAssoc(left, new PassParser<T>(right));
+            return OrParser<T>.LeftAssoc(left, new PassParser<T>(left._factory, right));
         }
         /// <summary>
         /// <see cref="ParserExtension.Then{T, U}(Parser{T}, Parser{U})"/>と同義です。
@@ -87,7 +87,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<Tuple<T, T>> operator &(Parser<T> left, Parser<T> right)
         {
-            return new DoubleParser<T, T>(left, right);
+            return new DoubleParser<T, T>(left._factory, left, right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Then{T}(Parser, Parser{T})"/>と同義です。
@@ -97,7 +97,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser left, Parser<T> right)
         {
-            return new ThenTakeRightParser<Nil, T>(left, right);
+            return new ThenTakeRightParser<Nil, T>(left._factory, left, right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Then{T}(Parser{T}, Parser)"/>と同義です。
@@ -107,9 +107,25 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
-            return new ThenTakeLeftParser<T, Nil>(left, right);
+            return new ThenTakeLeftParser<T, Nil>(left._factory, left, right);
         }
         #endregion
+
+        
+        protected Parser()
+        {
+            _factory = ParserFactory.Default;
+        }
+        protected Parser(IParserConfiguration config)
+        {
+            _factory = new ParserFactory(config) ?? throw new ArgumentNullException(nameof(config));
+        }
+
+        readonly ParserFactory _factory;
+        bool _autoConsuming;
+        bool _parseLogging;
+
+        public IParserConfiguration Configuration => _factory;
 
         /// <summary>
         /// パースを行います。
@@ -124,7 +140,43 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        public abstract ParseResult<T> Parse(Reader input);
+        protected abstract ParseResult<T> DoParse(Reader input);
+
+        public ParseResult<T> Parse(Reader input)
+        {
+            if (_autoConsuming) _factory.NonSignificant.Parse(input);
+            if (_parseLogging) LogPreParse(input);
+            var r = DoParse(input);
+            if (_parseLogging) LogPostParse(input, r);
+            return r;
+        }
+        public void Configure(Action<IParserConfigurer> act)
+        {
+            act(_factory);
+            _autoConsuming = _factory.NonSignificant != null;
+            _parseLogging = _factory.Logger != null;
+        }
+        void LogPreParse(Reader input)
+        {
+            WriteLine("--------------------------");
+            WriteLine("Parser              : {0} ", ParsecUtility.ObjectTypeToString(this));
+            WriteLine("Pre-Parse Position  : {0} ", input.Position);
+            WriteLine("Pre-Parse Char      : {0} ", ParsecUtility.CharToString(input.Peek()));
+        }
+        void LogPostParse(Reader input, ParseResult<T> result)
+        {
+            WriteLine("Successful          : {0} ", result.Successful);
+            if (result.Successful)
+                WriteLine("Capture             : {0} ", result.Capture);
+            else
+                WriteLine("Message             : {0} ", result.Message);
+            WriteLine("Post-Parse Position : {0} ", input.Position);
+            WriteLine("Post-Parse Char     : {0} ", ParsecUtility.CharToString(input.Peek()));
+        }
+        void WriteLine(string format, params object[] args)
+        {
+            _factory.Logger(string.Format(format, args));
+        }
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
@@ -175,7 +227,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<U> Map<U>(Func<T, U> transform, bool canThrow = false)
         {
-            return new MapParser<T, U>(this, transform, canThrow);
+            return new MapParser<T, U>(_factory, this, transform, canThrow);
         }
     }
 }

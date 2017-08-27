@@ -2,14 +2,14 @@
 {
     sealed class PassParser<T> : Parser<T>
     {
-        internal PassParser(T value)
+        internal PassParser(IParserConfiguration conf, T value) : base(conf)
         {
             _value = value;
         }
 
         readonly T _value;
 
-        public override ParseResult<T> Parse(Reader input)
+        protected override ParseResult<T> DoParse(Reader input)
         {
             return Success(input.Position, new Optional<T>(_value));
         }

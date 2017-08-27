@@ -6,15 +6,18 @@ namespace Unclazz.Parsec.CoreParsers
     {
         public static TripleParser<T1,T2,T3> Create(Parser<T1> left, Parser<Tuple<T2, T3>> right)
         {
-            return new ThenDoubleParser<T1, T2, T3>(left, right);
+            return new ThenDoubleParser<T1, T2, T3>(left.Configuration, left, right);
         }
         public static TripleParser<T1,T2,T3> Create(Parser<Tuple<T1, T2>> left, Parser<T3> right)
         {
-            return new DoubleThenParser<T1, T2, T3>(left, right);
+            return new DoubleThenParser<T1, T2, T3>(left.Configuration, left, right);
         }
+
+        internal TripleParser(IParserConfiguration conf) : base(conf) { }
+
         sealed class ThenDoubleParser<T1, T2, T3> : TripleParser<T1, T2, T3>
         {
-            internal ThenDoubleParser(Parser<T1> left, Parser<Tuple<T2, T3>> right)
+            internal ThenDoubleParser(IParserConfiguration conf, Parser<T1> left, Parser<Tuple<T2, T3>> right) : base(conf)
             {
                 Left = left ?? throw new ArgumentNullException(nameof(left));
                 Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -23,7 +26,7 @@ namespace Unclazz.Parsec.CoreParsers
             public Parser<T1> Left { get; }
             public Parser<Tuple<T2, T3>> Right { get; }
 
-            public override ParseResult<Tuple<T1, T2, T3>> Parse(Reader input)
+            protected override ParseResult<Tuple<T1, T2, T3>> DoParse(Reader input)
             {
                 var p = input.Position;
                 var leftResult = Left.Parse(input);
@@ -52,7 +55,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         sealed class DoubleThenParser<T1, T2, T3> : TripleParser<T1, T2, T3>
         {
-            internal DoubleThenParser(Parser<Tuple<T1, T2>> left, Parser<T3> right)
+            internal DoubleThenParser(IParserConfiguration conf, Parser<Tuple<T1, T2>> left, Parser<T3> right) : base(conf)
             {
                 Left = left ?? throw new ArgumentNullException(nameof(left));
                 Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -61,7 +64,7 @@ namespace Unclazz.Parsec.CoreParsers
             public Parser<Tuple<T1, T2>> Left { get; }
             public Parser<T3> Right { get; }
 
-            public override ParseResult<Tuple<T1, T2, T3>> Parse(Reader input)
+            protected override ParseResult<Tuple<T1, T2, T3>> DoParse(Reader input)
             {
                 var p = input.Position;
                 var leftResult = Left.Parse(input);

@@ -4,7 +4,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class DoubleParser<T1, T2> : Parser<Tuple<T1, T2>>
     {
-        internal DoubleParser(Parser<T1> left, Parser<T2> right)
+        internal DoubleParser(IParserConfiguration conf, Parser<T1> left, Parser<T2> right) : base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -13,7 +13,7 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<T1> Left { get; }
         public Parser<T2> Right { get; }
 
-        public override ParseResult<Tuple<T1, T2>> Parse(Reader input)
+        protected override ParseResult<Tuple<T1, T2>> DoParse(Reader input)
         {
             var p = input.Position;
             var leftResult = Left.Parse(input);

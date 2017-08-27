@@ -18,11 +18,7 @@ namespace Unclazz.Parsec.CoreParsers
     /// <typeparam name="T">任意の型</typeparam>
     sealed class CaptureParser<T> : Parser<string>
     {
-        /// <summary>
-        /// コンストラクタです。
-        /// </summary>
-        /// <param name="parse">パース・ロジックを提供するデリゲート</param>
-        public CaptureParser(Parser<T> parse)
+        public CaptureParser(IParserConfiguration conf, Parser<T> parse) : base(conf)
         {
             _parse = parse ?? throw new ArgumentNullException(nameof(parse));
         }
@@ -34,7 +30,7 @@ namespace Unclazz.Parsec.CoreParsers
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        public override ParseResult<string> Parse(Reader input)
+        protected override ParseResult<string> DoParse(Reader input)
         {
             input.Mark();
             var r = _parse.Parse(input);

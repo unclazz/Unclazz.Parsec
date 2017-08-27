@@ -43,12 +43,15 @@
   <ItemGroup>
     <Compile Include="CoreParsers\CastParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
-    <Compile Include="CoreParsers\LogParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="CoreParsers\LazyParser.cs" />
     <Compile Include="CoreParsers\TripleParser.cs" />
+    <Compile Include="IParserConfiguration.cs" />
+    <Compile Include="IParserConfigurer.cs" />
+    <Compile Include="IParserFactory.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="ParserFactory.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="Parsers.cs" />
     <Compile Include="Readers\AutoDispose.cs" />

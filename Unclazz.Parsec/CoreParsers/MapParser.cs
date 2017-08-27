@@ -6,7 +6,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class MapParser<T, U> : Parser<U>
     {
-        internal MapParser(Parser<T> source, Func<T, U> transform, bool canThrow)
+        internal MapParser(IParserConfiguration conf, Parser<T> source, Func<T, U> transform, bool canThrow) : base(conf)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _transform = transform ?? throw new ArgumentNullException(nameof(transform));
@@ -17,7 +17,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Func<T, U> _transform;
         readonly bool _canThrow;
 
-        public override ParseResult<U> Parse(Reader input)
+        protected override ParseResult<U> DoParse(Reader input)
         {
             var r = _source.Parse(input);
             try

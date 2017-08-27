@@ -21,7 +21,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator !(Parser operand)
         {
-            return new NotParser<Nil>(operand);
+            return new NotParser<Nil>(operand.Configuration, operand);
         }
         /// <summary>
         /// <see cref="ParserExtension.Or(Parser, Parser)"/>と同義です。
@@ -44,5 +44,7 @@ namespace Unclazz.Parsec
             return left.Then(right);
         }
         #endregion
+
+        protected Parser(IParserConfiguration conf) : base(conf) { }
     }
 }
