@@ -27,6 +27,12 @@ sealed class NumberParser : Parser<double>
         integral = Char('0') | (CharBetween('1', '9') & digits);
         fractional = Char('.') & digits;
         exponent = CharIn("eE") & (sign) & (digits);
+
+        // 始まりの符号はあるかもしれない（ないかもしれない）
+        // 整数は必須
+        // 小数点以下はあるかもしれない（ないかもしれない）
+        // 指数はあるかもしれない（ないかもしれない）
+        // 以上の文字列をキャプチャし、浮動小数点数に変換
         number = ((sign.OrNot() & integral & fractional.OrNot() & exponent.OrNot()).Capture()).Map(double.Parse);
     }
 
@@ -55,8 +61,8 @@ var c2 = r.Capture; // throws InvalidOperationException.
 
 次に示すのはJSONパーサーの実装例です。パースをしながら順次JSONオブジェクトを構築していきます。
 JSONのデータ型を表すC#言語におけるオブジェクトとそのユーティリティとして
-[Unclazz.Commons.Json`](https://github.com/unclazz/Unclazz.Commons.Json)のインターフェースを利用しています
-（実際にはこのライブラリ自体がパーサーを持っているので恐るべき車輪の再発明ということになります）。
+[Unclazz.Commons.Json](https://github.com/unclazz/Unclazz.Commons.Json)のインターフェースを利用しています
+（実際にはこのライブラリは自前のパーサーを持っているので恐るべき車輪の再発明ということになります）。
 
 まずは`null`・`true`・`false`のリテラルです：
 
@@ -66,6 +72,9 @@ sealed class JsonNullParser : Parser<IJsonObject>
     readonly Parser<IJsonObject> _null;
     public JsonNullParser()
     {
+        // キーワード"null"にマッチ
+        // 1文字目（'n'）にマッチしたら直近の |(Or) によるバックトラックを無効化
+        // "null"マッチ成功後、読み取り結果のキャプチャはせず、Yieldパーサーで直接値を産生
         _null = Keyword("null", cutIndex: 1) & Yield(JsonObject.OfNull());
     }
     protected override ParseResult<IJsonObject> DoParse(Reader input)
@@ -78,6 +87,8 @@ sealed class JsonBooleanParser : Parser<IJsonObject>
     readonly Parser<IJsonObject> _boolean;
     public JsonBooleanParser()
     {
+        // キーワード"false"もしくは"true"にマッチ
+        // マッチした文字列をキャプチャして、それをマッパーにより真偽値に変換
         _boolean = StringIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
     }
     protected override ParseResult<IJsonObject> DoParse(Reader input)
@@ -100,6 +111,12 @@ sealed class JsonNumberParser : Parser<IJsonObject>
         var integral = Char('0') | (CharBetween('1', '9') & digits);
         var fractional = Char('.') & digits;
         var exponent = CharIn("eE") & (sign) & (digits);
+
+        // 始まりの符号はあるかもしれない（ないかもしれない）
+        // 整数は必須
+        // 小数点以下はあるかもしれない（ないかもしれない）
+        // 指数はあるかもしれない（ないかもしれない）
+        // 以上の文字列をキャプチャし、浮動小数点数に変換
         number = ((sign.OrNot() & integral & fractional.OrNot() & exponent.OrNot()).Capture())
             .Map(double.Parse).Map(JsonObject.Of);
     }
@@ -124,6 +141,11 @@ sealed class JsonStringParser : Parser<IJsonObject>
         var unicodeEscape = Char('u').Then(hexDigits.Repeat(exactly: 4));
         var escape = Char('\\') & (CharIn("\"/\\bfnrt") | unicodeEscape);
         var stringChars = CharIn(!CharClass.AnyOf("\"\\"));
+
+        // まず'"'にマッチを試みる。
+        // マッチに成功したら直近の |(Or)によるバックトラックは無効化。
+        // その後JSON文字列を構成する文字として有効な文字の0回以上の繰り返しを読み取ってキャプチャ。
+        // 再度'"'にマッチを試みる。
         _string = (quote.Cut() & (stringChars | escape).Repeat().Capture() & quote)
             .Map(Unescape).Map(JsonObject.Of);
     }
@@ -158,16 +180,24 @@ sealed class JsonExprParser : Parser<IJsonObject>
     {
         Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
 
+        // JSON表現はObject・Arrayの要素としても登場。
+        // 結果、jsonExpr・_array・_objectは再帰的関係を持つ。
+        // C#言語仕様により、同じスコープ内でも後続行（下方の行）で宣言される変数は
+        // 先行行（上方の行）で宣言される式（ラムダ式含む）の中で参照できないから、
+        // jsonExprの構築は別メソッド化し、Lazy(...)による遅延評価型のパーサーとして
+        // インスタンス・フィールドにアサインしておく。
         jsonExpr = Lazy<IJsonObject>(JsonExpr);
 
         var propPair = _string.Cut() & Char(':') & jsonExpr;
         var comma = Char(',');
 
+        // jsonExprを要素とするObject・Arrayのパーサーを組み立てる
         _array = (Char('[').Cut() & jsonExpr.Repeat(sep: comma) & Char(']')).Map(JsonObject.Of);
         _object = (Char('{').Cut() & propPair.Repeat(sep: comma) & Char('}')).Map(PairsToObject);
     }
     Parser<IJsonObject> JsonExpr()
     {
+        // JSONオブジェクト表現はObject、Array、String、Boolean、Null、Numberのいずれかである
         return _object | (_array | (_string | (_boolean | (_null | _number))));
     }
     IJsonObject PairsToObject(IList<Tuple<IJsonObject,IJsonObject>> pairs)

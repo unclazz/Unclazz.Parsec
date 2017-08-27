@@ -15,6 +15,11 @@ namespace Example.Unclazz.Parcec
             var unicodeEscape = Char('u').Then(hexDigits.Repeat(exactly: 4));
             var escape = Char('\\') & (CharIn("\"/\\bfnrt") | unicodeEscape);
             var stringChars = CharIn(!CharClass.AnyOf("\"\\"));
+
+            // まず'"'にマッチを試みる。
+            // マッチに成功したら直近の |(Or)によるバックトラックは無効化。
+            // その後JSON文字列を構成する文字として有効な文字の0回以上の繰り返しを読み取ってキャプチャ。
+            // 再度'"'にマッチを試みる。
             _string = (quote.Cut() & (stringChars | escape).Repeat().Capture() & quote)
                 .Map(Unescape).Map(JsonObject.Of);
         }
