@@ -112,13 +112,19 @@ namespace Unclazz.Parsec
         }
         #endregion
 
-
+        /// <summary>
+        /// デフォルトのコンフィギュレーションを使用するコンストラクタです。
+        /// </summary>
         protected Parser()
         {
             _factory = ParserFactory.Default;
             _autoConsuming = _factory.NonSignificant != null;
             _parseLogging = _factory.Logger != null;
         }
+        /// <summary>
+        /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
+        /// </summary>
+        /// <param name="config"></param>
         protected Parser(IParserConfiguration config)
         {
             _factory = new ParserFactory(config) ?? throw new ArgumentNullException(nameof(config));
@@ -130,6 +136,9 @@ namespace Unclazz.Parsec
         bool _autoConsuming;
         bool _parseLogging;
 
+        /// <summary>
+        /// このパーサーのコンフィギュレーションです。
+        /// </summary>
         public IParserConfiguration Configuration => _factory;
 
         /// <summary>
@@ -147,6 +156,22 @@ namespace Unclazz.Parsec
         /// <returns>パース結果</returns>
         protected abstract ParseResult<T> DoParse(Reader input);
 
+        /// <summary>
+        /// パースを行います。
+        /// <para>
+        /// パース成否は戻り値の<see cref="ParseResult{T}"/>のインスタンスで表されます。
+        /// このメソッドはいかなる場合も<c>null</c>を返しません。
+        /// またこのメソッドは原則として例外スローも行いません。
+        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
+        /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知されます。
+        /// </para>
+        /// <para>
+        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Reader)"/>を呼び出します。
+        /// その後事後処理を終えてから、呼び出し元に結果を返します。
+        /// </para>
+        /// </summary>
+        /// <param name="input">入力データ</param>
+        /// <returns>パース結果</returns>
         public ParseResult<T> Parse(Reader input)
         {
             if (_autoConsuming) _factory.NonSignificant.Parse(input);
@@ -159,6 +184,10 @@ namespace Unclazz.Parsec
             }
             return DoParse(input);
         }
+        /// <summary>
+        /// このパーサーのコンフィギュレーションを変更します。
+        /// </summary>
+        /// <param name="act">変更を行うアクション</param>
         public void Configure(Action<IParserConfigurer> act)
         {
             act(_factory);
@@ -245,10 +274,10 @@ namespace Unclazz.Parsec
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
+        /// <typeparam name="U">任意の型</typeparam>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Not<T>(Parser<T> operand) => _factory.Not(operand);
+        public Parser Not<U>(Parser<U> operand) => _factory.Not(operand);
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
@@ -258,10 +287,10 @@ namespace Unclazz.Parsec
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
+        /// <typeparam name="U">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> For<T>(Func<Reader, ParseResult<T>> func) => _factory.For(func);
+        public Parser<U> For<U>(Func<Reader, ParseResult<U>> func) => _factory.For(func);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
@@ -272,10 +301,10 @@ namespace Unclazz.Parsec
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。
         /// </summary>
-        /// <typeparam name="T">パーサーが返す値の型</typeparam>
+        /// <typeparam name="U">パーサーが返す値の型</typeparam>
         /// <param name="factory">パーサーを生成するデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> Lazy<T>(Func<Parser<T>> factory) => _factory.Lazy(factory);
+        public Parser<U> Lazy<U>(Func<Parser<U>> factory) => _factory.Lazy(factory);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。

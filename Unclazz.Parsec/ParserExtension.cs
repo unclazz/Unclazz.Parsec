@@ -268,7 +268,7 @@ namespace Unclazz.Parsec
         }
         #endregion
 
-        #region AutoSpace系の拡張メソッド
+        #region SkipSpace系の拡張メソッド
         /// <summary>
         /// パース対象に先行する空白文字のスキップをON/OFFするパーサーを返します。
         /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
