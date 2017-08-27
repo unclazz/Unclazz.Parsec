@@ -6,9 +6,12 @@ C#言語の機能もしくは制約にあわせて構築されたAPIを公開し
 
 # パーサー実装例
 
-## 四則演算
+`Example.Unclazz.Parsec`配下に若干のサンプルコードが用意されています。
+これらのコードもまた [FastParse](https://github.com/lihaoyi/fastparse) のドキュメンテーションを参考にしてつくられたものです。
 
-`Example.Unclazz.Parsec`配下に若干のサンプルコードが用意されています。例えば次のコードは浮動小数点数のパーサーの実装例です：
+## 浮動小数点数
+
+例えば次のコードは浮動小数点数のパーサーの実装例です：
 
 ```cs
 sealed class NumberParser : Parser<double>
