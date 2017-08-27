@@ -2,11 +2,13 @@
 
 C#によるパーサーコンビネーター・ライブラリーです。
 Scala言語で実装されたパーサーコンビネーター [FastParse](https://github.com/lihaoyi/fastparse)を参考にしつつ、
-C#言語の機能もしくは制約にあわせて構築されたAPIを公開しています。
+C#言語の機能もしくは制約にあわせてAPIを構築しています。
 
 ## 主要コンポーネント
 
 次に示すのはこのライブラリの主要コンポーネントとなるクラスもしくは構造体です。
+これらはいずれも`Unclazz.Parsec`名前空間に属しています。
+
 ライブラリのユーザ開発者は抽象クラス`Parser<T>`・`Parser`の派生クラスを実装するか、
 `Parsers`ユーティリティが提供する静的ファクトリーメソッドを通じて得られる定義済みパーサーを組み合わせてパーサーを実装します。
 
@@ -118,7 +120,7 @@ sealed class JsonBooleanParser : Parser<IJsonObject>
 }
 ```
 
-続いて、四則演算のときに登場した数値リテラルのパーサーです。ただし今回はパース結果の型が`IJsonObject`になっています：
+続いて、先程も登場した数値リテラルのパーサーです。ただし今回はパース結果の型が`IJsonObject`になっています：
 
 ```cs
 sealed class JsonNumberParser : Parser<IJsonObject>
