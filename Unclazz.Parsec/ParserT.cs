@@ -194,29 +194,6 @@ namespace Unclazz.Parsec
             _autoConsuming = _factory.NonSignificant != null;
             _parseLogging = _factory.Logger != null;
         }
-        void LogPreParse(CharacterPosition pos, int peek)
-        {
-            WriteLine("##### Pre-Parse #####");
-            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
-            WriteLine("Position   : {0} ", pos);
-            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
-        }
-        void LogPostParse(CharacterPosition pos, int peek, ParseResult<T> result)
-        {
-            WriteLine("##### Post-Parse #####");
-            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
-            WriteLine("Successful : {0} ", result.Successful);
-            if (result.Successful)
-            WriteLine("Capture    : {0} ", result.Capture);
-            else
-            WriteLine("Message    : {0} ", result.Message);
-            WriteLine("Position   : {0} ", pos);
-            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
-        }
-        void WriteLine(string format, params object[] args)
-        {
-            _factory.Logger(string.Format(format, args));
-        }
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
@@ -269,8 +246,48 @@ namespace Unclazz.Parsec
         {
             return new MapParser<T, U>(_factory, this, transform, canThrow);
         }
+        void LogPreParse(CharacterPosition pos, int peek)
+        {
+            WriteLine("##### Pre-Parse #####");
+            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
+            WriteLine("Position   : {0} ", pos);
+            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
+        }
+        void LogPostParse(CharacterPosition pos, int peek, ParseResult<T> result)
+        {
+            WriteLine("##### Post-Parse #####");
+            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
+            WriteLine("Successful : {0} ", result.Successful);
+            if (result.Successful)
+                WriteLine("Capture    : {0} ", result.Capture);
+            else
+                WriteLine("Message    : {0} ", result.Message);
+            WriteLine("Position   : {0} ", pos);
+            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
+        }
+        void WriteLine(string format, params object[] args)
+        {
+            _factory.Logger(string.Format(format, args));
+        }
 
-        #region Factory
+
+        #region 定義済みパーサーを提供するプロパティの宣言
+        /// <summary>
+        /// データソースの先頭（BOF）にだけマッチするパーサーです。
+        /// </summary>
+        protected Parser BeginningOfFile => _factory.BeginningOfFile;
+        /// <summary>
+        /// データソースの終端（EOF）にだけマッチするパーサーです。
+        /// </summary>
+        public Parser EndOfFile => _factory.EndOfFile;
+        /// <summary>
+        /// 0文字以上の空白文字(コードポイント<c>32</c>）と
+        /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
+        /// </summary>
+        public Parser WhileSpaceAndControls => _factory.WhileSpaceAndControls;
+        #endregion
+
+        #region 定義済みパーサーを提供するメソッドの宣言
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
