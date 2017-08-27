@@ -35,27 +35,27 @@ namespace Unclazz.Parsec.CoreParsers
 
         internal RepeatParser(IParserConfiguration conf) : base(conf) { }
 
-        sealed class RepeatExactlyParser<T> : RepeatParser<T>
+        sealed class RepeatExactlyParser<U> : RepeatParser<U>
         {
-            internal RepeatExactlyParser(IParserConfiguration conf, Parser<T> original, int exactly, Parser<Nil> sep) : base(conf)
+            internal RepeatExactlyParser(IParserConfiguration conf, Parser<U> original, int exactly, Parser<Nil> sep) : base(conf)
             {
                 _original = original ?? throw new ArgumentNullException(nameof(original));
                 if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
                 _exactly = exactly;
                 _sep = sep;
-                _capture = typeof(T) != typeof(Nil);
+                _capture = typeof(U) != typeof(Nil);
             }
 
-            readonly Parser<T> _original;
+            readonly Parser<U> _original;
             readonly int _exactly;
             readonly Parser<Nil> _sep;
             readonly bool _capture;
 
-            protected override ParseResult<IList<T>> DoParse(Reader input)
+            protected override ParseResult<IList<U>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
-                var list = _capture ? new List<T>() : null;
+                var list = _capture ? new List<U>() : null;
                 // パース開始時の文字位置を記憶
                 var pos = input.Position;
                 // 予め指定された回数のパースを試みる
@@ -99,9 +99,9 @@ namespace Unclazz.Parsec.CoreParsers
                 }
             }
         }
-        sealed class RepeatMinMaxParser<T> : RepeatParser<T>
+        sealed class RepeatMinMaxParser<U> : RepeatParser<U>
         {
-            internal RepeatMinMaxParser(IParserConfiguration conf, Parser<T> original, int min, int max, Parser<Nil> sep): base(conf)
+            internal RepeatMinMaxParser(IParserConfiguration conf, Parser<U> original, int min, int max, Parser<Nil> sep): base(conf)
             {
                 max = max == -1 ? int.MaxValue : max;
                 min = min == -1 ? 0 : min;
@@ -114,20 +114,20 @@ namespace Unclazz.Parsec.CoreParsers
                 _min = min;
                 _max = max;
                 _sep = sep;
-                _capture = typeof(T) != typeof(Nil);
+                _capture = typeof(U) != typeof(Nil);
             }
 
             readonly int _min;
             readonly int _max;
-            readonly Parser<T> _original;
+            readonly Parser<U> _original;
             readonly Parser<Nil> _sep;
             readonly bool _capture;
 
-            protected override ParseResult<IList<T>> DoParse(Reader input)
+            protected override ParseResult<IList<U>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
-                var list = _capture ? new List<T>() : null;
+                var list = _capture ? new List<U>() : null;
                 // パース開始時の文字位置を記憶
                 var pos = input.Position;
                 // 予め指定された回数のパースを試みる

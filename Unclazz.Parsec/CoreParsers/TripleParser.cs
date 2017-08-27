@@ -15,37 +15,37 @@ namespace Unclazz.Parsec.CoreParsers
 
         internal TripleParser(IParserConfiguration conf) : base(conf) { }
 
-        sealed class ThenDoubleParser<T1, T2, T3> : TripleParser<T1, T2, T3>
+        sealed class ThenDoubleParser<U1, U2, U3> : TripleParser<U1, U2, U3>
         {
-            internal ThenDoubleParser(IParserConfiguration conf, Parser<T1> left, Parser<Tuple<T2, T3>> right) : base(conf)
+            internal ThenDoubleParser(IParserConfiguration conf, Parser<U1> left, Parser<Tuple<U2, U3>> right) : base(conf)
             {
                 Left = left ?? throw new ArgumentNullException(nameof(left));
                 Right = right ?? throw new ArgumentNullException(nameof(right));
             }
 
-            public Parser<T1> Left { get; }
-            public Parser<Tuple<T2, T3>> Right { get; }
+            public Parser<U1> Left { get; }
+            public Parser<Tuple<U2, U3>> Right { get; }
 
-            protected override ParseResult<Tuple<T1, T2, T3>> DoParse(Reader input)
+            protected override ParseResult<Tuple<U1, U2, U3>> DoParse(Reader input)
             {
                 var p = input.Position;
                 var leftResult = Left.Parse(input);
                 if (!leftResult.Successful)
                 {
-                    return leftResult.Cast<Tuple<T1, T2, T3>>();
+                    return leftResult.Cast<Tuple<U1, U2, U3>>();
                 }
 
                 var rightResult = Right.Parse(input);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
-                    return rightResult.Cast<Tuple<T1, T2, T3>>().AllowBacktrack(canBacktrack);
+                    return rightResult.Cast<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
-                var rightTuple = rightResult.Capture.OrElse(default(Tuple<T2, T3>));
-                var finalTuple = new Tuple<T1, T2, T3>(leftResult.Capture.OrElse(default(T1)),
-                    rightTuple == null ? default(T2) : rightTuple.Item1,
-                    rightTuple == null ? default(T3) : rightTuple.Item2);
+                var rightTuple = rightResult.Capture.OrElse(default(Tuple<U2, U3>));
+                var finalTuple = new Tuple<U1, U2, U3>(leftResult.Capture.OrElse(default(U1)),
+                    rightTuple == null ? default(U2) : rightTuple.Item1,
+                    rightTuple == null ? default(U3) : rightTuple.Item2);
                 return Success(p, finalTuple, canBacktrack: canBacktrack);
             }
             public override string ToString()
@@ -53,38 +53,38 @@ namespace Unclazz.Parsec.CoreParsers
                 return string.Format("Triple({0}, {1})", Left, Right);
             }
         }
-        sealed class DoubleThenParser<T1, T2, T3> : TripleParser<T1, T2, T3>
+        sealed class DoubleThenParser<U1, U2, U3> : TripleParser<U1, U2, U3>
         {
-            internal DoubleThenParser(IParserConfiguration conf, Parser<Tuple<T1, T2>> left, Parser<T3> right) : base(conf)
+            internal DoubleThenParser(IParserConfiguration conf, Parser<Tuple<U1, U2>> left, Parser<U3> right) : base(conf)
             {
                 Left = left ?? throw new ArgumentNullException(nameof(left));
                 Right = right ?? throw new ArgumentNullException(nameof(right));
             }
 
-            public Parser<Tuple<T1, T2>> Left { get; }
-            public Parser<T3> Right { get; }
+            public Parser<Tuple<U1, U2>> Left { get; }
+            public Parser<U3> Right { get; }
 
-            protected override ParseResult<Tuple<T1, T2, T3>> DoParse(Reader input)
+            protected override ParseResult<Tuple<U1, U2, U3>> DoParse(Reader input)
             {
                 var p = input.Position;
                 var leftResult = Left.Parse(input);
                 if (!leftResult.Successful)
                 {
-                    return leftResult.Cast<Tuple<T1, T2, T3>>();
+                    return leftResult.Cast<Tuple<U1, U2, U3>>();
                 }
 
                 var rightResult = Right.Parse(input);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
-                    return rightResult.Cast<Tuple<T1, T2, T3>>().AllowBacktrack(canBacktrack);
+                    return rightResult.Cast<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
-                var leftTuple = leftResult.Capture.OrElse(default(Tuple<T1, T2>));
-                var finalTuple = new Tuple<T1, T2, T3>(
-                    leftTuple == null ? default(T1) : leftTuple.Item1,
-                    leftTuple == null ? default(T2) : leftTuple.Item2,
-                    rightResult.Capture.OrElse(default(T3)));
+                var leftTuple = leftResult.Capture.OrElse(default(Tuple<U1, U2>));
+                var finalTuple = new Tuple<U1, U2, U3>(
+                    leftTuple == null ? default(U1) : leftTuple.Item1,
+                    leftTuple == null ? default(U2) : leftTuple.Item2,
+                    rightResult.Capture.OrElse(default(U3)));
                 return Success(p, finalTuple, canBacktrack: canBacktrack);
             }
             public override string ToString()
