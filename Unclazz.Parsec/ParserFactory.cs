@@ -11,10 +11,7 @@ namespace Unclazz.Parsec
 
     sealed class ParserFactory : IParserConfiguration, IParserConfigurer, IParserFactory
     {
-        internal static ParserFactory Default { get; } = new ParserFactory();
-
-        readonly static Action<string> _defaultLogger = Console.WriteLine;
-        readonly static Parser _defaultNonSignificant = Parsers.WhileSpaceAndControls;
+        internal static ParserFactory Default => new ParserFactory();
 
         ParserFactory() { }
         internal ParserFactory(IParserConfiguration original)
@@ -25,8 +22,8 @@ namespace Unclazz.Parsec
         }
 
         #region IParserConfigurationメンバーの宣言
-        Parser _nonSignificant = _defaultNonSignificant;
-        Action<string> _logger = _defaultLogger;
+        Parser _nonSignificant;
+        Action<string> _logger;
 
         public Parser NonSignificant => _nonSignificant;
         public Action<string> Logger => _logger;
@@ -39,24 +36,20 @@ namespace Unclazz.Parsec
 
 
         #region IParserConfigurerメンバーの宣言
-        public IParserConfiguration SetNonSignificant(Parser p)
+        public IParserConfigurer SetNonSignificant(Parser p)
         {
             _nonSignificant = p;
-            _autoConsuming = p != null;
             return this;
         }
-        public IParserConfiguration SetLogger(Action<string> l)
+        public IParserConfigurer SetLogger(Action<string> l)
         {
             _logger = l;
-            _parseLogging = l != null;
             return this;
         }
         #endregion
 
         #region IParserFactoryメンバーの宣言
         public IParserConfiguration Configuration { get; }
-        bool _autoConsuming;
-        bool _parseLogging;
         Parser _cachedBeginningOfFile;
         Parser _cachedEndOfFile;
         Parser _cachedWhileSpaceAndControls;

@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace Unclazz.Parsec.CoreParsers
 {
+
     sealed class CastParser<T, U> : Parser<U>
     {
         internal CastParser(IParserConfiguration conf, Parser<T> original) : base(conf)

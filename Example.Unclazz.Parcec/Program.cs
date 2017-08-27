@@ -14,7 +14,7 @@ namespace Example.Unclazz.Parcec
         {
             var parser = new ExpressionParser();
             var input = args.Aggregate(new StringBuilder(),
-                (b, a) => b.Append(a)).ToString();
+                (b, a) => b.Append(a).Append(' ')).ToString();
 
             parser.Parse(input)
                 .IfSuccessful(c => Console.WriteLine("result = {0}", c.Value), 
@@ -24,11 +24,24 @@ namespace Example.Unclazz.Parcec
 
     sealed class ExpressionParser : Parser<double>
     {
-        readonly static Parser<string> addSub = CharIn("+-").Capture();
-        readonly static Parser<string> mulDiv = CharIn("*/").Capture();
-        readonly static Parser parenLeft = Char('(');
-        readonly static Parser parenRight = Char(')');
-        readonly static Parser<double> number = new NumberParser();
+        readonly Parser<string> addSub;
+        readonly Parser<string> mulDiv;
+        readonly Parser parenLeft;
+        readonly Parser parenRight;
+        readonly Parser<double> number;
+
+        public ExpressionParser()
+        {
+            Configure(a =>
+            {
+                a.SetNonSignificant(WhileSpaceAndControls);
+            });
+            addSub = CharIn("+-").Capture();
+            mulDiv = CharIn("*/").Capture();
+            parenLeft = Char('(');
+            parenRight = Char(')');
+            number = new NumberParser();
+        }
 
         protected override ParseResult<double> DoParse(Reader input)
         {
@@ -83,13 +96,23 @@ namespace Example.Unclazz.Parcec
 
     sealed class NumberParser : Parser<double>
     {
-        readonly static Parser sign = CharIn("+-").OrNot();
-        readonly static Parser digits = CharsWhileIn("0123456789", min: 0);
-        readonly static Parser integral = Char('0') | (CharBetween('1', '9') & digits);
-        readonly static Parser fractional = Char('.') & digits;
-        readonly static Parser exponent = CharIn("eE") & (sign) & (digits);
-        readonly static Parser<double> number = ((integral & fractional.OrNot() &
-            exponent.OrNot()).Capture()).Map(double.Parse);
+        readonly Parser sign;
+        readonly Parser digits;
+        readonly Parser integral;
+        readonly Parser fractional;
+        readonly Parser exponent;
+        readonly Parser<double> number;
+
+        public NumberParser()
+        {
+            sign = CharIn("+-").OrNot();
+            digits = CharsWhileIn("0123456789", min: 0);
+            integral = Char('0') | (CharBetween('1', '9') & digits);
+            fractional = Char('.') & digits;
+            exponent = CharIn("eE") & (sign) & (digits);
+            number = ((integral & fractional.OrNot() &
+                exponent.OrNot()).Capture()).Map(double.Parse);
+        }
 
         protected override ParseResult<double> DoParse(Reader input)
         {
