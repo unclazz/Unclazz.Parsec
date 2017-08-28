@@ -53,6 +53,7 @@
     <Compile Include="CoreParsers\DelegateParserTest.cs" />
     <Compile Include="CoreParsers\DoubleParserTest.cs" />
     <Compile Include="CoreParsers\MapParserTest.cs" />
+    <Compile Include="CoreParsers\SkipSpaceParserTest.cs" />
     <Compile Include="CoreParsers\YieldParserTest.cs" />
     <Compile Include="OptionalTest.cs" />
     <Compile Include="CharacterPositionTest.cs" />
