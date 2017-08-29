@@ -8,16 +8,28 @@ namespace Unclazz.Parsec
     public interface IParserConfigurer
     {
         /// <summary>
-        /// <see cref="IParserConfiguration.Logger"/>を設定します。
+        /// <see cref="IParserConfiguration.ParseLogger"/>を設定します。
         /// </summary>
-        /// <param name="l">ロガーとして使用されるアクション</param>
+        /// <param name="logger">ロガーとして使用されるアクション</param>
         /// <returns></returns>
-        IParserConfigurer SetLogger(Action<string> l);
+        IParserConfigurer SetParseLogger(Action<string> logger);
         /// <summary>
-        /// <see cref="IParserConfiguration.NonSignificant"/>を設定します。
+        /// <see cref="IParserConfiguration.ParseLogging"/>を設定します。
         /// </summary>
-        /// <param name="p">パース（スキップ）のために使用されるパーサー</param>
+        /// <param name="onOff">ログを有効化する場合は<c>true</c></param>
         /// <returns></returns>
-        IParserConfigurer SetNonSignificant(Parser p);
+        IParserConfigurer SetParseLogging(bool onOff);
+        /// <summary>
+        /// <see cref="IParserConfiguration.SkipTarget"/>を設定します。
+        /// </summary>
+        /// <param name="clazz">スキップ対象の文字クラス</param>
+        /// <returns></returns>
+        IParserConfigurer SetSkipTarget(CharClass clazz);
+        /// <summary>
+        /// <see cref="IParserConfiguration.AutoSkip"/>を設定します。
+        /// </summary>
+        /// <param name="onOff">スキップを有効化する場合は<c>true</c></param>
+        /// <returns></returns>
+        IParserConfigurer SetAutoSkip(bool onOff);
     }
 }

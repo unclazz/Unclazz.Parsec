@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unclazz.Parsec.CharClasses;
 using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
@@ -17,16 +16,22 @@ namespace Unclazz.Parsec
         internal ParserFactory(IParserConfiguration original)
         {
             if (original == null) throw new ArgumentNullException(nameof(original));
-            SetNonSignificant(original.NonSignificant);
-            SetLogger(original.Logger);
+            SetAutoSkip(original.AutoSkip);
+            SetParseLogging(original.ParseLogging);
+            SetSkipTarget(original.SkipTarget);
+            SetParseLogger(original.ParseLogger);
         }
 
         #region IParserConfigurationメンバーの宣言
-        Parser _nonSignificant;
-        Action<string> _logger;
+        CharClass _skipTarget = CharClass.SpaceAndControl;
+        Action<string> _parseLogger = Console.WriteLine;
+        bool _autoSkip;
+        bool _parseLogging;
 
-        public Parser NonSignificant => _nonSignificant;
-        public Action<string> Logger => _logger;
+        public Action<string> ParseLogger => _parseLogger;
+        public bool ParseLogging => _parseLogging;
+        public CharClass SkipTarget => _skipTarget;
+        public bool AutoSkip => _autoSkip;
 
         public IParserConfiguration Copy()
         {
@@ -36,14 +41,24 @@ namespace Unclazz.Parsec
 
 
         #region IParserConfigurerメンバーの宣言
-        public IParserConfigurer SetNonSignificant(Parser p)
+        public IParserConfigurer SetSkipTarget(CharClass clazz)
         {
-            _nonSignificant = p;
+            _skipTarget = clazz ?? throw new ArgumentNullException(nameof(clazz));
             return this;
         }
-        public IParserConfigurer SetLogger(Action<string> l)
+        public IParserConfigurer SetParseLogger(Action<string> logger)
         {
-            _logger = l;
+            _parseLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            return this;
+        }
+        public IParserConfigurer SetAutoSkip(bool onOff)
+        {
+            _autoSkip = onOff;
+            return this;
+        }
+        public IParserConfigurer SetParseLogging(bool onOff)
+        {
+            _parseLogging = onOff;
             return this;
         }
         #endregion
@@ -67,7 +82,7 @@ namespace Unclazz.Parsec
         /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         public Parser WhileSpaceAndControls => _cachedWhileSpaceAndControls 
-            ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(this, CharClass.Between((char)0, (char)32) + (char)127, 0));
+            ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(this, CharClass.SpaceAndControl, 0));
 
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。

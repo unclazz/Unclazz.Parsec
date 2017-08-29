@@ -19,7 +19,7 @@ namespace Example.Unclazz.Parsec
 
         public JsonExprParser()
         {
-            Configure(c => c.SetNonSignificant(CharsWhileIn(" \r\n")));
+            Configure(c => c.SetAutoSkip(true));
 
             // JSON表現はObject・Arrayの要素としても登場。
             // 結果、jsonExpr・_array・_objectは再帰的関係を持つ。

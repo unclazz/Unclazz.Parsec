@@ -118,8 +118,8 @@ namespace Unclazz.Parsec
         protected Parser()
         {
             _factory = ParserFactory.Default;
-            _autoConsuming = _factory.NonSignificant != null;
-            _parseLogging = _factory.Logger != null;
+            _autoSkip = _factory.AutoSkip;
+            _parseLogging = _factory.ParseLogging;
         }
         /// <summary>
         /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
@@ -128,12 +128,12 @@ namespace Unclazz.Parsec
         protected Parser(IParserConfiguration config)
         {
             _factory = new ParserFactory(config) ?? throw new ArgumentNullException(nameof(config));
-            _autoConsuming = _factory.NonSignificant != null;
-            _parseLogging = _factory.Logger != null;
+            _autoSkip = _factory.AutoSkip;
+            _parseLogging = _factory.ParseLogging;
         }
 
         readonly ParserFactory _factory;
-        bool _autoConsuming;
+        bool _autoSkip;
         bool _parseLogging;
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace Unclazz.Parsec
         /// <returns>パース結果</returns>
         public ParseResult<T> Parse(Reader input)
         {
-            if (_autoConsuming) _factory.NonSignificant.Parse(input);
+            if (_autoSkip) SkipWhileIn(input, _factory.SkipTarget);
             if (_parseLogging)
             {
                 LogPreParse(input.Position, input.Peek());
@@ -191,8 +191,8 @@ namespace Unclazz.Parsec
         public void Configure(Action<IParserConfigurer> act)
         {
             act(_factory);
-            _autoConsuming = _factory.NonSignificant != null;
-            _parseLogging = _factory.Logger != null;
+            _autoSkip = _factory.AutoSkip;
+            _parseLogging = _factory.ParseLogging;
         }
         /// <summary>
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
@@ -267,7 +267,16 @@ namespace Unclazz.Parsec
         }
         void WriteLine(string format, params object[] args)
         {
-            _factory.Logger(string.Format(format, args));
+            _factory.ParseLogger(string.Format(format, args));
+        }
+        void SkipWhileIn(Reader r, CharClass c)
+        {
+            while (!r.EndOfFile)
+            {
+                var ch = (char)r.Peek();
+                if (!c.Contains(ch)) break;
+                r.Read();
+            }
         }
 
 

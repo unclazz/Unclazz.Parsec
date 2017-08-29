@@ -270,26 +270,24 @@ namespace Unclazz.Parsec
 
         #region SkipSpace系の拡張メソッド
         /// <summary>
-        /// パース対象に先行する空白文字のスキップをON/OFFするパーサーを返します。
+        /// パース対象に先行する空白文字のスキップするパーサーを返します。
         /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
         /// </summary>
         /// <param name="self">レシーバー</param>
-        /// <param name="onOff"><c>true</c>の場合スキップ機能がON</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser SkipSpace(this Parser self, bool onOff = true)
+        public static Parser SkipSpace(this Parser self)
         {
-            return new SkipSpaceParser(self.Configuration, self, onOff);
+            return new SkipParser(self.Configuration, self, true, null);
         }
         /// <summary>
-        /// パース対象に先行する空白文字のスキップをON/OFFするパーサーを返します。
+        /// パース対象に先行する空白文字のスキップするパーサーを返します。
         /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
         /// </summary>
         /// <param name="self">レシーバー</param>
-        /// <param name="onOff"><c>true</c>の場合スキップ機能がON</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> SkipSpace<T>(this Parser<T> self, bool onOff = true)
+        public static Parser<T> SkipSpace<T>(this Parser<T> self)
         {
-            return new SkipSpaceParser<T>(self.Configuration, self, onOff);
+            return new SkipSpaceParser<T>(self.Configuration, self, true, null);
         }
         #endregion
 

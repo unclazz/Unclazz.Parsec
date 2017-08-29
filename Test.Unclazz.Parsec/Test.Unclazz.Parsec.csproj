@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharClasses\CharClassTest.cs" />
     <Compile Include="CoreParsers\CaptureParserTest.cs" />
     <Compile Include="CoreParsers\CastParserTest.cs" />
     <Compile Include="CoreParsers\CharParserTest.cs" />

@@ -18,7 +18,7 @@ namespace Example.Unclazz.Parsec.Math
         {
             Configure(a =>
             {
-                a.SetNonSignificant(WhileSpaceAndControls);
+                a.SetSkipTarget(CharClass.SpaceAndControl);
             });
             addSub = CharIn("+-").Capture();
             mulDiv = CharIn("*/").Capture();

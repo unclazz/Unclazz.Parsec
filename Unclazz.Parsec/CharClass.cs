@@ -13,6 +13,33 @@ namespace Unclazz.Parsec
     /// </summary>
     public abstract class CharClass
     {
+        static CharClass _alphabetic;
+        static CharClass _numeric;
+        static CharClass _alphanumeric;
+        static CharClass _control;
+        static CharClass _spaceAndControl;
+
+        /// <summary>
+        /// <c>'a'</c>から<c>'z'</c>と<c>'A'</c><c>'Z'</c>の範囲の文字を含むクラスです。
+        /// </summary>
+        public static CharClass Alphabetic => _alphabetic ?? (_alphabetic = Between('a', 'z') | Between('A', 'Z'));
+        /// <summary>
+        /// <c>'0'</c>から<c>'9'</c>の範囲の文字を含むクラスです。
+        /// </summary>
+        public static CharClass Numeric => _numeric ?? (_numeric = Between('0', '9'));
+        /// <summary>
+        /// <see cref="Alphabetic"/>と<see cref="Numeric"/>を合わせたクラスです。
+        /// </summary>
+        public static CharClass Alphanumeric => _alphanumeric ?? (_alphanumeric = Alphabetic | Numeric);
+        /// <summary>
+        /// 制御文字（コードポイントで<c>0</c>から<c>31</c>と<c>127</c>）を内容とするクラスです。
+        /// </summary>
+        public static CharClass Control => _control ?? (_control = Between((char)0, (char)31) + (char)127);
+        /// <summary>
+        /// <see cref="Control"/>と空白文字（コードポイントで<c>32</c>）を内容とするクラスです。
+        /// </summary>
+        public static CharClass SpaceAndControl => _spaceAndControl ?? (_spaceAndControl = Between((char)0, (char)32) + (char)127);
+
         /// <summary>
         /// 文字の範囲から文字クラスを生成します。
         /// </summary>
