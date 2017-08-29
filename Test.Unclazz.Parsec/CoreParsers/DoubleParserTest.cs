@@ -10,6 +10,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
     public class DoubleParserTest
     {
         [Test]
+        [Description("Parse - Case#1 - パース失敗時")]
         public void Parse_Case1()
         {
             // Arrange
@@ -24,6 +25,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(() => res.Capture.Present, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
+        [Description("Parse - Case#2 - パース成功時 かつ キャプチャありのパーサー2つから構築された場合")]
         public void Parse_Case2()
         {
             // Arrange
@@ -40,6 +42,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(res.Capture.Value.Item2, Is.EqualTo("3"));
         }
         [Test]
+        [Description("Parse - Case#3 - パース成功時 かつ キャプチャなしのパーサーから構築された場合")]
         public void Parse_Case3()
         {
             // Arrange
@@ -54,6 +57,42 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(res.Capture.Present, Is.True);
             Assert.That(res.Capture.Value.Item1, Is.EqualTo("012"));
             Assert.That(res.Capture.Value.Item2, Is.Null);
+        }
+        [Test]
+        [Description("Parse - Case#4 - パース成功時 かつ キャプチャ失敗のパーサーから構築された場合")]
+        public void Parse_Case4()
+        {
+            // Arrange
+            var cp = Char('A').Capture().OrNot();
+            var kp = Keyword("0123").Capture();
+            var dp = cp.Then(kp);
+
+            // Act
+            var res = dp.Parse("0123XXXX");
+
+            // Assert
+            Assert.That(res.Successful, Is.True);
+            Assert.That(res.Capture.Present, Is.True);
+            Assert.That(res.Capture.Value.Item1, Is.Null);
+            Assert.That(res.Capture.Value.Item2, Is.EqualTo("0123"));
+        }
+        [Test]
+        [Description("Parse - Case#5 - パース成功時 かつ パース失敗時もキャプチャするパーサーから構築された場合")]
+        public void Parse_Case5()
+        {
+            // Arrange
+            var cp = Char('A').OrNot().Capture();
+            var kp = Keyword("0123").Capture();
+            var dp = cp.Then(kp);
+
+            // Act
+            var res = dp.Parse("0123XXXX");
+
+            // Assert
+            Assert.That(res.Successful, Is.True);
+            Assert.That(res.Capture.Present, Is.True);
+            Assert.That(res.Capture.Value.Item1, Is.EqualTo(string.Empty));
+            Assert.That(res.Capture.Value.Item2, Is.EqualTo("0123"));
         }
     }
 }
