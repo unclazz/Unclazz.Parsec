@@ -20,7 +20,6 @@ namespace Unclazz.Parsec.CoreParsers
         }
         readonly Parser<Nil> _original;
         readonly bool _onOff;
-        readonly CharClass _target;
         protected override ParseResult<Nil> DoParse(Reader input) => _original.Parse(input);
         public override string ToString()
         {
