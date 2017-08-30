@@ -165,6 +165,69 @@ namespace Unclazz.Parsec
         }
         #endregion
 
+        #region Map系の拡張メソッド
+        /// <summary>
+        /// 読み取り結果の<see cref="Optional{T}"/>が内包する値に関数を提供するパーサーを生成します。
+        /// <para>
+        /// このメソッドが返すパーサーは関数<paramref name="transform"/>が例外をスローした場合、
+        /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
+        /// この挙動を変更し、関数がスローした例外をそのまま再スローさせたい場合は
+        /// <paramref name="canThrow"/>に<c>true</c>を指定します。
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
+        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
+        /// <param name="self">レシーバー</param>
+        /// <param name="transform">変換を行う関数</param>
+        /// <param name="canThrow"><paramref name="transform"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<TResult> Map<TSource, TResult>(this Parser<TSource> self, Func<TSource, TResult> transform, bool canThrow = false)
+        {
+            return new MapParser<TSource, TResult>(self.Configuration, self, transform, canThrow);
+        }
+        /// <summary>
+        /// <see cref="ParserExtension.Map{T, U}(Parser{T}, Func{T, U}, bool)"/>のオーバーロードです。
+        /// <para>元になるパーサーが何もキャプチャを行わないため、
+        /// <paramref name="transform"/>は実際には決して呼び出されません。</para>
+        /// </summary>
+        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
+        /// <param name="self">レシーバー</param>
+        /// <param name="transform">変換を行う関数</param>
+        /// <param name="canThrow"><paramref name="transform"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser Map<TResult>(this Parser<Nil> self, Func<Nil, TResult> transform, bool canThrow = false)
+        {
+            return self.Cast();
+        }
+        /// <summary>
+        /// 読み取り結果の<see cref="Optional{T}"/>が内包する値を元に動的にパーサーを構築するパーサーを返します。
+        /// </summary>
+        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
+        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
+        /// <param name="self">レシーバー</param>
+        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
+        /// <param name="canThrow"><paramref name="mapper"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser<TResult> FlatMap<TSource, TResult>(this Parser<TSource> self, Func<TSource, Parser<TResult>> mapper, bool canThrow = false)
+        {
+            return new FlatMapParser<TSource, TResult>(self.Configuration, self, mapper, canThrow);
+        }
+        /// <summary>
+        /// <see cref="FlatMap{T, U}(Parser{T}, Func{T, Parser{U}}, bool)"/>のオーバーロードです。
+        /// <para>元になるパーサーが何もキャプチャを行わないため、
+        /// <paramref name="mapper"/>は実際には決して呼び出されません。</para>
+        /// </summary>
+        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
+        /// <param name="self">レシーバー</param>
+        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
+        /// <param name="canThrow"><paramref name="mapper"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <returns>新しいパーサー</returns>
+        public static Parser FlatMap<TResult>(this Parser<Nil> self, Func<Nil, Parser<TResult>> mapper, bool canThrow = false)
+        {
+            return self.Cast();
+        }
+        #endregion
+
         #region Or系の拡張メソッド
         /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
