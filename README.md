@@ -248,10 +248,10 @@ sealed class JsonExprParser : Parser<IJsonObject>
 class HelloParser : Parser<string>
 {
 	Parser<string> _hello;
-    protected override ParseResult<string> DoParse(Reader input)
-    {
-        return (_hello ?? (_hello = Keyword("hello").Capture())).Parse(input);
-    }
+	protected override ParseResult<string> DoParse(Reader input)
+	{
+		return (_hello ?? (_hello = Keyword("hello").Capture())).Parse(input);
+	}
 }
 ```
 
@@ -273,6 +273,31 @@ class HelloParser : Parser<string>
 変換後のパーサーはパース結果として`ParseResult<string>`を返します。
 `ParseResult<string>.Capture`プロパティはキャプチャした値を格納するコンテナ`Optional<string>`を返します。
 
+ではこのパーサーを実行してみましょう：
+
+```cs
+class Program
+{
+    static void Main(string[] args)
+    {
+        new HelloParser().Parse(args[0])
+            .IfSuccessful(
+                c => Console.WriteLine("result = {0}", c.Value), 
+                m => Console.WriteLine("error = {0}", m));
+    }
+}
+```
+
+このコードをビルドして、生成された*.exeを実行してみます：
+
+```bat
+path\to\exe> example.exe hello
+result = hello
+
+path\to\exe> example.exe hallo
+error = expected 'e'(101) but found 'a'(97) at index 1 in "hello"
+```
+
 ところで先程の例ではすべてをレディメイドのパーサーにより行っています。
 しかしもちろん完全に独自のロジックでパースを行うパーサーを組み立てることもできます。
 そのような場合は次のようにします：
@@ -280,8 +305,8 @@ class HelloParser : Parser<string>
 ```cs
 class CustomParser : Parser<string>
 {
-    protected override ParseResult<string> DoParse(Reader input)
-    {
+	protected override ParseResult<string> DoParse(Reader input)
+	{
 		// パース開始時の文字位置を記録
 		var pos = input.Position;
 
@@ -289,8 +314,8 @@ class CustomParser : Parser<string>
 		// ...inputから文字を読み、何かしらのチェックや変換を行う...
 
 		// パースの結果を構造体にくるんで呼び出し元に返す
-        return Success(pos, capture: new Capture<string>(value));
-    }
+		return Success(pos, capture: new Capture<string>(value));
+	}
 }
 ```
 
