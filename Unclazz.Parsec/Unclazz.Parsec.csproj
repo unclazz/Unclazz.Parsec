@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CoreParsers\CastParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
+    <Compile Include="CoreParsers\FlatMapParser.cs" />
     <Compile Include="CoreParsers\SkipParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
