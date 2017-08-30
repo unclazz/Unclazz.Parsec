@@ -131,7 +131,8 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Cast<T>(this Parser<T> self)
         {
-            return new CastParser<T>(self.Configuration, self);
+            var p = self as Parser;
+            return p == null ? new CastParser<T>(self.Configuration, self) : p;
         }
         #endregion
 
