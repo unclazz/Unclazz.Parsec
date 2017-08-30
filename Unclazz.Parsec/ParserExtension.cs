@@ -268,26 +268,28 @@ namespace Unclazz.Parsec
         }
         #endregion
 
-        #region SkipSpace系の拡張メソッド
+        #region Skip系の拡張メソッド
         /// <summary>
-        /// パース対象に先行する空白文字のスキップするパーサーを返します。
+        /// パース対象に先行する空白文字もしくは指定された文字クラスをスキップするパーサーを返します。
         /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
         /// </summary>
         /// <param name="self">レシーバー</param>
+        /// <param name="target">スキップ対象の文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser SkipSpace(this Parser self)
+        public static Parser Skip(this Parser self, CharClass target = null)
         {
-            return new SkipParser(self.Configuration, self, true, null);
+            return new SkipParser(self.Configuration, self, true, target ?? CharClass.SpaceAndControl);
         }
         /// <summary>
-        /// パース対象に先行する空白文字のスキップするパーサーを返します。
+        /// パース対象に先行する空白文字もしくは指定された文字クラスをスキップするパーサーを返します。
         /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
         /// </summary>
         /// <param name="self">レシーバー</param>
+        /// <param name="target">スキップ対象の文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> SkipSpace<T>(this Parser<T> self)
+        public static Parser<T> Skip<T>(this Parser<T> self, CharClass target = null)
         {
-            return new SkipSpaceParser<T>(self.Configuration, self, true, null);
+            return new SkipSpaceParser<T>(self.Configuration, self, true, target ?? CharClass.SpaceAndControl);
         }
         #endregion
 
