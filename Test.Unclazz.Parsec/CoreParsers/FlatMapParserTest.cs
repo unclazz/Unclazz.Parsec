@@ -81,5 +81,24 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Assert
             Assert.That(() => mp.Parse("0123XXXX"), Throws.InstanceOf<FormatException>());
         }
+        [Test]
+        [Description("Parse - Case6 - XMLタグを読み取るパーサーのサンプル")]
+        public void Parse_Case6()
+        {
+            // Arrange
+            var angleLeft = Char('<');
+            var angleRight = Char('>');
+            var leftTag = angleLeft & CharsWhileIn(CharClass.Alphabetic).Capture() & angleRight;
+            Func<string,Parser> rightTag = (string s) => angleLeft & Char('/') & Keyword(s) & angleRight;
+            var tag = leftTag.FlatMap(rightTag);
+
+            // Act
+            var result0 = tag.Parse("<abc></abc>");
+            var result1 = tag.Parse("<abc></abd>");
+
+            // Assert
+            Assert.That(result0.Successful, Is.True);
+            Assert.That(result1.Successful, Is.False);
+        }
     }
 }
