@@ -98,6 +98,8 @@
     <Compile Include="CoreParsers\YieldParser.cs" />
     <Compile Include="CoreParsers\KeywordParser.cs" />
     <Compile Include="Nil.cs" />
+    <Compile Include="ResultCore.cs" />
+    <Compile Include="ResultCore1.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
