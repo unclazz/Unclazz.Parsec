@@ -332,7 +332,39 @@ class CustomParser : Parser<string>
 独自のパーサーを実装する際にとくに注意すべき点として、以下の原則にしたがってください。
 これらが守られない場合、パーサーコンビネーターのパーサーコンビネーターたる所以である「コンビネーション」が破綻します：
 
-* `DoParse(...)`このメソッドはいかなる場合も<c>null</c>を返してはなりません。
+* `DoParse(...)`メソッドはいかなる場合も`null`を返してはなりません。
 * またこのメソッドは原則として例外スローを行ってはなりません。
 * 正常・異常を問わずこのメソッド内で起こったことはすべて`ParseResult<T>`を通じて呼び出し元に通知される必要があります。
 
+### シーケンス
+
+例えばあるキーワードのあとに別のあるキーワードが続くとか、
+ある文字のあとにある文字クラスに属する文字の並びが続くとかのシーケンスを表現するには、
+`&`演算子もしくは`Parser<T>.Then()`メソッドのオーバーロードを使用します。
+
+演算子オーバーロードを使用する例を見てみましょう：
+
+```cs
+Parser helloWorld = Keyword("hello") & Keyword("world");
+helloWorld.Parse("helloworld"); // => OK. ParseResult<Nil>.Successful is true.
+helloWorld.Parse("hello world"); // => NG. ParseResult<Nil>.Successful is false.
+
+Parser hello_ = Keyword("hello") & CharIn('!', '?');
+hello_.Parse("hello"); // => NG.
+hello_.Parse("hello!"); // => OK.
+
+Parser<Tuple<string, string>> bothCapture = Keyword("hello").Capture() & Keyword("world").Capture();
+Parser<string> leftCapture = Keyword("hello").Capture() & Keyword("world");
+Parser<string> rightCapture = Keyword("hello") & Keyword("world").Capture();
+```
+
+左右の被演算子となるパーサーの結果型の違いが、合成された新しいパーサーの結果型に影響している点が見てとれます。
+
+* 両側の被演算子が`Parser`の場合、合成結果も`Parser`です。
+* 片側の被演算子が`Parser`でもう片側が`Parser<T>`の場合、合成結果も`Parser<T>`です。
+* 片側の被演算子が`Parser<T>`でもう片側が`Parser<U>`の場合、合成結果は`Parser<Tuple<T, U>>`です。
+
+C#言語仕様の制約により[FastParseの場合](http://www.lihaoyi.com/fastparse/#Sequence)のように
+多種多様な状況では`&`が使用できません。`Unclazz.Parsec`において`&`演算子を使用可能なのは、
+左右の被演算子となるパーサーが同じ結果型を宣言している場合と、いずれか片方もしくは両方のパーサーが`Parser`である場合だけです。
+つまり`Parser<T>.Then<T, U>(Parser<U>)`メソッドに対応する演算子オーバーロードは存在しません。
