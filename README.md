@@ -361,8 +361,8 @@ Parser<string> rightCapture = Keyword("hello") & Keyword("world").Capture();
 左右の被演算子となるパーサーの結果型の違いが、合成された新しいパーサーの結果型に影響している点が見てとれます。
 
 * 両側の被演算子が`Parser`の場合、合成結果も`Parser`です。
-* 片側の被演算子が`Parser`でもう片側が`Parser<T>`の場合、合成結果も`Parser<T>`です。
-* 片側の被演算子が`Parser<T>`でもう片側が`Parser<U>`の場合、合成結果は`Parser<Tuple<T, U>>`です。
+* 片側の被演算子が`Parser`でもう片側が`Parser<T>`の場合、合成結果は`Parser<T>`です。
+* 両側の被演算子が`Parser<T>`の場合、合成結果は`Parser<Tuple<T, T>>`です。
 
 C#言語仕様の制約により[FastParseの場合](http://www.lihaoyi.com/fastparse/#Sequence)のように
 多種多様な状況では`&`が使用できません。`Unclazz.Parsec`において`&`演算子を使用可能なのは、
