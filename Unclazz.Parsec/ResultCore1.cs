@@ -67,6 +67,15 @@ namespace Unclazz.Parsec
     }
     public struct Result<T>
     {
+        public static Result<T> operator |(Result<T> left, Result<T> right)
+        {
+            return left.Or(right);
+        }
+        public static implicit operator Result(Result<T> operand)
+        {
+            return operand.DetachValue();
+        }
+
         public static Result<T> OfSuccess(T value,
             CharacterPosition start,
             CharacterPosition end,
@@ -145,6 +154,10 @@ namespace Unclazz.Parsec
             {
                 return Result<U>.OfFailure(_message, _start, _end, _canBacktrack);
             }
+        }
+        public Result<T> Or(Result<T> other)
+        {
+            return _successful ? this : other;
         }
         public void IfSuccessful(Action<T> act)
         {

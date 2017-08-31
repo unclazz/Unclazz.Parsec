@@ -62,6 +62,11 @@ namespace Unclazz.Parsec
     }
     public struct Result
     {
+        public static Result operator |(Result left, Result right)
+        {
+            return left.Or(right);
+        }
+
         public static Result OfSuccess(
             CharacterPosition start,
             CharacterPosition end,
@@ -132,6 +137,10 @@ namespace Unclazz.Parsec
             {
                 return Result<T>.OfFailure(_message, _start, _end, _canBacktrack);
             }
+        }
+        public Result Or(Result other)
+        {
+            return _successful ? this : other;
         }
         public void IfSuccessful(Action act)
         {
