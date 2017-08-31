@@ -2,6 +2,7 @@
 {
     sealed class YieldParser<T> : Parser<T>
     {
+        internal YieldParser(T value) : this(ParserFactory.Default, value) { }
         internal YieldParser(IParserConfiguration conf, T value) : base(conf)
         {
             _value = value;

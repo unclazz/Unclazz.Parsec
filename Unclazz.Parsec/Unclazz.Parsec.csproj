@@ -41,16 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreParsers\AttacheParser.cs" />
-    <Compile Include="CoreParsers\CastParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
-    <Compile Include="CoreParsers\DummyParser.cs" />
+    <Compile Include="CoreParsers\TypedParser.cs" />
     <Compile Include="CoreParsers\FlatMapParser.cs" />
     <Compile Include="CoreParsers\SkipParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="CoreParsers\LazyParser.cs" />
     <Compile Include="CoreParsers\TripleParser.cs" />
+    <Compile Include="CoreParsers\UntypedParser.cs" />
     <Compile Include="IParserConfiguration.cs" />
     <Compile Include="IParserConfigurer.cs" />
     <Compile Include="IParserFactory.cs" />
@@ -84,7 +83,7 @@
     <Compile Include="CoreParsers\OrNotParser.cs" />
     <Compile Include="CoreParsers\OrParser.cs" />
     <Compile Include="ParsecUtility.cs" />
-    <Compile Include="ParserT.cs" />
+    <Compile Include="Parser1.cs" />
     <Compile Include="Reader.cs" />
     <Compile Include="Readers\IResettableReader.cs" />
     <Compile Include="Readers\ITextReader.cs" />

@@ -6,6 +6,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class KeywordParser : Parser
     {
+        internal KeywordParser(string keyword) : this(ParserFactory.Default, keyword) { }
         internal KeywordParser(IParserConfiguration conf, string keyword) : this(conf, keyword, -1) { }
         internal KeywordParser(IParserConfiguration conf, string keyword, int cutIndex) : base(conf)
         {

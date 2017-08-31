@@ -7,14 +7,14 @@ using static Unclazz.Parsec.Parsers;
 namespace Test.Unclazz.Parsec.CoreParsers
 {
     [TestFixture]
-    public class CastParserTest
+    public class TypedParserTest
     {
         [Test]
         public void Parse_Case3()
         {
             // Arrange
             var kp = Keyword("0123");
-            var cp = kp.Cast("3210");
+            var cp = kp.Typed("3210");
 
             // Act
             var res = cp.Parse("0123XXXX");

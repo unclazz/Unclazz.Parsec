@@ -38,7 +38,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser operator !(Parser<T> operand)
         {
-            return Parsers.Not<T>(operand);
+            return Parsers.Not(operand);
         }
         /// <summary>
         /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
@@ -48,7 +48,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator |(Parser<T> left, Parser<T> right)
         {
-            return OrParser<T>.LeftAssoc(left, right);
+            return new OrParser<T>(left.Configuration, left, right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
@@ -58,7 +58,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser operator |(Parser<T> left, Parser right)
         {
-            return new OrParser(left.Configuration, left.Cast(), right);
+            return new OrParser(left.Configuration, left.Untyped(), right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
@@ -68,17 +68,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser operator |(Parser left, Parser<T> right)
         {
-            return new OrParser(left.Configuration, left, right.Cast());
-        }
-        /// <summary>
-        /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
-        /// </summary>
-        /// <param name="left">元のパーサー</param>
-        /// <param name="right">元のパーサーのパースが失敗したとき新しいパーサーの返す値として使用される値</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> operator |(Parser<T> left, T right)
-        {
-            return OrParser<T>.LeftAssoc(left, new YieldParser<T>(left._factory, right));
+            return new OrParser(left.Configuration, left, right.Untyped());
         }
         /// <summary>
         /// <see cref="ParserExtension.Then{T, U}(Parser{T}, Parser{U})"/>と同義です。
@@ -109,6 +99,14 @@ namespace Unclazz.Parsec
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
             return new ThenTakeLeftParser<T>(left._factory, left, right);
+        }
+        public static Parser<T> operator &(Parser<T> left, string right)
+        {
+            return left.Then(new KeywordParser(right));
+        }
+        public static Parser<T> operator &(string left, Parser<T> right)
+        {
+            return new KeywordParser(left).Then(right);
         }
         #endregion
 
@@ -203,7 +201,11 @@ namespace Unclazz.Parsec
         /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ResultCore<T> Success(T value, bool canBacktrack = true)
+        protected ResultCore<T> Success(T value)
+        {
+            return ResultCore<T>.OfSuccess(value, true);
+        }
+        protected ResultCore<T> Success(T value, bool canBacktrack)
         {
             return ResultCore<T>.OfSuccess(value, canBacktrack);
         }
@@ -215,7 +217,11 @@ namespace Unclazz.Parsec
         /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ResultCore<T> Failure(string message, bool canBacktrack = true)
+        protected ResultCore<T> Failure(string message)
+        {
+            return ResultCore<T>.OfFailure(message, true);
+        }
+        protected ResultCore<T> Failure(string message, bool canBacktrack)
         {
             return ResultCore<T>.OfFailure(message, canBacktrack);
         }

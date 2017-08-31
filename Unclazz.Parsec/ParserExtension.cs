@@ -75,7 +75,7 @@ namespace Unclazz.Parsec
         }
         #endregion
 
-        #region Cast系の拡張メソッド
+        #region Capture系の拡張メソッド
         /// <summary>
         /// このパーサーの読み取り結果をキャプチャするパーサーを生成します。
         /// <para>
@@ -92,33 +92,6 @@ namespace Unclazz.Parsec
         public static Parser<string> Capture(this Parser self)
         {
             return new CaptureParser(self.Configuration, self);
-        }
-        /// <summary>
-        /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
-        /// <para>
-        /// 変換後の新しいパーサーは返す値の型の情報こそ持っていますが、値のキャプチャは行いません。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Cast<T>(this Parser self, T defaultValue)
-        {
-            return new AttacheParser<T>(self.Configuration, self, defaultValue);
-        }
-        /// <summary>
-        /// <see cref="Parser{T}"/>を<see cref="Parser"/>に変換します。
-        /// <para>
-        /// 元のパーサーが値をキャプチャするものであっても変換後のパーサーはあくまでも値をキャプチャしないパーサーとなります。
-        /// 元のパーサーがキャプチャした値は破棄されます。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Cast<T>(this Parser<T> self)
-        {
-            var p = self as Parser;
-            return p == null ? new CastParser<T>(self.Configuration, self) : p;
         }
         #endregion
 
@@ -233,7 +206,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Or<T>(this Parser<T> self, Parser<T> another)
         {
-            return OrParser<T>.LeftAssoc(self, another);
+            return new OrParser<T>(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
@@ -271,7 +244,7 @@ namespace Unclazz.Parsec
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
         public static Parser Repeat(this Parser self, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return RepeatParser<string>.Create(new DummyParser<string>(self), min, max, exactly, sep).Cast();
+            return RepeatParser<string>.Create(self.Typed<string>(), min, max, exactly, sep).Untyped();
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
@@ -415,6 +388,21 @@ namespace Unclazz.Parsec
         public static Parser<Tuple<T1, T2, T3>> Then<T1, T2, T3>(this Parser<Tuple<T1, T2>> self, Parser<T3> another)
         {
             return TripleParser<T1, T2, T3>.Create(self, another);
+        }
+        #endregion
+
+        #region Typed/Untyped系の拡張メソッド
+        public static Parser<T> Typed<T>(this Parser self)
+        {
+            return new TypedParser<T>(self);
+        }
+        public static Parser<T> Typed<T>(this Parser self, T value)
+        {
+            return new TypedParser<T>(self, value);
+        }
+        public static Parser Untyped<T>(this Parser<T> self)
+        {
+            return new UntypedParser<T>(self);
         }
         #endregion
     }

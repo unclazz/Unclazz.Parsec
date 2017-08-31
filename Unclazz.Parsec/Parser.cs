@@ -34,6 +34,14 @@ namespace Unclazz.Parsec
         {
             return new OrParser(left.Configuration, left, right);
         }
+        public static Parser operator |(Parser left, string right)
+        {
+            return new OrParser(left.Configuration, left, new KeywordParser(right));
+        }
+        public static Parser operator |(string left, Parser right)
+        {
+            return new OrParser(new KeywordParser(left), right);
+        }
         /// <summary>
         /// <see cref="ParserExtension.Then(Parser, Parser)"/>と同義です。
         /// </summary>
@@ -43,6 +51,14 @@ namespace Unclazz.Parsec
         public static Parser operator &(Parser left, Parser right)
         {
             return left.Then(right);
+        }
+        public static Parser operator &(Parser left, string right)
+        {
+            return left.Then(new KeywordParser(right));
+        }
+        public static Parser operator &(string left, Parser right)
+        {
+            return new KeywordParser(left).Then(right);
         }
         #endregion
 
@@ -67,11 +83,19 @@ namespace Unclazz.Parsec
 
         protected abstract ResultCore DoParse(Reader input);
 
-        protected ResultCore Success(bool canBacktrack = true)
+        protected ResultCore Success()
+        {
+            return ResultCore.OfSuccess(true);
+        }
+        protected ResultCore Success(bool canBacktrack)
         {
             return ResultCore.OfSuccess(canBacktrack);
         }
-        protected ResultCore Failure(string message, bool canBacktrack = true)
+        protected ResultCore Failure(string message)
+        {
+            return ResultCore.OfFailure(message, true);
+        }
+        protected ResultCore Failure(string message, bool canBacktrack)
         {
             return ResultCore.OfFailure(message, canBacktrack);
         }

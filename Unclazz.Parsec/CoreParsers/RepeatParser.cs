@@ -22,7 +22,7 @@ namespace Unclazz.Parsec.CoreParsers
                     // OKの例：　(exactly = 3, min = 3, max = 3)
                     // NGの例：　(exactly = 3, min = 2, max = 3)
                     if (exactly != min || min != max) throw new ArgumentException(
-                        string.Format("conflicted arguments. exactly = {0}, but min = {1} and max = {2}.",
+                        string.Format("arguments conflict. exactly = {0}, but min = {1} and max = {2}.",
                         exactly, min, max));
                 }
                 // チェックをパスした場合のみ、RepeatExactlyParserを返す
@@ -34,7 +34,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         public static Parser Create(Parser parser, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return Create(new DummyParser<T>(parser), min, max, exactly, sep).Cast();
+            return Create(new TypedParser<T>(parser), min, max, exactly, sep).Untyped();
         }
 
         internal RepeatParser(IParserConfiguration conf) : base(conf) { }
@@ -47,7 +47,7 @@ namespace Unclazz.Parsec.CoreParsers
                 if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
                 _exactly = exactly;
                 _sep = sep;
-                _capture = typeof(U) != typeof(DummyParser<T>);
+                _capture = typeof(U) != typeof(TypedParser<T>);
             }
 
             readonly Parser<U> _original;
@@ -118,7 +118,7 @@ namespace Unclazz.Parsec.CoreParsers
                 _min = min;
                 _max = max;
                 _sep = sep;
-                _capture = original.GetType() != typeof(DummyParser<T>);
+                _capture = original.GetType() != typeof(TypedParser<T>);
             }
 
             readonly int _min;

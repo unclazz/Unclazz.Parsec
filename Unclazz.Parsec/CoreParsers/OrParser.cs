@@ -4,45 +4,8 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class OrParser<T> : Parser<T>
     {
-        internal static OrParser<T> RightAssoc(Parser<T> left, Parser<T> right, params Parser<T>[] others)
-        {
-            OrParser<T> tmpOr = RightAssoc(left, right);
-            foreach (var other in others)
-            {
-                tmpOr = new OrParser<T>(tmpOr.Configuration, tmpOr.Left,
-                    new OrParser<T>(tmpOr.Configuration, tmpOr.Right, right));
-            }
-            return tmpOr;
-        }
-        internal static OrParser<T> RightAssoc(Parser<T> left, Parser<T> right)
-        {
-            var leftOr = left as OrParser<T>;
-            if (leftOr == null)
-            {
-                return new OrParser<T>(left.Configuration, left, right);
-            }
-            else
-            {
-                return new OrParser<T>(left.Configuration, leftOr.Left,
-                    new OrParser<T>(left.Configuration, leftOr.Right, right));
-            }
-        }
-        internal static OrParser<T> LeftAssoc(Parser<T> left, Parser<T> right, params Parser<T>[] others)
-        {
-            OrParser<T> tmpOr = new OrParser<T>(left.Configuration, left, right);
-            foreach (var other in others)
-            {
-                tmpOr = new OrParser<T>(tmpOr.Configuration, tmpOr, right);
-            }
-            return tmpOr;
-        }
-        internal static OrParser<T> LeftAssoc(Parser<T> left, Parser<T> right)
-        {
-            return new OrParser<T>(left.Configuration, left, right);
-        }
-
-
-        OrParser(IParserConfiguration conf, Parser<T> left, Parser<T> right) : base(conf)
+        internal OrParser(Parser<T> left, Parser<T> right) : this(ParserFactory.Default, left, right) { }
+        internal OrParser(IParserConfiguration conf, Parser<T> left, Parser<T> right) : base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -72,6 +35,7 @@ namespace Unclazz.Parsec.CoreParsers
     }
     sealed class OrParser : Parser
     {
+        internal OrParser(Parser left, Parser right) : this(ParserFactory.Default, left, right) { }
         internal OrParser(IParserConfiguration conf, Parser left, Parser right) : base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));

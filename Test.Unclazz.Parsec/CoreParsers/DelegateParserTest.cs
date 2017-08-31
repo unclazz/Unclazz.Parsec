@@ -42,7 +42,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var cp = kp.Cast("3210");
+            var cp = kp.Typed("3210");
             var dp = For(r => cp.Parse(r));
 
             // Act

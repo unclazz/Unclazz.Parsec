@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="CharClasses\CharClassTest.cs" />
     <Compile Include="CoreParsers\CaptureParserTest.cs" />
-    <Compile Include="CoreParsers\CastParserTest.cs" />
+    <Compile Include="CoreParsers\TypedParserTest.cs" />
     <Compile Include="CoreParsers\CharParserTest.cs" />
     <Compile Include="CoreParsers\DelegateParserTest.cs" />
     <Compile Include="CoreParsers\DoubleParserTest.cs" />
