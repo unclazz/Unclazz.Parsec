@@ -11,8 +11,6 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Parser _original;
         protected override ResultCore DoParse(Reader input)
         {
-            var b = true;
-            var b2 = !!b;
             input.Mark();
             var res = _original.Parse(input);
             input.Reset();
