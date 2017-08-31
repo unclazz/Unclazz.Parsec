@@ -89,9 +89,9 @@ namespace Unclazz.Parsec
         /// パース処理本体が失敗した場合は単に<see cref="Reader.Unmark"/>が呼び出されます。</para>
         /// </summary>
         /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
-        public static Parser<string> Capture(this Parser<Nil> self)
+        public static Parser<string> Capture(this Parser self)
         {
-            return new CaptureParser<Nil>(self.Configuration, self);
+            return new CaptureParser(self.Configuration, self);
         }
         /// <summary>
         /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
@@ -101,23 +101,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> Cast<T>(this Parser<Nil> self)
+        public static Parser<T> Cast<T>(this Parser self, T defaultValue)
         {
-            return new CastParser<Nil, T>(self.Configuration, self);
-        }
-        /// <summary>
-        /// <see cref="Parser"/>を<see cref="Parser{T}"/>に変換します。
-        /// <para>
-        /// 引数で指定された値は変換後の新しいパーサーがキャプチャする値として使用されます。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="T">任意の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="defaultValue">デフォルト値</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Cast<T>(this Parser<Nil> self, T defaultValue)
-        {
-            return new CastParser<Nil, T>(self, defaultValue);
+            return new AttacheParser<T>(self.Configuration, self, defaultValue);
         }
         /// <summary>
         /// <see cref="Parser{T}"/>を<see cref="Parser"/>に変換します。
@@ -146,9 +132,9 @@ namespace Unclazz.Parsec
         /// </para>
         /// </summary>
         /// <returns>新しいパーサー</returns>
-        public static Parser Cut(this Parser<Nil> self)
+        public static Parser Cut(this Parser self)
         {
-            return new CutParser<Nil>(self.Configuration, self).Cast();
+            return new CutParser(self.Configuration, self);
         }
         /// <summary>
         /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックを無効化します。
@@ -186,20 +172,6 @@ namespace Unclazz.Parsec
             return new MapParser<TSource, TResult>(self.Configuration, self, transform, canThrow);
         }
         /// <summary>
-        /// <see cref="ParserExtension.Map{T, U}(Parser{T}, Func{T, U}, bool)"/>のオーバーロードです。
-        /// <para>元になるパーサーが何もキャプチャを行わないため、
-        /// <paramref name="transform"/>は実際には決して呼び出されません。</para>
-        /// </summary>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="transform">変換を行う関数</param>
-        /// <param name="canThrow"><paramref name="transform"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Map<TResult>(this Parser<Nil> self, Func<Nil, TResult> transform, bool canThrow = false)
-        {
-            return self.Cast();
-        }
-        /// <summary>
         /// 読み取り結果の<see cref="Optional{T}"/>が内包する値を元に動的にパーサーを構築するパーサーを返します。
         /// </summary>
         /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
@@ -212,19 +184,9 @@ namespace Unclazz.Parsec
         {
             return new FlatMapParser<TSource, TResult>(self.Configuration, self, mapper, canThrow);
         }
-        /// <summary>
-        /// <see cref="FlatMap{T, U}(Parser{T}, Func{T, Parser{U}}, bool)"/>のオーバーロードです。
-        /// <para>元になるパーサーが何もキャプチャを行わないため、
-        /// <paramref name="mapper"/>は実際には決して呼び出されません。</para>
-        /// </summary>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
-        /// <param name="canThrow"><paramref name="mapper"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser FlatMap<TResult>(this Parser<Nil> self, Func<Nil, Parser<TResult>> mapper, bool canThrow = false)
+        public static Parser FlatMap<TSource>(this Parser<TSource> self, Func<TSource, Parser> mapper, bool canThrow = false)
         {
-            return self.Cast();
+            return new FlatMapParser<TSource>(self.Configuration, self, mapper, canThrow);
         }
         #endregion
 
@@ -249,7 +211,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Or(this Parser self, Parser another)
         {
-            return OrParser<Nil>.LeftAssoc(self, another).Cast();
+            return new OrParser(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
@@ -279,13 +241,13 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser OrNot(this Parser self)
         {
-            return new OrNotParser<Nil>(self.Configuration, self).Cast();
+            return new OrNotParser(self.Configuration, self);
         }
         /// <summary>
         /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
         /// </summary>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> OrNot<T>(this Parser<T> self)
+        public static Parser<Optional<T>> OrNot<T>(this Parser<T> self)
         {
             return new OrNotParser<T>(self.Configuration, self);
         }
@@ -309,7 +271,7 @@ namespace Unclazz.Parsec
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
         public static Parser Repeat(this Parser self, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return RepeatParser<Nil>.Create(self, min, max, exactly, sep).Cast();
+            return RepeatParser<string>.Create(new DummyParser<string>(self), min, max, exactly, sep).Cast();
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
@@ -372,7 +334,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Then<T>(this Parser self, Parser<T> another)
         {
-            return new ThenTakeRightParser<Nil, T>(self.Configuration, self, another);
+            return new ThenTakeRightParser<T>(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -388,7 +350,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser Then(this Parser self, Parser another)
         {
-            return new ThenTakeRightParser<Nil, Nil>(self.Configuration, self, another).Cast();
+            return new ThenParser(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -420,7 +382,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> Then<T>(this Parser<T> self, Parser another)
         {
-            return new ThenTakeLeftParser<T, Nil>(self.Configuration, self, another);
+            return new ThenTakeLeftParser<T>(self.Configuration, self, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。

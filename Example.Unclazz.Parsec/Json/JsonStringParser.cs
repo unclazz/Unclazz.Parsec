@@ -27,7 +27,7 @@ namespace Example.Unclazz.Parsec
         {
             return Regex.Unescape(escaped);
         }
-        protected override ParseResult<IJsonObject> DoParse(Reader input)
+        protected override ResultCore<IJsonObject> DoParse(Reader input)
         {
             return _string.Parse(input);
         }

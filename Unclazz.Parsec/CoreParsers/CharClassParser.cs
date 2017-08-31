@@ -11,17 +11,16 @@ namespace Unclazz.Parsec.CoreParsers
 
         readonly CharClass _clazz;
 
-        protected override ParseResult<Nil> DoParse(Reader input)
+        protected override ResultCore DoParse(Reader input)
         {
-            var p = input.Position;
             var ch = input.Read();
             if (0 <= ch && _clazz.Contains((char)ch))
             {
-                return Success(p);
+                return Success();
             }
             else
             {
-                return Failure(p, string.Format("expected a member of {0} but found {1}.", 
+                return Failure(string.Format("expected a member of {0} but found {1}.", 
                     _clazz, ParsecUtility.CharToString(ch)));
             }
         }

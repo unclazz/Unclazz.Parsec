@@ -21,22 +21,20 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _cut;
         readonly string _keyword;
 
-        protected override ParseResult<Nil> DoParse(Reader input)
+        protected override ResultCore DoParse(Reader input)
         {
-            var p = input.Position;
             for (var i = 0; i < _keyword.Length; i++)
             {
                 var expected = _keyword[i];
                 var actual = input.Read();
                 if (expected != actual)
                 {
-                    return Failure(input.Position,
-                        string.Format("expected {0} but found {1} at index {2} in \"{3}\"",
+                    return Failure(string.Format("expected {0} but found {1} at index {2} in \"{3}\"",
                         ParsecUtility.CharToString(expected), ParsecUtility.CharToString(actual), i, _keyword),
                         -1 == _cut || i < _cut);
                 }
             }
-            return Success(p);
+            return Success();
         }
         public override string ToString()
         {

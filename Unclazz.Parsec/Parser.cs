@@ -1,4 +1,5 @@
-﻿using Unclazz.Parsec.CoreParsers;
+﻿using System;
+using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
 {
@@ -11,7 +12,7 @@ namespace Unclazz.Parsec
     /// <see cref="ParseResult{T}.Capture"/>は必ず空の（値を持たない）インスタンスになります。
     /// </para>
     /// </summary>
-    public abstract class Parser : Parser<Nil>
+    public abstract class Parser
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
@@ -21,7 +22,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator !(Parser operand)
         {
-            return new NotParser<Nil>(operand.Configuration, operand);
+            return new NotParser(operand.Configuration, operand);
         }
         /// <summary>
         /// <see cref="ParserExtension.Or(Parser, Parser)"/>と同義です。
@@ -31,7 +32,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator |(Parser left, Parser right)
         {
-            return OrParser<Nil>.LeftAssoc(left, right).Cast();
+            return new OrParser(left.Configuration, left, right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Then(Parser, Parser)"/>と同義です。
@@ -45,10 +46,78 @@ namespace Unclazz.Parsec
         }
         #endregion
 
-        /// <summary>
-        /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
-        /// </summary>
-        /// <param name="conf"></param>
-        protected Parser(IParserConfiguration conf) : base(conf) { }
+        protected Parser()
+        {
+            _factory = ParserFactory.Default;
+            _autoSkip = _factory.AutoSkip;
+            _parseLogging = _factory.ParseLogging;
+        }
+        protected Parser(IParserConfiguration config)
+        {
+            _factory = new ParserFactory(config) ?? throw new ArgumentNullException(nameof(config));
+            _autoSkip = _factory.AutoSkip;
+            _parseLogging = _factory.ParseLogging;
+        }
+
+        readonly ParserFactory _factory;
+        bool _autoSkip;
+        bool _parseLogging;
+
+        public IParserConfiguration Configuration => _factory;
+
+        protected abstract ResultCore DoParse(Reader input);
+
+        protected ResultCore Success(bool canBacktrack = true)
+        {
+            return ResultCore.OfSuccess(canBacktrack);
+        }
+        protected ResultCore Failure(string message, bool canBacktrack = true)
+        {
+            return ResultCore.OfFailure(message, canBacktrack);
+        }
+
+        public Result Parse(Reader input)
+        {
+            if (_autoSkip) SkipWhileIn(input, _factory.SkipTarget);
+            var start = input.Position;
+            if (_parseLogging)
+            {
+                LogPreParse(input.Position, input.Peek());
+                var res = DoParse(input);
+                LogPostParse(input.Position, input.Peek(), res);
+                return res.AttachPosition(start, input.Position);
+            }
+            return DoParse(input).AttachPosition(start, input.Position);
+        }
+        void LogPreParse(CharacterPosition pos, int peek)
+        {
+            WriteLine("##### Pre-Parse #####");
+            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
+            WriteLine("Position   : {0} ", pos);
+            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
+        }
+        void LogPostParse(CharacterPosition pos, int peek, ResultCore result)
+        {
+            WriteLine("##### Post-Parse #####");
+            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
+            WriteLine("Successful : {0} ", result.Successful);
+            if (!result.Successful)
+                WriteLine("Message    : {0} ", result.Message);
+            WriteLine("Position   : {0} ", pos);
+            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
+        }
+        void WriteLine(string format, params object[] args)
+        {
+            _factory.ParseLogger(string.Format(format, args));
+        }
+        void SkipWhileIn(Reader r, CharClass c)
+        {
+            while (!r.EndOfFile)
+            {
+                var ch = (char)r.Peek();
+                if (!c.Contains(ch)) break;
+                r.Read();
+            }
+        }
     }
 }

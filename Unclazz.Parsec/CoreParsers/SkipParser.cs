@@ -12,15 +12,15 @@ namespace Unclazz.Parsec.CoreParsers
             return copy;
         }
 
-        internal SkipParser(IParserConfiguration conf, Parser<Nil> original, 
+        internal SkipParser(IParserConfiguration conf, Parser original, 
             bool onOff, CharClass target) : base(CopyAndModify(conf, onOff, target))
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _onOff = onOff;
         }
-        readonly Parser<Nil> _original;
+        readonly Parser _original;
         readonly bool _onOff;
-        protected override ParseResult<Nil> DoParse(Reader input) => _original.Parse(input);
+        protected override ResultCore DoParse(Reader input) => _original.Parse(input);
         public override string ToString()
         {
             return string.Format("Skip({0}, onOff = {1})", _original, _onOff);
@@ -44,7 +44,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         readonly Parser<T> _original;
         readonly bool _onOff;
-        protected override ParseResult<T> DoParse(Reader input) => _original.Parse(input);
+        protected override ResultCore<T> DoParse(Reader input) => _original.Parse(input);
         public override string ToString()
         {
             return string.Format("Skip({0}, onOff = {1})", _original, _onOff);

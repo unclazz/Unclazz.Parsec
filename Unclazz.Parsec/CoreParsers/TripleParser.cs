@@ -26,7 +26,7 @@ namespace Unclazz.Parsec.CoreParsers
             public Parser<U1> Left { get; }
             public Parser<Tuple<U2, U3>> Right { get; }
 
-            protected override ParseResult<Tuple<U1, U2, U3>> DoParse(Reader input)
+            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader input)
             {
                 var p = input.Position;
                 var leftResult = Left.Parse(input);
@@ -42,11 +42,11 @@ namespace Unclazz.Parsec.CoreParsers
                     return rightResult.Cast<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
-                var rightTuple = rightResult.Capture.OrElse(default(Tuple<U2, U3>));
-                var finalTuple = new Tuple<U1, U2, U3>(leftResult.Capture.OrElse(default(U1)),
+                var rightTuple = rightResult.Value;
+                var finalTuple = new Tuple<U1, U2, U3>(leftResult.Value,
                     rightTuple == null ? default(U2) : rightTuple.Item1,
                     rightTuple == null ? default(U3) : rightTuple.Item2);
-                return Success(p, finalTuple, canBacktrack: canBacktrack);
+                return Success(finalTuple, canBacktrack);
             }
             public override string ToString()
             {
@@ -64,9 +64,8 @@ namespace Unclazz.Parsec.CoreParsers
             public Parser<Tuple<U1, U2>> Left { get; }
             public Parser<U3> Right { get; }
 
-            protected override ParseResult<Tuple<U1, U2, U3>> DoParse(Reader input)
+            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader input)
             {
-                var p = input.Position;
                 var leftResult = Left.Parse(input);
                 if (!leftResult.Successful)
                 {
@@ -80,12 +79,12 @@ namespace Unclazz.Parsec.CoreParsers
                     return rightResult.Cast<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
-                var leftTuple = leftResult.Capture.OrElse(default(Tuple<U1, U2>));
+                var leftTuple = leftResult.Value;
                 var finalTuple = new Tuple<U1, U2, U3>(
                     leftTuple == null ? default(U1) : leftTuple.Item1,
                     leftTuple == null ? default(U2) : leftTuple.Item2,
-                    rightResult.Capture.OrElse(default(U3)));
-                return Success(p, finalTuple, canBacktrack: canBacktrack);
+                    rightResult.Value);
+                return Success(finalTuple, canBacktrack);
             }
             public override string ToString()
             {

@@ -22,13 +22,13 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Assert
             if (okNg)
             {
-                var p1 = RepeatParser<Nil>.Create(p0, exactly: count);
+                var p1 = p0.Repeat(exactly: count);
             }
             else
             {
                 Assert.That(() =>
                 {
-                    var p1 = RepeatParser<Nil>.Create(p0, exactly: count);
+                    var p1 = p0.Repeat(exactly: count);
                 }, Throws.InstanceOf<ArgumentOutOfRangeException>());
             }
         }
@@ -40,7 +40,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p0 = Keyword(word, -1);
-            var p1 = RepeatParser<Nil>.Create(p0, exactly: count);
+            var p1 = p0.Repeat(exactly: count);
             Reader input = TestUtility.Repeats(word, count + 1);
 
             // Act
@@ -58,7 +58,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p0 = Keyword(word, -1);
-            var p1 = RepeatParser<Nil>.Create(p0, exactly: count, sep: Keyword(sep));
+            var p1 = p0.Repeat(exactly: count, sep: Keyword(sep));
             Reader input = TestUtility.Repeats(word, count + 1, sep: sep);
 
             // Act
@@ -75,7 +75,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var p0 = Keyword(word, -1);
-            var p1 = RepeatParser<Nil>.Create(p0, exactly: count, sep: Keyword(sep));
+            var p1 = p0.Repeat(exactly: count, sep: Keyword(sep));
             Reader input = TestUtility.Repeats(word, count - 1, sep: sep) + sep + "__________";
 
             // Act

@@ -19,7 +19,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Capture.Present, Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => res.Value, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
         public void Parse_Case2()
@@ -33,9 +33,8 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("hello"));
-            Assert.That(res.Position.Index, Is.EqualTo(4));
+            Assert.That(res.Value, Is.EqualTo("hello"));
+            Assert.That(res.End.Index, Is.EqualTo(4));
         }
         [Test]
         public void Parse_Case3()
@@ -48,9 +47,8 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("hello"));
-            Assert.That(res.Position.Index, Is.EqualTo(0));
+            Assert.That(res.Value, Is.EqualTo("hello"));
+            Assert.That(res.Start.Index, Is.EqualTo(0));
         }
     }
 }

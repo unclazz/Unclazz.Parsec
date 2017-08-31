@@ -43,7 +43,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         readonly string[] _keywords;
         readonly Parser _parser;
-        protected override ParseResult<Nil> DoParse(Reader input)
+        protected override ResultCore DoParse(Reader input)
         {
             return _parser.Parse(input);
         }

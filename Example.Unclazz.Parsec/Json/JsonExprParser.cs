@@ -48,7 +48,7 @@ namespace Example.Unclazz.Parsec
                 a0 => a0.Build());
         }
 
-        protected override ParseResult<IJsonObject> DoParse(Reader input)
+        protected override ResultCore<IJsonObject> DoParse(Reader input)
         {
             return jsonExpr.Parse(input);
         }

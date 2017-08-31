@@ -17,9 +17,8 @@ namespace Unclazz.Parsec.CoreParsers
         readonly char _start;
         readonly char _end;
 
-        protected override ParseResult<Nil> DoParse(Reader input)
+        protected override ResultCore DoParse(Reader input)
         {
-            var p = input.Position;
             var count = 0;
             while (!input.EndOfFile)
             {
@@ -30,14 +29,14 @@ namespace Unclazz.Parsec.CoreParsers
             }
             if (_min <= count)
             {
-                return Success(p);
+                return Success();
             }
             else
             {
                 var m = string.Format("expected that length of char sequence is" +
                     " greater than or equal {0}, but actualy it is {1}.",
                     _min, count);
-                return Failure(p, m);
+                return Failure(m);
             }
         }
         public override string ToString()

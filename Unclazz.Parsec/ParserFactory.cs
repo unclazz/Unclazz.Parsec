@@ -101,7 +101,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Not(Parser operand)
         {
-            return new NotParser<Nil>(this, operand);
+            return new NotParser(this, operand);
         }
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
@@ -109,7 +109,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> For<T>(Func<Reader, ParseResult<T>> func)
+        public Parser<T> For<T>(Func<Reader, Result<T>> func)
         {
             return new DelegateParser<T>(this, func);
         }
@@ -118,9 +118,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser For(Func<Reader, ParseResult<Nil>> func)
+        public Parser For(Func<Reader, Result> func)
         {
-            return new DelegateParser<Nil>(this, func).Cast();
+            return new DelegateParser(this, func);
         }
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
@@ -141,7 +141,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Lazy(Func<Parser> factory)
         {
-            return new LazyParser<Nil>(this, factory).Cast();
+            return new LazyParser(this, factory);
         }
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。

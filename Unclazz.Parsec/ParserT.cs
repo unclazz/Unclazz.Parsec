@@ -18,7 +18,7 @@ namespace Unclazz.Parsec
         /// <see cref="Parsers.For{T}(Func{Reader, ParseResult{T}})"/>と同義です。
         /// </summary>
         /// <param name="func">パース処理を行うデリゲート</param>
-        public static implicit operator Parser<T>(Func<Reader, ParseResult<T>> func)
+        public static implicit operator Parser<T>(Func<Reader, Result<T>> func)
         {
             return Parsers.For(func);
         }
@@ -56,9 +56,9 @@ namespace Unclazz.Parsec
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> operator |(Parser<T> left, Parser right)
+        public static Parser operator |(Parser<T> left, Parser right)
         {
-            return OrParser<T>.LeftAssoc(left, right.Cast<T>());
+            return new OrParser(left.Configuration, left.Cast(), right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
@@ -66,9 +66,9 @@ namespace Unclazz.Parsec
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> operator |(Parser left, Parser<T> right)
+        public static Parser operator |(Parser left, Parser<T> right)
         {
-            return OrParser<T>.LeftAssoc(left.Cast<T>(), right);
+            return new OrParser(left.Configuration, left, right.Cast());
         }
         /// <summary>
         /// <see cref="ParserExtension.Or{T}(Parser{T}, Parser{T})"/>と同義です。
@@ -98,7 +98,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser left, Parser<T> right)
         {
-            return new ThenTakeRightParser<Nil, T>(left._factory, left, right);
+            return new ThenTakeRightParser<T>(left.Configuration, left, right);
         }
         /// <summary>
         /// <see cref="ParserExtension.Then{T}(Parser{T}, Parser)"/>と同義です。
@@ -108,7 +108,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
-            return new ThenTakeLeftParser<T, Nil>(left._factory, left, right);
+            return new ThenTakeLeftParser<T>(left._factory, left, right);
         }
         #endregion
 
@@ -154,7 +154,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        protected abstract ParseResult<T> DoParse(Reader input);
+        protected abstract ResultCore<T> DoParse(Reader input);
 
         /// <summary>
         /// パースを行います。
@@ -172,17 +172,18 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        public ParseResult<T> Parse(Reader input)
+        public Result<T> Parse(Reader input)
         {
             if (_autoSkip) SkipWhileIn(input, _factory.SkipTarget);
+            var start = input.Position;
             if (_parseLogging)
             {
                 LogPreParse(input.Position, input.Peek());
                 var res = DoParse(input);
                 LogPostParse(input.Position, input.Peek(), res);
-                return res;
+                return res.AttachPosition(start, input.Position);
             }
-            return DoParse(input);
+            return DoParse(input).AttachPosition(start, input.Position);
         }
         /// <summary>
         /// このパーサーのコンフィギュレーションを変更します。
@@ -198,24 +199,13 @@ namespace Unclazz.Parsec
         /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Success(CharacterPosition position, bool canBacktrack = true)
-        {
-            return ParseResult.OfSuccess<T>(position, canBacktrack: canBacktrack);
-        }
-        /// <summary>
-        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
-        /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
         /// <param name="capture">パースされた値を内包する可能性のある<see cref="Optional{T}"/>インスタンス</param>
         /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Success(CharacterPosition position, Optional<T> capture, bool canBacktrack = true)
+        protected ResultCore<T> Success(T value, bool canBacktrack = true)
         {
-            return ParseResult.OfSuccess(position, capture, canBacktrack);
+            return ResultCore<T>.OfSuccess(value, canBacktrack);
         }
         /// <summary>
         /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
@@ -225,9 +215,9 @@ namespace Unclazz.Parsec
         /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
         /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
         /// <returns>パース成功を表すインスタンス</returns>
-        protected ParseResult<T> Failure(CharacterPosition position, string message, bool canBacktrack = true)
+        protected ResultCore<T> Failure(string message, bool canBacktrack = true)
         {
-            return ParseResult.OfFailure<T>(position, message, canBacktrack);
+            return ResultCore<T>.OfFailure(message, canBacktrack);
         }
         void LogPreParse(CharacterPosition pos, int peek)
         {
@@ -236,13 +226,13 @@ namespace Unclazz.Parsec
             WriteLine("Position   : {0} ", pos);
             WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
         }
-        void LogPostParse(CharacterPosition pos, int peek, ParseResult<T> result)
+        void LogPostParse(CharacterPosition pos, int peek, ResultCore<T> result)
         {
             WriteLine("##### Post-Parse #####");
             WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
             WriteLine("Successful : {0} ", result.Successful);
             if (result.Successful)
-                WriteLine("Capture    : {0} ", result.Capture);
+                WriteLine("Capture    : {0} ", result.Value);
             else
                 WriteLine("Message    : {0} ", result.Message);
             WriteLine("Position   : {0} ", pos);
@@ -299,13 +289,13 @@ namespace Unclazz.Parsec
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        protected Parser<U> For<U>(Func<Reader, ParseResult<U>> func) => _factory.For(func);
+        protected Parser<U> For<U>(Func<Reader, Result<U>> func) => _factory.For(func);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        protected Parser For(Func<Reader, ParseResult<Nil>> func) => _factory.For(func);
+        protected Parser For(Func<Reader, Result> func) => _factory.For(func);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。

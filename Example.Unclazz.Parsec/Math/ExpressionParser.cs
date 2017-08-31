@@ -27,7 +27,7 @@ namespace Example.Unclazz.Parsec.Math
             number = new NumberParser();
         }
 
-        protected override ParseResult<double> DoParse(Reader input)
+        protected override ResultCore<double> DoParse(Reader input)
         {
             return (Expr() & EndOfFile).Parse(input);
         }

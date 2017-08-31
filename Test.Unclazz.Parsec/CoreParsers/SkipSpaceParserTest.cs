@@ -21,7 +21,6 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Capture.Present, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
         [Description("Parse - Case#2 - 元のクラスの読み取り結果に影響しない（成功ケース）")]
@@ -36,7 +35,6 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.False);
         }
         [Test]
         [Description("Parse - Case#3 - トークンに先行する空白文字はすべてスキップ、キャプチャ結果にも影響しない")]
@@ -51,8 +49,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("0123"));
+            Assert.That(res.Value, Is.EqualTo("0123"));
         }
         [Test]
         [Description("Parse - Case#4 - スキップ設定は継承される")]
@@ -67,8 +64,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("0123")); // kpではなくcpの事前処理でスキップが行われている
+            Assert.That(res.Value, Is.EqualTo("0123")); // kpではなくcpの事前処理でスキップが行われている
         }
         [Test]
         [Description("Parse - Case#5 - " +
@@ -85,8 +81,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("0123  0123"));
+            Assert.That(res.Value, Is.EqualTo("0123  0123"));
         }
         [Test]
         [Description("Parse - Case#6 - スキップ設定の継承は下方のみで上方には起こらない")]
@@ -102,7 +97,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Capture.Present, Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => res.Value, Throws.InstanceOf<InvalidOperationException>());
         }
     }
 }

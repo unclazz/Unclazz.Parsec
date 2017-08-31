@@ -13,9 +13,8 @@ namespace Unclazz.Parsec.CoreParsers
         public Parser<T1> Left { get; }
         public Parser<T2> Right { get; }
 
-        protected override ParseResult<Tuple<T1, T2>> DoParse(Reader input)
+        protected override ResultCore<Tuple<T1, T2>> DoParse(Reader input)
         {
-            var p = input.Position;
             var leftResult = Left.Parse(input);
             if (!leftResult.Successful)
             {
@@ -29,8 +28,8 @@ namespace Unclazz.Parsec.CoreParsers
                 return rightResult.Cast<Tuple<T1, T2>>().AllowBacktrack(canBacktrack);
             }
 
-            var cap = new Tuple<T1, T2>(leftResult.Capture.OrElse(default(T1)), rightResult.Capture.OrElse(default(T2)));
-            return Success(p, capture: new Optional<Tuple<T1, T2>>(cap), canBacktrack: canBacktrack);
+            var cap = new Tuple<T1, T2>(leftResult.Value, rightResult.Value);
+            return Success(cap, canBacktrack);
         }
         public override string ToString()
         {

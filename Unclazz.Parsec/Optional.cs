@@ -146,5 +146,21 @@ namespace Unclazz.Parsec
             if (_hasValue) return string.Format("Optional({0})", ParsecUtility.ValueToString(_value));
             else return "Optional()";
         }
+        public override int GetHashCode()
+        {
+            return _hasValue ? _value.GetHashCode() : 1;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj is Optional<T>)
+            {
+                var that = (Optional<T>)obj;
+                if (_hasValue && that._hasValue) return _value.Equals(that._value);
+                else if (_hasValue || that._hasValue) return false;
+                else return true;
+            }
+            return false;
+        }
     }
 }

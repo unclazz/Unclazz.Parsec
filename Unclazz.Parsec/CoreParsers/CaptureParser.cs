@@ -16,27 +16,27 @@ namespace Unclazz.Parsec.CoreParsers
     /// パース処理本体が失敗した場合は単に<see cref="Reader.Unmark"/>が呼び出されます。</para>
     /// </summary>
     /// <typeparam name="T">任意の型</typeparam>
-    sealed class CaptureParser<T> : Parser<string>
+    sealed class CaptureParser : Parser<string>
     {
-        public CaptureParser(IParserConfiguration conf, Parser<T> parse) : base(conf)
+        public CaptureParser(IParserConfiguration conf, Parser parse) : base(conf)
         {
             _parse = parse ?? throw new ArgumentNullException(nameof(parse));
         }
 
-        readonly Parser<T> _parse;
+        readonly Parser _parse;
 
         /// <summary>
         /// パースを行います。
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        protected override ParseResult<string> DoParse(Reader input)
+        protected override ResultCore<string> DoParse(Reader input)
         {
             input.Mark();
             var r = _parse.Parse(input);
             if (r.Successful)
             {
-                return r.Cast<string>().Attach(input.Capture(true));
+                return r.AttachValue(input.Capture(true));
             }
             input.Unmark();
             return r.Cast<string>();

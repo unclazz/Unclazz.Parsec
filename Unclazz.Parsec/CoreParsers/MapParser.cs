@@ -2,20 +2,20 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class MapParser<T, U> : Parser<U>
+    sealed class MapParser<TSource, TResult> : Parser<TResult>
     {
-        internal MapParser(IParserConfiguration conf, Parser<T> source, Func<T, U> transform, bool canThrow) : base(conf)
+        internal MapParser(IParserConfiguration conf, Parser<TSource> source, Func<TSource, TResult> transform, bool canThrow) : base(conf)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _transform = transform ?? throw new ArgumentNullException(nameof(transform));
             _canThrow = canThrow;
         }
 
-        readonly Parser<T> _source;
-        readonly Func<T, U> _transform;
+        readonly Parser<TSource> _source;
+        readonly Func<TSource, TResult> _transform;
         readonly bool _canThrow;
 
-        protected override ParseResult<U> DoParse(Reader input)
+        protected override ResultCore<TResult> DoParse(Reader input)
         {
             var r = _source.Parse(input);
             try
@@ -25,7 +25,7 @@ namespace Unclazz.Parsec.CoreParsers
             catch (Exception ex)
             {
                 if (_canThrow) throw;
-                return Failure(r.Position, ex.ToString(), r.CanBacktrack);
+                return Failure(ex.ToString(), r.CanBacktrack);
             }
         }
         public override string ToString()

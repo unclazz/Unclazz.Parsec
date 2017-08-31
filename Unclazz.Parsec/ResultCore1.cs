@@ -4,6 +4,11 @@ namespace Unclazz.Parsec
 {
     public struct ResultCore<T>
     {
+        public static implicit operator ResultCore<T>(Result<T> res)
+        {
+            return res.DetachPosition();
+        }
+
         public static ResultCore<T> OfSuccess(T value, bool canBacktrack = true)
         {
             return new ResultCore<T>(true, null, value, canBacktrack);
@@ -27,6 +32,7 @@ namespace Unclazz.Parsec
         readonly bool _canBacktrack;
 
         public bool Successful => _successful;
+        public bool CanBacktrack => _canBacktrack;
         public string Message => !_successful ? _message : throw new InvalidOperationException();
         public T Value => _successful ? _value : throw new InvalidOperationException();
 
@@ -101,6 +107,7 @@ namespace Unclazz.Parsec
         public CharacterPosition Start => _start;
         public CharacterPosition End => _end;
         public bool Successful => _successful;
+        public bool CanBacktrack => _canBacktrack;
         public string Message => !_successful ? _message : throw new InvalidOperationException();
         public T Value => _successful ? _value : throw new InvalidOperationException();
 
@@ -124,6 +131,21 @@ namespace Unclazz.Parsec
                 return Result.OfFailure(_message, _start, _end, _canBacktrack);
             }
         }
+        public Result<U> Cast<U>()
+        {
+            return Cast(default(U));
+        }
+        public Result<U> Cast<U>(U value)
+        {
+            if (_successful)
+            {
+                return Result<U>.OfSuccess(value, _start, _end, _canBacktrack);
+            }
+            else
+            {
+                return Result<U>.OfFailure(_message, _start, _end, _canBacktrack);
+            }
+        }
         public void IfSuccessful(Action<T> act)
         {
             if (_successful) act(_value);
@@ -132,6 +154,21 @@ namespace Unclazz.Parsec
         {
             if (_successful) act(_value);
             else orElse(_message);
+        }
+        public void IfFailed(Action<string> act)
+        {
+            if (!_successful) act(_message);
+        }
+        public ResultCore<T> DetachPosition()
+        {
+            if (_successful)
+            {
+                return ResultCore<T>.OfSuccess(_value, _canBacktrack);
+            }
+            else
+            {
+                return ResultCore<T>.OfFailure(_message, _canBacktrack);
+            }
         }
         public override string ToString()
         {

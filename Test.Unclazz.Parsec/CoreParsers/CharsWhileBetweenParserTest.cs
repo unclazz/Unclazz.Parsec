@@ -30,14 +30,9 @@ namespace Test.Unclazz.Parsec
 
             // Assert
             Assert.That(result.Successful, Is.EqualTo(expectedResult));
-            result.IfSuccessful((cap, pos) =>
+            result.IfSuccessful(() =>
             {
-                Assert.That(cap.Present, Is.False);
-                Assert.That(pos.Index, Is.EqualTo(0));
                 Assert.That(input.Position.Index, Is.EqualTo(expectedIndex));
-            }, (message, pos) =>
-            {
-                Assert.That(pos.Index, Is.EqualTo(0));
             });
         }
         [TestCase("0123456789X", '0', '0', true, 1)]
@@ -56,14 +51,6 @@ namespace Test.Unclazz.Parsec
 
             // Assert
             Assert.That(result.Successful, Is.EqualTo(expectedResult));
-            result.IfSuccessful((cap, pos) =>
-            {
-                Assert.That(cap.Present, Is.False);
-                Assert.That(pos.Index, Is.EqualTo(0));
-            }, (message, pos) =>
-            {
-                Assert.That(pos.Index, Is.EqualTo(0));
-            });
         }
     }
 }

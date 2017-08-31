@@ -14,7 +14,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var cp = kp.Cast<string>();
+            var cp = kp;
             var dp = For(r => cp.Parse(r));
 
             // Act
@@ -22,14 +22,13 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Capture.Present, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
         public void Parse_Case2()
         {
             // Arrange
             var kp = Keyword("0123");
-            var cp = kp.Cast<string>();
+            var cp = kp;
             var dp = For(r => cp.Parse(r));
 
             // Act
@@ -37,7 +36,6 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.False);
         }
         [Test]
         public void Parse_Case3()
@@ -52,8 +50,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Present, Is.True);
-            Assert.That(res.Capture.Value, Is.EqualTo("3210"));
+            Assert.That(res.Value, Is.EqualTo("3210"));
         }
     }
 }

@@ -41,8 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreParsers\AttacheParser.cs" />
     <Compile Include="CoreParsers\CastParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
+    <Compile Include="CoreParsers\DummyParser.cs" />
     <Compile Include="CoreParsers\FlatMapParser.cs" />
     <Compile Include="CoreParsers\SkipParser.cs" />
     <Compile Include="CoreParsers\StringInParser.cs" />
@@ -97,7 +99,6 @@
     <Compile Include="CoreParsers\CharParser.cs" />
     <Compile Include="CoreParsers\YieldParser.cs" />
     <Compile Include="CoreParsers\KeywordParser.cs" />
-    <Compile Include="Nil.cs" />
     <Compile Include="ResultCore.cs" />
     <Compile Include="ResultCore1.cs" />
   </ItemGroup>

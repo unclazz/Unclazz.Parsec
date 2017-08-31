@@ -9,9 +9,9 @@
 
         readonly T _value;
 
-        protected override ParseResult<T> DoParse(Reader input)
+        protected override ResultCore<T> DoParse(Reader input)
         {
-            return Success(input.Position, new Optional<T>(_value));
+            return Success(_value);
         }
 
         public override string ToString()

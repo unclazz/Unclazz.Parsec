@@ -23,7 +23,7 @@ namespace Unclazz.Parsec.CoreParsers
             }
             else
             {
-                return new OrParser<T>(left.Configuration, leftOr.Left, 
+                return new OrParser<T>(left.Configuration, leftOr.Left,
                     new OrParser<T>(left.Configuration, leftOr.Right, right));
             }
         }
@@ -51,7 +51,37 @@ namespace Unclazz.Parsec.CoreParsers
         internal Parser<T> Left { get; }
         internal Parser<T> Right { get; }
 
-        protected override ParseResult<T> DoParse(Reader input)
+        protected override ResultCore<T> DoParse(Reader input)
+        {
+            input.Mark();
+            var leftResult = Left.Parse(input);
+            if (leftResult.Successful || !leftResult.CanBacktrack)
+            {
+                input.Unmark();
+                return leftResult.AllowBacktrack(true);
+            }
+            input.Reset();
+            var rightResult = Right.Parse(input);
+            input.Unmark();
+            return rightResult.AllowBacktrack(true);
+        }
+        public override string ToString()
+        {
+            return string.Format("Or({0}, {1})", Left, Right);
+        }
+    }
+    sealed class OrParser : Parser
+    {
+        internal OrParser(IParserConfiguration conf, Parser left, Parser right) : base(conf)
+        {
+            Left = left ?? throw new ArgumentNullException(nameof(left));
+            Right = right ?? throw new ArgumentNullException(nameof(right));
+        }
+
+        internal Parser Left { get; }
+        internal Parser Right { get; }
+
+        protected override ResultCore DoParse(Reader input)
         {
             input.Mark();
             var leftResult = Left.Parse(input);

@@ -23,7 +23,7 @@ namespace Example.Unclazz.Parsec
             var raw = (sign & integral & fractional.OrNot() & exponent.OrNot()).Capture();
             _number = raw.Map(double.Parse).Map(JsonObject.Of);
         }
-        protected override ParseResult<IJsonObject> DoParse(Reader input)
+        protected override ResultCore<IJsonObject> DoParse(Reader input)
         {
             return _number.Parse(input);
         }

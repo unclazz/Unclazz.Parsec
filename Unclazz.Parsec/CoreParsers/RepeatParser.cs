@@ -6,7 +6,7 @@ namespace Unclazz.Parsec.CoreParsers
 
     abstract class RepeatParser<T> : Parser<IList<T>>
     {
-        public static RepeatParser<T> Create(Parser<T> parser, int min = 0, int max = -1, int exactly = -1, Parser<Nil> sep = null)
+        public static RepeatParser<T> Create(Parser<T> parser, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             // 後続処理のためexactlyだけはまず範囲チェック
             if (exactly == 0 | exactly < -1) throw new ArgumentOutOfRangeException(nameof(exactly));
@@ -32,26 +32,30 @@ namespace Unclazz.Parsec.CoreParsers
             // RepeatMinMaxParserを返す
             return new RepeatMinMaxParser<T>(parser.Configuration, parser, min, max, sep);
         }
+        public static Parser Create(Parser parser, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
+        {
+            return Create(new DummyParser<T>(parser), min, max, exactly, sep).Cast();
+        }
 
         internal RepeatParser(IParserConfiguration conf) : base(conf) { }
 
         sealed class RepeatExactlyParser<U> : RepeatParser<U>
         {
-            internal RepeatExactlyParser(IParserConfiguration conf, Parser<U> original, int exactly, Parser<Nil> sep) : base(conf)
+            internal RepeatExactlyParser(IParserConfiguration conf, Parser<U> original, int exactly, Parser sep) : base(conf)
             {
                 _original = original ?? throw new ArgumentNullException(nameof(original));
                 if (exactly < 2) throw new ArgumentOutOfRangeException(nameof(exactly));
                 _exactly = exactly;
                 _sep = sep;
-                _capture = typeof(U) != typeof(Nil);
+                _capture = typeof(U) != typeof(DummyParser<T>);
             }
 
             readonly Parser<U> _original;
             readonly int _exactly;
-            readonly Parser<Nil> _sep;
+            readonly Parser _sep;
             readonly bool _capture;
 
-            protected override ParseResult<IList<U>> DoParse(Reader input)
+            protected override ResultCore<IList<U>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
@@ -68,7 +72,7 @@ namespace Unclazz.Parsec.CoreParsers
                         var sepResult = _sep.Parse(input);
                         if (!sepResult.Successful)
                         {
-                            return Failure(sepResult.Position, sepResult.Message);
+                            return Failure(sepResult.Message);
                         }
                     }
 
@@ -77,15 +81,15 @@ namespace Unclazz.Parsec.CoreParsers
                     // 失敗の場合はそこでパースを中断
                     if (!mainResult.Successful)
                     {
-                        return Failure(mainResult.Position, mainResult.Message);
+                        return Failure(mainResult.Message);
                     }
 
                     // キャプチャ・モードの場合
                     // 元のパーサーがキャプチャした内容をキューに追加
-                    if (_capture) mainResult.Capture.IfPresent(list.Add);
+                    if (_capture) list.Add(mainResult.Value);
                 }
                 // ループを無事抜けたならパースは成功
-                return _capture ? Success(pos, list) : Success(pos);
+                return Success(_capture ? list : null);
             }
             public override string ToString()
             {
@@ -101,7 +105,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         sealed class RepeatMinMaxParser<U> : RepeatParser<U>
         {
-            internal RepeatMinMaxParser(IParserConfiguration conf, Parser<U> original, int min, int max, Parser<Nil> sep): base(conf)
+            internal RepeatMinMaxParser(IParserConfiguration conf, Parser<U> original, int min, int max, Parser sep): base(conf)
             {
                 max = max == -1 ? int.MaxValue : max;
                 min = min == -1 ? 0 : min;
@@ -114,16 +118,16 @@ namespace Unclazz.Parsec.CoreParsers
                 _min = min;
                 _max = max;
                 _sep = sep;
-                _capture = typeof(U) != typeof(Nil);
+                _capture = original.GetType() != typeof(DummyParser<T>);
             }
 
             readonly int _min;
             readonly int _max;
             readonly Parser<U> _original;
-            readonly Parser<Nil> _sep;
+            readonly Parser _sep;
             readonly bool _capture;
 
-            protected override ParseResult<IList<U>> DoParse(Reader input)
+            protected override ResultCore<IList<U>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
@@ -150,7 +154,7 @@ namespace Unclazz.Parsec.CoreParsers
                                 input.Unmark();
                                 break;
                             }
-                            return Failure(sepResult.Position, sepResult.Message);
+                            return Failure(sepResult.Message);
                         }
                     }
 
@@ -164,17 +168,17 @@ namespace Unclazz.Parsec.CoreParsers
                             input.Unmark();
                             break;
                         }
-                        return Failure(r.Position, r.Message);
+                        return Failure(r.Message);
                     }
 
                     // キャプチャ・モードの場合
                     // 元のパーサーがキャプチャした内容をキューに追加
-                    if (_capture) r.Capture.IfPresent(list.Add);
+                    if (_capture) list.Add(r.Value);
 
                     // min ＜ ループ回数 ならリセットのための準備を解除
                     if (_min < i) input.Unmark();
                 }
-                return _capture ? Success(pos, list) : Success(pos);
+                return Success(_capture ? list : null);
             }
 
             public override string ToString()
