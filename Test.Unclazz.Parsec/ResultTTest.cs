@@ -9,14 +9,15 @@ using Unclazz.Parsec;
 namespace Test.Unclazz.Parsec
 {
     [TestFixture]
-    public class ParseResultTest
+    public class ResultTTest
     {
         [Test]
         public void Successful_Case1()
         {
             // Arrange
-            var r0 = ParseResult.OfSuccess(CharacterPosition.StartOfFile, 123);
-            var r1 = ParseResult.OfFailure<int>(CharacterPosition.StartOfFile, "123");
+            var sof = CharacterPosition.StartOfFile;
+            var r0 = Result<int>.OfSuccess(123, sof, sof);
+            var r1 = Result<int>.OfFailure("123", sof, sof);
 
             // Act
             var s0 = r0.Successful;
@@ -30,14 +31,15 @@ namespace Test.Unclazz.Parsec
         public void Value_Case1()
         {
             // Arrange
-            var r0 = ParseResult.OfSuccess(CharacterPosition.StartOfFile, 123);
-            var r1 = ParseResult.OfFailure<int>(CharacterPosition.StartOfFile, "123");
+            var sof = CharacterPosition.StartOfFile;
+            var r0 = Result<int>.OfSuccess(123, sof, sof);
+            var r1 = Result<int>.OfFailure("123", sof, sof);
 
             // Act
             // Assert
             try
             {
-                var v0 = r0.Capture.Value;
+                var v0 = r0.Value;
                 Assert.That(v0, Is.EqualTo(123));
             }
             catch (InvalidOperationException)
@@ -46,7 +48,7 @@ namespace Test.Unclazz.Parsec
             }
             try
             {
-                var v1 = r1.Capture.Value;
+                var v1 = r1.Value;
                 Assert.Fail();
             }
             catch (InvalidOperationException)
@@ -58,8 +60,9 @@ namespace Test.Unclazz.Parsec
         public void Message_Case1()
         {
             // Arrange
-            var r0 = ParseResult.OfSuccess(CharacterPosition.StartOfFile, 123);
-            var r1 = ParseResult.OfFailure<int>(CharacterPosition.StartOfFile, "123");
+            var sof = CharacterPosition.StartOfFile;
+            var r0 = Result<int>.OfSuccess(123, sof, sof);
+            var r1 = Result<int>.OfFailure("123", sof, sof);
 
             // Act
             // Assert
@@ -70,7 +73,7 @@ namespace Test.Unclazz.Parsec
             }
             catch (InvalidOperationException)
             {
-                Assert.That(r0.Capture.Value, Is.EqualTo(123));
+                Assert.That(r0.Value, Is.EqualTo(123));
             }
             try
             {
@@ -86,32 +89,35 @@ namespace Test.Unclazz.Parsec
         public void IfSuccessful_Case1()
         {
             // Arrange
-            var r0 = ParseResult.OfSuccess(CharacterPosition.StartOfFile, 123);
-            var r1 = ParseResult.OfFailure<int>(CharacterPosition.StartOfFile, "123");
+            var sof = CharacterPosition.StartOfFile;
+            var r0 = Result<int>.OfSuccess(123, sof, sof);
+            var r1 = Result<int>.OfFailure("123", sof, sof);
 
             // Act
             // Assert
-            r0.IfSuccessful(v => Assert.That(v.Value, Is.EqualTo(123)));
+            r0.IfSuccessful(v => Assert.That(v, Is.EqualTo(123)));
             r1.IfSuccessful(v => Assert.Fail());
         }
         [Test]
         public void IfSuccessful_Case2()
         {
             // Arrange
-            var r0 = ParseResult.OfSuccess(CharacterPosition.StartOfFile, 123);
-            var r1 = ParseResult.OfFailure<int>(CharacterPosition.StartOfFile, "123");
+            var sof = CharacterPosition.StartOfFile;
+            var r0 = Result<int>.OfSuccess(123, sof, sof);
+            var r1 = Result<int>.OfFailure("123", sof, sof);
 
             // Act
             // Assert
-            r0.IfSuccessful(v => Assert.That(v.Value, Is.EqualTo(123)), v => Assert.Fail());
+            r0.IfSuccessful(v => Assert.That(v, Is.EqualTo(123)), v => Assert.Fail());
             r1.IfSuccessful(v => Assert.Fail(), v => Assert.That(v, Is.EqualTo("123")));
         }
         [Test]
         public void IfFailed_Case1()
         {
             // Arrange
-            var r0 = ParseResult.OfSuccess(CharacterPosition.StartOfFile, 123);
-            var r1 = ParseResult.OfFailure<int>(CharacterPosition.StartOfFile, "123");
+            var sof = CharacterPosition.StartOfFile;
+            var r0 = Result<int>.OfSuccess(123, sof, sof);
+            var r1 = Result<int>.OfFailure("123", sof, sof);
 
             // Act
             // Assert
