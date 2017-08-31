@@ -9,20 +9,20 @@ namespace Unclazz.Parsec
     /// <summary>
     /// 文字位置を表す構造体です。
     /// </summary>
-    public struct CharacterPosition
+    public struct CharPosition
     {
-        static readonly CharacterPosition _start = new CharacterPosition(0, 1, 1);
+        static readonly CharPosition _start = new CharPosition(0, 1, 1);
         /// <summary>
         /// データソースの先頭を表すインスタンスです。
         /// </summary>
-        public static CharacterPosition StartOfFile => _start;
+        public static CharPosition BeginningOfFile => _start;
         /// <summary>
         /// 2つのインスタンスの等値性を確認します。
         /// </summary>
         /// <param name="left">左被演算子</param>
         /// <param name="right">右被演算子</param>
         /// <returns>等値とみなせる場合<c>true</c></returns>
-        public static bool operator ==(CharacterPosition left, CharacterPosition right)
+        public static bool operator ==(CharPosition left, CharPosition right)
         {
             return left.Equals(right);
         }
@@ -32,7 +32,7 @@ namespace Unclazz.Parsec
         /// <param name="left">左被演算子</param>
         /// <param name="right">右被演算子</param>
         /// <returns>等値でない場合<c>true</c></returns>
-        public static bool operator !=(CharacterPosition left, CharacterPosition right)
+        public static bool operator !=(CharPosition left, CharPosition right)
         {
             return !left.Equals(right);
         }
@@ -55,7 +55,7 @@ namespace Unclazz.Parsec
         /// </summary>
         public int Column => _columnPosition < 1 ? 1 : _columnPosition;
 
-        CharacterPosition(int index, int linePosition, int columnPosition)
+        CharPosition(int index, int linePosition, int columnPosition)
         {
             if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
             _index = index;
@@ -69,11 +69,11 @@ namespace Unclazz.Parsec
         /// <summary>
         /// 列数に<c>+1</c>された次の文字位置です。
         /// </summary>
-        public CharacterPosition NextColumn => new CharacterPosition(Index + 1, Line, Column + 1);
+        public CharPosition NextColumn => new CharPosition(Index + 1, Line, Column + 1);
         /// <summary>
         /// 行数に<c>+1</c>された次の文字位置です。
         /// </summary>
-        public CharacterPosition NextLine => new CharacterPosition(Index + 1, Line + 1, 1);
+        public CharPosition NextLine => new CharPosition(Index + 1, Line + 1, 1);
 
         /// <summary>
         /// このインスタンスの文字列表現を返します。
@@ -103,8 +103,8 @@ namespace Unclazz.Parsec
         /// <returns>等値とみなせる場合<c>true</c></returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is CharacterPosition)) return false;
-            var that = (CharacterPosition)obj;
+            if (!(obj is CharPosition)) return false;
+            var that = (CharPosition)obj;
             return Line == that.Line && Column == that.Column && Index == that.Index;
         }
     }

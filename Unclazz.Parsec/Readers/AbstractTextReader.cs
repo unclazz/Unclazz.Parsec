@@ -15,7 +15,7 @@ namespace Unclazz.Parsec.Readers
     /// </summary>
     abstract class AbstractTextReader : AutoDispose, ITextReader
     {
-        public CharacterPosition Position { get; protected set; }
+        public CharPosition Position { get; protected set; }
         public bool EndOfFile => Peek() == -1;
 
         public abstract int Peek();

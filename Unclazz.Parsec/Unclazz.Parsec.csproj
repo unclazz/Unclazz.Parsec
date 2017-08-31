@@ -60,7 +60,7 @@
     <Compile Include="AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Optional.cs" />
-    <Compile Include="CharacterPosition.cs" />
+    <Compile Include="CharPosition.cs" />
     <Compile Include="CoreParsers\CharClassParser.cs" />
     <Compile Include="CharRange.cs" />
     <Compile Include="CharClass.cs" />

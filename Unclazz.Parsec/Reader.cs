@@ -103,7 +103,7 @@ namespace Unclazz.Parsec
         /// 現在の文字位置です。
         /// <see cref="Read"/>のたびにインクリメントされます。
         /// </summary>
-        public CharacterPosition Position => _inner.Position;
+        public CharPosition Position => _inner.Position;
         /// <summary>
         /// データソースの終端（EOF）まで到達している場合<c>true</c>。
         /// </summary>

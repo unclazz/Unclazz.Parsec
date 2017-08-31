@@ -18,9 +18,9 @@ namespace Unclazz.Parsec.Readers
         bool _marked;
         readonly PrependableReader _inner;
         readonly Queue<char> _backup = new Queue<char>();
-        readonly Stack<CharacterPosition> _marks = new Stack<CharacterPosition>();
+        readonly Stack<CharPosition> _marks = new Stack<CharPosition>();
 
-        public CharacterPosition Position => _inner.Position;
+        public CharPosition Position => _inner.Position;
         public bool EndOfFile => _inner.EndOfFile;
         protected override IDisposable Disposable => _inner;
 

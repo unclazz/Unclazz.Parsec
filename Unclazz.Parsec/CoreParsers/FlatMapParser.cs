@@ -36,7 +36,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         public override string ToString()
         {
-            return string.Format("FlatMap({0}, transform = {1})",
+            return string.Format("FlatMap({0}, mapper = {1})",
                 _source, ParsecUtility.ObjectTypeToString(_mapper));
         }
     }
@@ -73,7 +73,7 @@ namespace Unclazz.Parsec.CoreParsers
         }
         public override string ToString()
         {
-            return string.Format("FlatMap({0}, transform = {1})",
+            return string.Format("FlatMap({0}, mapper = {1})",
                 _source, ParsecUtility.ObjectTypeToString(_mapper));
         }
     }

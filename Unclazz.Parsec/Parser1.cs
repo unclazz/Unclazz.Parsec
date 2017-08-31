@@ -225,14 +225,14 @@ namespace Unclazz.Parsec
         {
             return ResultCore<T>.OfFailure(message, canBacktrack);
         }
-        void LogPreParse(CharacterPosition pos, int peek)
+        void LogPreParse(CharPosition pos, int peek)
         {
             WriteLine("##### Pre-Parse #####");
             WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
             WriteLine("Position   : {0} ", pos);
             WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
         }
-        void LogPostParse(CharacterPosition pos, int peek, ResultCore<T> result)
+        void LogPostParse(CharPosition pos, int peek, ResultCore<T> result)
         {
             WriteLine("##### Post-Parse #####");
             WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));

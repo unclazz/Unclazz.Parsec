@@ -16,8 +16,8 @@ namespace Unclazz.Parsec.Readers
             _prefix = new Queue<char>();
             _inner = r ?? throw new ArgumentNullException(nameof(r));
         }
-        internal PrependableReader(CharacterPosition p, Queue<char> q, TextReader r) : this(p, q, new TextReaderProxy(r)) { }
-        internal PrependableReader(CharacterPosition p, Queue<char> q, ITextReader r)
+        internal PrependableReader(CharPosition p, Queue<char> q, TextReader r) : this(p, q, new TextReaderProxy(r)) { }
+        internal PrependableReader(CharPosition p, Queue<char> q, ITextReader r)
         {
             Position = p;
             _prefix = q ?? throw new ArgumentNullException(nameof(q));
@@ -34,7 +34,7 @@ namespace Unclazz.Parsec.Readers
         {
             return _prefix.Count == 0 ? _inner.Read() : _prefix.Dequeue();
         }
-        public void Reattach(CharacterPosition p, Queue<char> prefix)
+        public void Reattach(CharPosition p, Queue<char> prefix)
         {
             Position = p;
             _prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));

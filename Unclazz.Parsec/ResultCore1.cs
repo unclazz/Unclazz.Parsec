@@ -40,7 +40,7 @@ namespace Unclazz.Parsec
         {
             return new ResultCore<T>(_successful, _message, _value, yesNo);
         }
-        public Result<T> AttachPosition(CharacterPosition start, CharacterPosition end)
+        public Result<T> AttachPosition(CharPosition start, CharPosition end)
         {
             if (_successful)
             {
@@ -77,23 +77,23 @@ namespace Unclazz.Parsec
         }
 
         public static Result<T> OfSuccess(T value,
-            CharacterPosition start,
-            CharacterPosition end,
+            CharPosition start,
+            CharPosition end,
             bool canBacktrack = true)
         {
             return new Result<T>(true, start, end, null, value, canBacktrack);
         }
         public static Result<T> OfFailure(string message,
-            CharacterPosition start,
-            CharacterPosition end,
+            CharPosition start,
+            CharPosition end,
             bool canBacktrack = true)
         {
             return new Result<T>(false, start, end, message, default(T), canBacktrack);
         }
 
         Result(bool successful, 
-            CharacterPosition start, 
-            CharacterPosition end, 
+            CharPosition start, 
+            CharPosition end, 
             string message, 
             T value, 
             bool canBacktrack)
@@ -106,15 +106,15 @@ namespace Unclazz.Parsec
             _canBacktrack = canBacktrack;
         }
 
-        readonly CharacterPosition _start;
-        readonly CharacterPosition _end;
+        readonly CharPosition _start;
+        readonly CharPosition _end;
         readonly bool _successful;
         readonly string _message;
         readonly T _value;
         readonly bool _canBacktrack;
 
-        public CharacterPosition Start => _start;
-        public CharacterPosition End => _end;
+        public CharPosition Start => _start;
+        public CharPosition End => _end;
         public bool Successful => _successful;
         public bool CanBacktrack => _canBacktrack;
         public string Message => !_successful ? _message : throw new InvalidOperationException();

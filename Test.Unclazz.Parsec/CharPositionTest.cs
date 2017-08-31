@@ -9,9 +9,9 @@ using Unclazz.Parsec;
 namespace Test.Unclazz.Parsec
 {
     [TestFixture]
-    public class CharacterPositionTest
+    public class CharPositionTest
     {
-        private readonly CharacterPosition zero; // Not initialized.
+        private readonly CharPosition zero; // Not initialized.
 
         [Test]
         public void ZeroValue_Case1()
@@ -61,9 +61,9 @@ namespace Test.Unclazz.Parsec
             // Arrange
             // Act
             // Assert
-            Assert.That(zero == CharacterPosition.StartOfFile, Is.True);
-            Assert.That(zero.NextColumn == CharacterPosition.StartOfFile.NextColumn, Is.True);
-            Assert.That(zero.NextLine == CharacterPosition.StartOfFile.NextLine, Is.True);
+            Assert.That(zero == CharPosition.BeginningOfFile, Is.True);
+            Assert.That(zero.NextColumn == CharPosition.BeginningOfFile.NextColumn, Is.True);
+            Assert.That(zero.NextLine == CharPosition.BeginningOfFile.NextLine, Is.True);
         }
     }
 }

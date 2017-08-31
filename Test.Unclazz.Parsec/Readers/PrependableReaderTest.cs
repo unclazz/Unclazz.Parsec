@@ -22,7 +22,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void Read_Case1(string prefixText, string readerText, int firstChar, int secondChar)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
 
             // Act
             var ch0 = r.Read();
@@ -40,7 +40,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void Peek_Case1(string prefixText, string readerText, int firstChar, int secondChar)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
 
             // Act
             var ch0 = r.Peek();
@@ -59,7 +59,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void Position_Case1(string prefixText, string readerText, int resultIndex)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
 
             // Act
             var p0 = r.Position.Index;
@@ -78,7 +78,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void Position_Case2(string prefixText, string readerText, int resultIndex)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
             ConsumesAll(r);
 
             // Act
@@ -96,7 +96,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void LinePosition_Case1(string prefixText, string readerText)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
             r.Read();
             r.Read();
 
@@ -116,7 +116,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void LinePosition_Case2(string prefixText, string readerText)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
             r.Read();
             r.Read();
 
@@ -141,7 +141,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void ColumnPosition_Case1(string prefixText, string readerText)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
             r.Read();
             r.Read();
 
@@ -161,11 +161,11 @@ namespace Test.Unclazz.Parsec.Readers
         public void Reattach_Case1(string prefixText, string readerText)
         {
             // Arrange
-            var r = new PrependableReader(CharacterPosition.StartOfFile, new Queue<char>(prefixText), new StringReader(readerText));
+            var r = new PrependableReader(CharPosition.BeginningOfFile, new Queue<char>(prefixText), new StringReader(readerText));
             r.Read();
 
             // Act
-            r.Reattach(CharacterPosition.StartOfFile, new Queue<char>(prefixText));
+            r.Reattach(CharPosition.BeginningOfFile, new Queue<char>(prefixText));
             var p = r.Position.Index;
             var l = r.Position.Line;
             var c = r.Position.Column;

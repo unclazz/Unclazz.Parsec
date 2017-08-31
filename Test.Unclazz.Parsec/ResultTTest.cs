@@ -15,7 +15,7 @@ namespace Test.Unclazz.Parsec
         public void Successful_Case1()
         {
             // Arrange
-            var sof = CharacterPosition.StartOfFile;
+            var sof = CharPosition.BeginningOfFile;
             var r0 = Result<int>.OfSuccess(123, sof, sof);
             var r1 = Result<int>.OfFailure("123", sof, sof);
 
@@ -31,7 +31,7 @@ namespace Test.Unclazz.Parsec
         public void Value_Case1()
         {
             // Arrange
-            var sof = CharacterPosition.StartOfFile;
+            var sof = CharPosition.BeginningOfFile;
             var r0 = Result<int>.OfSuccess(123, sof, sof);
             var r1 = Result<int>.OfFailure("123", sof, sof);
 
@@ -60,7 +60,7 @@ namespace Test.Unclazz.Parsec
         public void Message_Case1()
         {
             // Arrange
-            var sof = CharacterPosition.StartOfFile;
+            var sof = CharPosition.BeginningOfFile;
             var r0 = Result<int>.OfSuccess(123, sof, sof);
             var r1 = Result<int>.OfFailure("123", sof, sof);
 
@@ -89,7 +89,7 @@ namespace Test.Unclazz.Parsec
         public void IfSuccessful_Case1()
         {
             // Arrange
-            var sof = CharacterPosition.StartOfFile;
+            var sof = CharPosition.BeginningOfFile;
             var r0 = Result<int>.OfSuccess(123, sof, sof);
             var r1 = Result<int>.OfFailure("123", sof, sof);
 
@@ -102,7 +102,7 @@ namespace Test.Unclazz.Parsec
         public void IfSuccessful_Case2()
         {
             // Arrange
-            var sof = CharacterPosition.StartOfFile;
+            var sof = CharPosition.BeginningOfFile;
             var r0 = Result<int>.OfSuccess(123, sof, sof);
             var r1 = Result<int>.OfFailure("123", sof, sof);
 
@@ -115,7 +115,7 @@ namespace Test.Unclazz.Parsec
         public void IfFailed_Case1()
         {
             // Arrange
-            var sof = CharacterPosition.StartOfFile;
+            var sof = CharPosition.BeginningOfFile;
             var r0 = Result<int>.OfSuccess(123, sof, sof);
             var r1 = Result<int>.OfFailure("123", sof, sof);
 
