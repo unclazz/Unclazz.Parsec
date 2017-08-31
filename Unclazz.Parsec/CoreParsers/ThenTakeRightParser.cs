@@ -2,18 +2,18 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class ThenParser : Parser
+    sealed class ThenTakeRightParser<TRight> : Parser<TRight>
     {
-        internal ThenParser(IParserConfiguration conf, Parser left, Parser right) : base(conf)
+        internal ThenTakeRightParser(IParserConfiguration conf, Parser left, Parser<TRight> right) :base(conf)
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
         }
 
         public Parser Left { get; }
-        public Parser Right { get; }
+        public Parser<TRight> Right { get; }
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore<TRight> DoParse(Reader input)
         {
             var leftResult = Left.Parse(input);
             if (leftResult.Successful)
@@ -23,7 +23,7 @@ namespace Unclazz.Parsec.CoreParsers
 
                 return rightResult.AllowBacktrack(canBacktrack);
             }
-            return leftResult;
+            return leftResult.Cast<TRight>();
         }
         public override string ToString()
         {

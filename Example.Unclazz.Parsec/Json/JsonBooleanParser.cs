@@ -10,7 +10,7 @@ namespace Example.Unclazz.Parsec
         {
             // キーワード"false"もしくは"true"にマッチ
             // マッチした文字列をキャプチャして、それをマッパーにより真偽値に変換
-            _boolean = StringIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
+            _boolean = KeywordIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
         }
         protected override ResultCore<IJsonObject> DoParse(Reader input)
         {

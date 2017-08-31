@@ -60,8 +60,6 @@ namespace Unclazz.Parsec.CoreParsers
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
                 var list = _capture ? new List<U>() : null;
-                // パース開始時の文字位置を記憶
-                var pos = input.Position;
                 // 予め指定された回数のパースを試みる
                 for (var i = 0; i < _exactly; i++)
                 {
@@ -132,8 +130,6 @@ namespace Unclazz.Parsec.CoreParsers
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
                 var list = _capture ? new List<U>() : null;
-                // パース開始時の文字位置を記憶
-                var pos = input.Position;
                 // 予め指定された回数のパースを試みる
                 for (var i = 1; i <= _max; i++)
                 {

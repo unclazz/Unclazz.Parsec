@@ -4,7 +4,8 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class MapParser<TSource, TResult> : Parser<TResult>
     {
-        internal MapParser(IParserConfiguration conf, Parser<TSource> source, Func<TSource, TResult> transform, bool canThrow) : base(conf)
+        internal MapParser(IParserConfiguration conf, Parser<TSource> source, 
+            Func<TSource, TResult> transform, bool canThrow) : base(conf)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _transform = transform ?? throw new ArgumentNullException(nameof(transform));

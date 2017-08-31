@@ -11,7 +11,7 @@ using Unclazz.Parsec.CoreParsers;
 namespace Test.Unclazz.Parsec
 {
     [TestFixture]
-    public class KeywordParserTest
+    public class StringParserTest
     {
         [TestCase("0123456789X", "0", true)]
         [TestCase("0123456789X", "01", true)]

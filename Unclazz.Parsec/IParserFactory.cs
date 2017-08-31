@@ -118,6 +118,13 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         Parser<T> Lazy<T>(Func<Parser<T>> factory);
         /// <summary>
+        /// 先読み（look-ahead）を行うパーサーを生成します。
+        /// <para>このパーサーはその成否に関わらず文字位置を前進させません。</para>
+        /// </summary>
+        /// <param name="operand">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        Parser Lookahead(Parser operand);
+        /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
@@ -135,7 +142,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keywords">キーワード</param>
         /// <returns>新しいパーサー</returns>
-        Parser StringIn(params string[] keywords);
+        Parser KeywordIn(params string[] keywords);
         /// <summary>
         /// 指定した値をキャプチャ結果とするパーサーを生成します。
         /// <para>このパーサーは実際には読み取りは行わず、パース結果は必ず成功となります。

@@ -67,7 +67,7 @@
     <Compile Include="CoreParsers\OrParserAndCutParserTest.cs" />
     <Compile Include="CoreParsers\RepeatExacltyParserTest.cs" />
     <Compile Include="CoreParsers\RepeatMinMaxParserTest.cs" />
-    <Compile Include="CoreParsers\StringInParserTest.cs" />
+    <Compile Include="CoreParsers\KeywordInParserTest.cs" />
     <Compile Include="ResultTTest.cs" />
     <Compile Include="CoreParsers\EndOfFileParserTest.cs" />
     <Compile Include="Readers\PrependableReaderTest.cs" />

@@ -318,6 +318,13 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         protected Parser Lazy(Func<Parser> factory) => _factory.Lazy(factory);
         /// <summary>
+        /// 先読み（look-ahead）を行うパーサーを生成します。
+        /// <para>このパーサーはその成否に関わらず文字位置を前進させません。</para>
+        /// </summary>
+        /// <param name="operand">元になるパーサー</param>
+        /// <returns>新しいパーサー</returns>
+        protected Parser Lookahead(Parser operand) => _factory.Lookahead(operand);
+        /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="ch">文字</param>
@@ -380,7 +387,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keywords">キーワード</param>
         /// <returns>新しいパーサー</returns>
-        protected Parser StringIn(params string[] keywords) => _factory.StringIn(keywords);
+        protected Parser KeywordIn(params string[] keywords) => _factory.KeywordIn(keywords);
         /// <summary>
         /// 指定した値をキャプチャ結果とするパーサーを生成します。
         /// <para>このパーサーは実際には読み取りは行わず、パース結果は必ず成功となります。

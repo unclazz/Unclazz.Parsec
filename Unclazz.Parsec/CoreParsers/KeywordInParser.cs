@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class StringInParser : Parser
+    sealed class KeywordInParser : Parser
     {
         static int CommonPrefixLength(string keyword0, string keyword1)
         {
@@ -30,7 +30,7 @@ namespace Unclazz.Parsec.CoreParsers
             return parser;
         }
 
-        internal StringInParser(IParserConfiguration conf, string[] keywords) : base(conf)
+        internal KeywordInParser(IParserConfiguration conf, string[] keywords) : base(conf)
         {
             var tmp = keywords ?? throw new ArgumentNullException(nameof(keywords));
             if (tmp.Length == 0) throw new ArgumentException(nameof(keywords) + " must not be empty.");

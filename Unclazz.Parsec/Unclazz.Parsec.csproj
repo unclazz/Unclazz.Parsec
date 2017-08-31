@@ -42,10 +42,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreParsers\DoubleParser.cs" />
+    <Compile Include="CoreParsers\LazyParser1.cs" />
+    <Compile Include="CoreParsers\LookaheadParser.cs" />
+    <Compile Include="CoreParsers\ThenTakeLeftParser.cs" />
+    <Compile Include="CoreParsers\ThenTakeRightParser.cs" />
     <Compile Include="CoreParsers\TypedParser.cs" />
     <Compile Include="CoreParsers\FlatMapParser.cs" />
     <Compile Include="CoreParsers\SkipParser.cs" />
-    <Compile Include="CoreParsers\StringInParser.cs" />
+    <Compile Include="CoreParsers\KeywordInParser.cs" />
     <Compile Include="CoreParsers\ThenParser.cs" />
     <Compile Include="CoreParsers\LazyParser.cs" />
     <Compile Include="CoreParsers\TripleParser.cs" />

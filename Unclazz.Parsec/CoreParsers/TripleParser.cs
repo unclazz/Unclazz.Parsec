@@ -28,7 +28,6 @@ namespace Unclazz.Parsec.CoreParsers
 
             protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader input)
             {
-                var p = input.Position;
                 var leftResult = Left.Parse(input);
                 if (!leftResult.Successful)
                 {

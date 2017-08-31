@@ -6,7 +6,7 @@ using static Unclazz.Parsec.Parsers;
 namespace Test.Unclazz.Parsec.CoreParsers
 {
     [TestFixture]
-    public class StringInParserTest
+    public class KeywordInParserTest
     {
         [Test]
         public void Constructor_Case1()
@@ -14,9 +14,9 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             // Act
             // Assert
-            var p0 = StringIn("hello", "bonjour");
-            var p1 = StringIn("h", "hello");
-            var p2 = StringIn("hello");
+            var p0 = KeywordIn("hello", "bonjour");
+            var p1 = KeywordIn("h", "hello");
+            var p2 = KeywordIn("hello");
         }
         [Test]
         public void Constructor_Case2()
@@ -24,18 +24,18 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Arrange
             // Act
             // Assert
-            Assert.That(() => StringIn(null), Throws.InstanceOf<ArgumentNullException>());
-            Assert.That(() => StringIn(new string[0]), Throws.InstanceOf<ArgumentException>());
-            Assert.That(() => StringIn("hello", string.Empty), Throws.InstanceOf<ArgumentException>());
-            Assert.That(() => StringIn("hello", null), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => KeywordIn(null), Throws.InstanceOf<ArgumentNullException>());
+            Assert.That(() => KeywordIn(new string[0]), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => KeywordIn("hello", string.Empty), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => KeywordIn("hello", null), Throws.InstanceOf<ArgumentException>());
         }
         [Test]
         public void ToString_Case1()
         {
             // Arrange
-            var p0 = StringIn("hello", "bonjour");
-            var p1 = StringIn("h", "hello");
-            var p2 = StringIn("hello");
+            var p0 = KeywordIn("hello", "bonjour");
+            var p1 = KeywordIn("h", "hello");
+            var p2 = KeywordIn("hello");
 
             // Act
             var r0 = p0.ToString();
@@ -52,7 +52,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var input = Reader.From("hello");
-            var parser = StringIn("hallo", "helo");
+            var parser = KeywordIn("hallo", "helo");
 
             // Act
             var result = parser.Parse(input);
@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var input = Reader.From("hellox");
-            var parser = StringIn(keywords);
+            var parser = KeywordIn(keywords);
 
             // Act
             var result = parser.Parse(input);
