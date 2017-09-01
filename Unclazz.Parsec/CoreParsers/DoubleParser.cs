@@ -18,14 +18,14 @@ namespace Unclazz.Parsec.CoreParsers
             var leftResult = Left.Parse(input);
             if (!leftResult.Successful)
             {
-                return leftResult.Cast<Tuple<T1, T2>>();
+                return leftResult.Retyped<Tuple<T1, T2>>();
             }
 
             var rightResult = Right.Parse(input);
             var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
             if (!rightResult.Successful)
             {
-                return rightResult.Cast<Tuple<T1, T2>>().AllowBacktrack(canBacktrack);
+                return rightResult.Retyped<Tuple<T1, T2>>().AllowBacktrack(canBacktrack);
             }
 
             var cap = new Tuple<T1, T2>(leftResult.Value, rightResult.Value);

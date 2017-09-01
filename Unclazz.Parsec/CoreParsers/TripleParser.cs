@@ -31,14 +31,14 @@ namespace Unclazz.Parsec.CoreParsers
                 var leftResult = Left.Parse(input);
                 if (!leftResult.Successful)
                 {
-                    return leftResult.Cast<Tuple<U1, U2, U3>>();
+                    return leftResult.Retyped<Tuple<U1, U2, U3>>();
                 }
 
                 var rightResult = Right.Parse(input);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
-                    return rightResult.Cast<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
+                    return rightResult.Retyped<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
                 var rightTuple = rightResult.Value;
@@ -68,14 +68,14 @@ namespace Unclazz.Parsec.CoreParsers
                 var leftResult = Left.Parse(input);
                 if (!leftResult.Successful)
                 {
-                    return leftResult.Cast<Tuple<U1, U2, U3>>();
+                    return leftResult.Retyped<Tuple<U1, U2, U3>>();
                 }
 
                 var rightResult = Right.Parse(input);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
-                    return rightResult.Cast<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
+                    return rightResult.Retyped<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
                 var leftTuple = leftResult.Value;

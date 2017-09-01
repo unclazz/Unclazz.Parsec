@@ -23,7 +23,7 @@ namespace Unclazz.Parsec.CoreParsers
 
                 return rightResult.AllowBacktrack(canBacktrack);
             }
-            return leftResult.Cast<TRight>();
+            return leftResult.Typed<TRight>();
         }
         public override string ToString()
         {

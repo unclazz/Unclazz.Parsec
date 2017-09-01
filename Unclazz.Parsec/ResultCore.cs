@@ -112,22 +112,11 @@ namespace Unclazz.Parsec
         {
             return new Result(_successful, _start, _end, _message, yesNo);
         }
-        public Result<T> AttachValue<T>(T value)
+        public Result<T> Typed<T>()
         {
-            if (_successful)
-            {
-                return Result<T>.OfSuccess(value, _start, _end, _canBacktrack);
-            }
-            else
-            {
-                return Result<T>.OfFailure(_message, _start, _end, _canBacktrack);
-            }
+            return Typed(default(T));
         }
-        public Result<T> Cast<T>()
-        {
-            return Cast(default(T));
-        }
-        public Result<T> Cast<T>(T value)
+        public Result<T> Typed<T>(T value)
         {
             if (_successful)
             {

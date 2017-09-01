@@ -26,7 +26,7 @@ namespace Unclazz.Parsec.CoreParsers
                 {
                     return _mapper(r.Value).Parse(input);
                 }
-                return r.Cast<TResult>();
+                return r.Retyped<TResult>();
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace Unclazz.Parsec.CoreParsers
                 {
                     return _mapper(r.Value).Parse(input);
                 }
-                return r.DetachValue();
+                return r.Untyped();
             }
             catch (Exception ex)
             {

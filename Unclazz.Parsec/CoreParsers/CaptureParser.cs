@@ -2,20 +2,6 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    /// <summary>
-    /// 文字列を読み取りキャプチャするパーサーです。
-    /// <para>
-    /// パース処理そのものはコンストラクタに渡されたパーサーに委譲されます。
-    /// ただし元になるパーサーが返す値の型がなんであれ、
-    /// パース開始から終了（パース成功）までの区間のデータはあくまでも文字列としてキャプチャされ、
-    /// それがこのラッパーとなる新しいパーサーが返す値となります。</para>
-    /// <para>
-    /// 内部的な動作はおおよそ次のように進みます。
-    /// パース処理本体が実行される前に<see cref="Reader.Mark"/>が呼び出されます。
-    /// パース処理本体が成功した場合は<see cref="Reader.Capture(bool)"/>が呼び出されます。
-    /// パース処理本体が失敗した場合は単に<see cref="Reader.Unmark"/>が呼び出されます。</para>
-    /// </summary>
-    /// <typeparam name="T">任意の型</typeparam>
     sealed class CaptureParser : Parser<string>
     {
         public CaptureParser(IParserConfiguration conf, Parser parse) : base(conf)
@@ -36,10 +22,10 @@ namespace Unclazz.Parsec.CoreParsers
             var r = _parse.Parse(input);
             if (r.Successful)
             {
-                return r.AttachValue(input.Capture(true));
+                return r.Typed(input.Capture(true));
             }
             input.Unmark();
-            return r.Cast<string>();
+            return r.Typed<string>();
         }
         /// <summary>
         /// このパーサーの文字列表現を返します。

@@ -73,7 +73,7 @@ namespace Unclazz.Parsec
         }
         public static implicit operator Result(Result<T> operand)
         {
-            return operand.DetachValue();
+            return operand.Untyped();
         }
 
         public static Result<T> OfSuccess(T value,
@@ -129,7 +129,7 @@ namespace Unclazz.Parsec
             return new Result<U>(_successful, _start, _end, _message,
                 _successful ? func(_value) : default(U), _canBacktrack);
         }
-        public Result DetachValue()
+        public Result Untyped()
         {
             if (_successful)
             {
@@ -140,11 +140,11 @@ namespace Unclazz.Parsec
                 return Result.OfFailure(_message, _start, _end, _canBacktrack);
             }
         }
-        public Result<U> Cast<U>()
+        public Result<U> Retyped<U>()
         {
-            return Cast(default(U));
+            return Retyped(default(U));
         }
-        public Result<U> Cast<U>(U value)
+        public Result<U> Retyped<U>(U value)
         {
             if (_successful)
             {

@@ -14,7 +14,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly T _value;
         protected override ResultCore<T> DoParse(Reader input)
         {
-            return _original.Parse(input).AttachValue(_value);
+            return _original.Parse(input).Typed(_value);
         }
         public override string ToString()
         {
