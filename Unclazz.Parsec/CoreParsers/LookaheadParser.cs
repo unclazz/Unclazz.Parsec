@@ -13,7 +13,7 @@ namespace Unclazz.Parsec.CoreParsers
         {
             input.Mark();
             var res = _original.Parse(input);
-            input.Reset();
+            input.Reset(true);
             return res;
         }
         public override string ToString()
