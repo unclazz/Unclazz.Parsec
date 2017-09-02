@@ -18,7 +18,7 @@ C#言語の機能もしくは制約にあわせてAPIを構築しています。
 `Parser`|パーサーを表す抽象クラスです。このパーサーはパース成否に関わらず決して値のキャプチャを行いません。`Char(char)`や`KeywordIn(params string[])`など多くのパーサーがこのクラスの派生型です。
 `Parsers`|定義済みパーサーの静的ファクトリーメソッドを提供するユーティリティです。`using static`ディレクティブの使用をおすすめします。
 `Reader`|パーサーの入力データとなるクラスです。このクラスが公開する静的ファクトリーメソッドを使い各種データ型からインスタンスを生成します。
-`Result<T>`|`Parser<T>`のパース結果を表す構造体です。`Successful`プロパティでパース成否を、`Value`でキャプチャ結果を、`Message`でパース失敗の理由を示すメッセージを取得できます。
+`Result<T>`|`Parser<T>`のパース結果を表す構造体です。`Successful`プロパティでパース成否を、`Capture`でキャプチャ結果を、`Message`でパース失敗の理由を示すメッセージを取得できます。
 `Result`|`Parser`のパース結果を表す構造体です。`Successful`プロパティでパース成否を、`Message`でパース失敗の理由を示すメッセージを取得できます。
 `Optional`|Java 8 における同名クラスやScalaにおける`Option`と同じ役割を持つ構造体です。`ParseResult<T>.Capture`はこの構造体のインスタンスを返します。
 `CharClass`|文字クラスを表す抽象クラスです。`CharIn(CharClass)`などのファクトリーメソッドの引数として利用します。`CharClass`が公開する静的ファクトリーメソッドを通じて派生クラスのインスタンスを得られます。
@@ -65,7 +65,7 @@ var p = new NumberParser();
 
 var r1 = p.Parse("-123.456");
 var s1 = r.Successful; // returns true.
-var c1 = r.Capture; // returns Optional(-123.456), and c1.Value returns -123.456.
+var c1 = r.Capture; // returns Optional(-123.456), and c1.Capture returns -123.456.
 
 var r2 = p.Parse("hello");
 var s2 = r.Successful; // returns false.
@@ -289,7 +289,7 @@ class HelloParser : Parser<string>
 `Capture()`を呼び出して`string`型の値をキャプチャするパーサーに変換するか、
 `Map<T>(Func<string, T>)`を呼び出して任意の型をキャプチャするパーサーに変換するかします。
 変換後のパーサーはパース結果として`Result<T>`を返します。
-`ParseResult<T>.Value`プロパティはキャプチャした値を返します。
+`ParseResult<T>.Capture`プロパティはキャプチャした値を返します。
 
 ではこのパーサーを実行してみましょう：
 
@@ -305,6 +305,16 @@ class Program
     }
 }
 ```
+
+`Result<T>`で宣言されている主なメンバー：
+
+シグネチャ|戻り値|説明
+---|---|---
+`Successful { get; }`|`bool`|パースの成否を示すプロパティ。
+`Capture { get; }`|`T`|キャプチャした値。パース失敗時は例外をスローする。
+`Message { get; }`|`string`|パース失敗の理由を示すメッセージ。パース成功時は例外をスローする。
+`Map<U>(Func<T,U>)`|`Reult<U>`|キャプチャした値に関数を適用する。パース失敗時は何もしない。
+
 
 このコードをビルドして、生成された*.exeを実行してみます：
 
@@ -416,3 +426,25 @@ sepComma.Parse("a,a,a,b"); // => OK. 3つ目の'a'まで読む
 上記の例ではいずれのパーサーも`Parser`の派生クラスをベースとするため結果型がなく、したがって`Repeat(...)`の戻り値型も`Parser`です。
 一方で例えば`a.Capture().Repeat(...)`とした場合は`Parser<T>`の派生クラスをベースとするため結果型あり、`Repeat(...)`の戻り値型は`Parser<IList<string>>`となります。
 
+### オプション
+
+あるトークンが存在するケースとそうでないケースがあるという場合、`OrNot()`を使用します。
+例によって`Parser.OrNot()`は`Parser`の派生クラスを返すため結果型なしですが、
+`Parser<T>.OrNot()`は`Parser<T>`の派生クラスを返すため結果型ありです。
+ただし後者の場合でも対象のトークンの存否は実際にパースしてみないと確定しないため`Parser<Optional<T>>`となります。
+`Parse(...)`は`Result<Optional<T>>`を返します：
+
+```cs
+var ab = Char('a') & Char('b').Capture().OrNot();
+var result0 = ab.Parse("abc"); // OK. result0.Capture.Value は "b".
+var result1 = ab.Parse("acd"); // OK. result1.Capture.Value は例外スロー
+```
+
+`Optional<T>`はJava SE 8の同名クラスやScalaにおける`Option`に対応するものです。`Optional<T>`で宣言されている主なメンバー：
+
+シグネチャ|戻り値|説明
+---|---|---
+`Present { get; }`|`bool`|値の有無を示すプロパティ。
+`Value { get; }`|`T`|値を返すプロパティ。値が存在しない場合は例外をスローする。
+`OrElse(T)`|`T`|値を返すメソッド。値が存在しない場合は引数で指定した値を返す。
+`Map<U>(Func<T,U>)`|`Optional<U>`|値に関数を適用する。値が存在しない時は何もしない。
