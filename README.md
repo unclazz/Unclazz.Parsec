@@ -479,17 +479,19 @@ var result2 = ab.Parse("abb"); // NG.
 パーサーを`Lookahead(...)`を使用すると肯定先読みと否定先読みを実現できます。
 元のパーサーがパース成功する状況でのみ`Lookahead(...)`が返すパーサーもパース成功します。
 しかし元のパーサーと異なってこのパーサーは文字位置を前進させません。
+もちろんキャプチャされる文字列にもこの先読み部分は反映されません。
+
 したがって、次に示すように`&`演算子もしくは`Then(...)`メソッドや`!`演算子もしくは`Not(...)`と組わせて、
 肯定先読みと否定先読みを行うパーサーを構築できます：
 
 ```cs
-var helloSp = Keyword("hello") & Lookahead(Char(' '));
-var result0 = helloSp.Parse("hello "); // OK.
+var helloSp = (Keyword("hello") & Lookahead(Char(' '))).Capture();
+var result0 = helloSp.Parse("hello "); // OK. result0.Capture == "hello" (!= "hello ")
 var result1 = helloSp.Parse("helloX"); // NG.
 
-var helloNoSp = Keyword("hello") & !Lookahead(Char(' '));
+var helloNoSp = (Keyword("hello") & !Lookahead(Char(' '))).Capture();
 var result2 = helloNoSp.Parse("hello "); // NG.
-var result3 = helloNoSp.Parse("helloX"); // OK.
+var result3 = helloNoSp.Parse("helloX"); // OK. result3.Capture == "hello" (!= "helloX")
 ```
 
 
