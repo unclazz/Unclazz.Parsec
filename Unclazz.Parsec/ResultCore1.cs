@@ -2,198 +2,134 @@
 
 namespace Unclazz.Parsec
 {
+    /// <summary>
+    /// <see cref="Parser{T}"/>の派生クラスのパース結果中核部となる構造体です。
+    /// <para>
+    /// <see cref="Parser{T}"/>実装者は抽象メソッド<see cref="Parser{T}.DoParse(Reader)"/>を実装するとき、
+    /// このメソッドの戻り値として<see cref="ResultCore{T}"/>構造体のインスタンスを返す必要があります。
+    /// </para>
+    /// </summary>
     public struct ResultCore<T>
     {
+        /// <summary>
+        /// 暗黙のキャストを行います。
+        /// </summary>
+        /// <param name="res"></param>
         public static implicit operator ResultCore<T>(Result<T> res)
         {
             return res.DetachPosition();
         }
 
-        public static ResultCore<T> OfSuccess(T value, bool canBacktrack = true)
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static ResultCore<T> OfSuccess(T value)
+        {
+            return new ResultCore<T>(true, null, value, true);
+        }
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="canBacktrack"></param>
+        /// <returns></returns>
+        public static ResultCore<T> OfSuccess(T value, bool canBacktrack)
         {
             return new ResultCore<T>(true, null, value, canBacktrack);
         }
-        public static ResultCore<T> OfFailure(string message, bool canBacktrack = true)
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static ResultCore<T> OfFailure(string message)
+        {
+            return new ResultCore<T>(false, message, default(T), true);
+        }
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="canBacktrack"></param>
+        /// <returns></returns>
+        public static ResultCore<T> OfFailure(string message, bool canBacktrack)
         {
             return new ResultCore<T>(false, message, default(T), canBacktrack);
         }
 
         ResultCore(bool successful, string message, T value, bool canBacktrack)
         {
-            _successful = successful;
+            Successful = successful;
             _message = message;
             _value = value;
-            _canBacktrack = canBacktrack;
+            CanBacktrack = canBacktrack;
         }
 
-        readonly bool _successful;
-        readonly string _message;
         readonly T _value;
-        readonly bool _canBacktrack;
+        readonly string _message;
 
-        public bool Successful => _successful;
-        public bool CanBacktrack => _canBacktrack;
-        public string Message => !_successful ? _message : throw new InvalidOperationException();
-        public T Value => _successful ? _value : throw new InvalidOperationException();
+        /// <summary>
+        /// <c>true</c>の場合パース成功です。
+        /// </summary>
+        public bool Successful { get; }
+        /// <summary>
+        /// パースによりキャプチャされた値です。
+        /// </summary>
+        /// <exception cref="InvalidOperationException">パースが成功していない場合</exception>
+        public T Value => Successful ? _value : throw new InvalidOperationException();
+        /// <summary>
+        /// パース失敗の理由を示すメッセージです。
+        /// </summary>
+        /// <exception cref="InvalidOperationException">パースが失敗していない場合</exception>
+        public string Message => !Successful ? _message : throw new InvalidOperationException();
+        /// <summary>
+        /// <c>true</c>の場合バックトラックは有効です。
+        /// </summary>
+        public bool CanBacktrack { get; }
 
+        /// <summary>
+        /// バックトラック設定を変更したインスタンスを返します。
+        /// </summary>
+        /// <param name="yesNo"><c>true</c>の場合バックトラック設定はON</param>
+        /// <returns></returns>
         public ResultCore<T> AllowBacktrack(bool yesNo)
         {
-            return new ResultCore<T>(_successful, _message, _value, yesNo);
+            return new ResultCore<T>(Successful, _message, _value, yesNo);
         }
+        /// <summary>
+        /// パース開始と終了の文字位置情報を付与します。
+        /// </summary>
+        /// <param name="start">開始の文字位置</param>
+        /// <param name="end">終了の文字位置</param>
+        /// <returns></returns>
         public Result<T> AttachPosition(CharPosition start, CharPosition end)
         {
-            if (_successful)
+            if (Successful)
             {
-                return Result<T>.OfSuccess(_value, start, end, _canBacktrack);
+                return Result<T>.OfSuccess(_value, start, end, CanBacktrack);
             }
             else
             {
-                return Result<T>.OfFailure(_message, start, end, _canBacktrack);
+                return Result<T>.OfFailure(_message, start, end, CanBacktrack);
             }
         }
+        /// <summary>
+        /// このインスタンスの文字列表現を返します。
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            if (_successful)
+            if (Successful)
             {
                 return string.Format("ResultCore<{2}>(Successful: {0}, Value: {1})",
-                    _successful, _value, ParsecUtility.TypeToString(typeof(T)));
+                    Successful, _value, ParsecUtility.TypeToString(typeof(T)));
             }
             else
             {
                 return string.Format("ResultCore<{2}>(Successful: {0}, Message: {1})",
-                    _successful, _message, ParsecUtility.TypeToString(typeof(T)));
-            }
-        }
-    }
-    public struct Result<T>
-    {
-        public static Result<T> operator |(Result<T> left, Result<T> right)
-        {
-            return left.Or(right);
-        }
-        public static implicit operator Result(Result<T> operand)
-        {
-            return operand.Untyped();
-        }
-
-        public static Result<T> OfSuccess(T value,
-            CharPosition start,
-            CharPosition end,
-            bool canBacktrack = true)
-        {
-            return new Result<T>(true, start, end, null, value, canBacktrack);
-        }
-        public static Result<T> OfFailure(string message,
-            CharPosition start,
-            CharPosition end,
-            bool canBacktrack = true)
-        {
-            return new Result<T>(false, start, end, message, default(T), canBacktrack);
-        }
-
-        Result(bool successful, 
-            CharPosition start, 
-            CharPosition end, 
-            string message, 
-            T value, 
-            bool canBacktrack)
-        {
-            _start = start;
-            _end = end;
-            _successful = successful;
-            _message = message;
-            _value = value;
-            _canBacktrack = canBacktrack;
-        }
-
-        readonly CharPosition _start;
-        readonly CharPosition _end;
-        readonly bool _successful;
-        readonly string _message;
-        readonly T _value;
-        readonly bool _canBacktrack;
-
-        public CharPosition Start => _start;
-        public CharPosition End => _end;
-        public bool Successful => _successful;
-        public bool CanBacktrack => _canBacktrack;
-        public string Message => !_successful ? _message : throw new InvalidOperationException();
-        public T Value => _successful ? _value : throw new InvalidOperationException();
-
-        public Result<T> AllowBacktrack(bool yesNo)
-        {
-            return new Result<T>(_successful, _start, _end, _message, _value, yesNo);
-        }
-        public Result<U> Map<U>(Func<T, U> func)
-        {
-            return new Result<U>(_successful, _start, _end, _message,
-                _successful ? func(_value) : default(U), _canBacktrack);
-        }
-        public Result Untyped()
-        {
-            if (_successful)
-            {
-                return Result.OfSuccess(_start, _end, _canBacktrack);
-            }
-            else
-            {
-                return Result.OfFailure(_message, _start, _end, _canBacktrack);
-            }
-        }
-        public Result<U> Retyped<U>()
-        {
-            return Retyped(default(U));
-        }
-        public Result<U> Retyped<U>(U value)
-        {
-            if (_successful)
-            {
-                return Result<U>.OfSuccess(value, _start, _end, _canBacktrack);
-            }
-            else
-            {
-                return Result<U>.OfFailure(_message, _start, _end, _canBacktrack);
-            }
-        }
-        public Result<T> Or(Result<T> other)
-        {
-            return _successful ? this : other;
-        }
-        public void IfSuccessful(Action<T> act)
-        {
-            if (_successful) act(_value);
-        }
-        public void IfSuccessful(Action<T> act, Action<string> orElse)
-        {
-            if (_successful) act(_value);
-            else orElse(_message);
-        }
-        public void IfFailed(Action<string> act)
-        {
-            if (!_successful) act(_message);
-        }
-        public ResultCore<T> DetachPosition()
-        {
-            if (_successful)
-            {
-                return ResultCore<T>.OfSuccess(_value, _canBacktrack);
-            }
-            else
-            {
-                return ResultCore<T>.OfFailure(_message, _canBacktrack);
-            }
-        }
-        public override string ToString()
-        {
-            if (_successful)
-            {
-                return string.Format("Result<{4}>(Successful: {0}, Value: {1}, Start: {2}, End: {3})",
-                    _successful, _value, _start, _end, ParsecUtility.TypeToString(typeof(T)));
-            }
-            else
-            {
-                return string.Format("Result<{4}>(Successful: {0}, Message: {1}, Start: {2}, End: {3})",
-                    _successful, _message, _start, _end, ParsecUtility.TypeToString(typeof(T)));
+                    Successful, _message, ParsecUtility.TypeToString(typeof(T)));
             }
         }
     }

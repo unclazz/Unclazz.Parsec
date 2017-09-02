@@ -2,170 +2,125 @@
 
 namespace Unclazz.Parsec
 {
+    /// <summary>
+    /// <see cref="Parser"/>の派生クラスのパース結果中核部となる構造体です。
+    /// <para>
+    /// <see cref="Parser"/>実装者は抽象メソッド<see cref="Parser.DoParse(Reader)"/>を実装するとき、
+    /// このメソッドの戻り値として<see cref="ResultCore"/>構造体のインスタンスを返す必要があります。
+    /// </para>
+    /// </summary>
     public struct ResultCore
     {
+        #region 静的メンバー
+        /// <summary>
+        /// 暗黙のキャストを行います。
+        /// </summary>
+        /// <param name="res"></param>
         public static implicit operator ResultCore(Result res)
         {
             return res.DetachPosition();
         }
-
-        public static ResultCore OfSuccess(bool canBacktrack = true)
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <returns></returns>
+        public static ResultCore OfSuccess()
+        {
+            return new ResultCore(true, null, true);
+        }
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="canBacktrack"><c>true</c>の場合バックトラックは有効</param>
+        /// <returns></returns>
+        public static ResultCore OfSuccess(bool canBacktrack)
         {
             return new ResultCore(true, null, canBacktrack);
         }
-        public static ResultCore OfFailure(string message, bool canBacktrack = true)
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="message">エラーメッセージ</param>
+        /// <returns></returns>
+        public static ResultCore OfFailure(string message)
+        {
+            return new ResultCore(false, message, true);
+        }
+        /// <summary>
+        /// 静的ファクトリーメソッドです。
+        /// </summary>
+        /// <param name="message">エラーメッセージ</param>
+        /// <param name="canBacktrack"><c>true</c>の場合バックトラックは有効</param>
+        /// <returns></returns>
+        public static ResultCore OfFailure(string message, bool canBacktrack)
         {
             return new ResultCore(false, message, canBacktrack);
         }
 
+        #endregion
+
         ResultCore(bool successful, string message, bool canBacktrack)
         {
-            _successful = successful;
+            Successful = successful;
             _message = message;
-            _canBacktrack = canBacktrack;
+            CanBacktrack = canBacktrack;
         }
 
-        readonly bool _successful;
         readonly string _message;
-        readonly bool _canBacktrack;
 
-        public bool Successful => _successful;
-        public bool CanBacktrack => _canBacktrack;
-        public string Message => !_successful ? _message : throw new InvalidOperationException();
+        /// <summary>
+        /// <c>true</c>の場合パース成功です。
+        /// </summary>
+        public bool Successful { get; }
+        /// <summary>
+        /// パース失敗の理由を示すメッセージです。
+        /// </summary>
+        /// <exception cref="InvalidOperationException">パースが失敗していない場合</exception>
+        public string Message => !Successful ? _message : throw new InvalidOperationException();
+        /// <summary>
+        /// <c>true</c>の場合バックトラックは有効です。
+        /// </summary>
+        public bool CanBacktrack { get; }
 
+        /// <summary>
+        /// バックトラック設定を変更したインスタンスを返します。
+        /// </summary>
+        /// <param name="yesNo"><c>true</c>の場合バックトラック設定はON</param>
+        /// <returns></returns>
         public ResultCore AllowBacktrack(bool yesNo)
         {
-            return new ResultCore(_successful, _message, yesNo);
+            return new ResultCore(Successful, _message, yesNo);
         }
+        /// <summary>
+        /// パース開始と終了の文字位置情報を付与します。
+        /// </summary>
+        /// <param name="start">開始の文字位置</param>
+        /// <param name="end">終了の文字位置</param>
+        /// <returns></returns>
         public Result AttachPosition(CharPosition start, CharPosition end)
         {
-            if (_successful)
+            if (Successful)
             {
-                return Result.OfSuccess(start, end, _canBacktrack);
+                return Result.OfSuccess(start, end, CanBacktrack);
             }
             else
             {
-                return Result.OfFailure(_message, start, end, _canBacktrack);
+                return Result.OfFailure(_message, start, end, CanBacktrack);
             }
         }
+        /// <summary>
+        /// このインスタンスの文字列表現を返します。
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            if (_successful)
+            if (Successful)
             {
-                return string.Format("ResultCore(Successful: {0})", _successful);
+                return string.Format("ResultCore(Successful: {0})", Successful);
             }
             else
             {
-                return string.Format("ResultCore(Successful: {0}, Message: {1})", _successful, _message);
-            }
-        }
-    }
-    public struct Result
-    {
-        public static Result operator |(Result left, Result right)
-        {
-            return left.Or(right);
-        }
-
-        public static Result OfSuccess(
-            CharPosition start,
-            CharPosition end,
-            bool canBacktrack = true)
-        {
-            return new Result(true, start, end, null, canBacktrack);
-        }
-        public static Result OfFailure(
-            string message,
-            CharPosition start,
-            CharPosition end,
-            bool canBacktrack = true)
-        {
-            return new Result(false, start, end, message, canBacktrack);
-        }
-
-        Result(bool successful,
-            CharPosition start,
-            CharPosition end,
-            string message,
-            bool canBacktrack)
-        {
-            _start = start;
-            _end = end;
-            _successful = successful;
-            _message = message;
-            _canBacktrack = canBacktrack;
-        }
-
-        readonly CharPosition _start;
-        readonly CharPosition _end;
-        readonly bool _successful;
-        readonly string _message;
-        readonly bool _canBacktrack;
-
-        public CharPosition Start => _start;
-        public CharPosition End => _end;
-        public bool Successful => _successful;
-        public bool CanBacktrack => _canBacktrack;
-        public string Message => !_successful ? _message : throw new InvalidOperationException();
-
-        public Result AllowBacktrack(bool yesNo)
-        {
-            return new Result(_successful, _start, _end, _message, yesNo);
-        }
-        public Result<T> Typed<T>()
-        {
-            return Typed(default(T));
-        }
-        public Result<T> Typed<T>(T value)
-        {
-            if (_successful)
-            {
-                return Result<T>.OfSuccess(value, _start, _end, _canBacktrack);
-            }
-            else
-            {
-                return Result<T>.OfFailure(_message, _start, _end, _canBacktrack);
-            }
-        }
-        public Result Or(Result other)
-        {
-            return _successful ? this : other;
-        }
-        public void IfSuccessful(Action act)
-        {
-            if (_successful) act();
-        }
-        public void IfSuccessful(Action act, Action<string> orElse)
-        {
-            if (_successful) act();
-            else orElse(_message);
-        }
-        public void IfFailed(Action<string> act)
-        {
-            if (!_successful) act(_message);
-        }
-        public ResultCore DetachPosition()
-        {
-            if (_successful)
-            {
-                return ResultCore.OfSuccess(_canBacktrack);
-            }
-            else
-            {
-                return ResultCore.OfFailure(_message, _canBacktrack);
-            }
-        }
-        public override string ToString()
-        {
-            if (_successful)
-            {
-                return string.Format("Result(Successful: {0}, Start: {1}, End: {2})",
-                    _successful, _start, _end);
-            }
-            else
-            {
-                return string.Format("Result(Successful: {0}, Message: {1}, Start: {2}, End: {3})",
-                    _successful, _message, _start, _end);
+                return string.Format("ResultCore(Successful: {0}, Message: {1})", Successful, _message);
             }
         }
     }
