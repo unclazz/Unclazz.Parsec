@@ -128,8 +128,8 @@ namespace Unclazz.Parsec
         /// <summary>
         /// 読み取り結果の<see cref="Optional{T}"/>が内包する値に関数を提供するパーサーを生成します。
         /// <para>
-        /// このメソッドが返すパーサーは関数<paramref name="transform"/>が例外をスローした場合、
-        /// そのメッセージを使用してパース失敗を表す<see cref="ParseResult{T}"/>インスタンスを返します。
+        /// このメソッドが返すパーサーは関数<paramref name="func"/>が例外をスローした場合、
+        /// そのメッセージを使用してパース失敗を表す<see cref="Result{T}"/>インスタンスを返します。
         /// この挙動を変更し、関数がスローした例外をそのまま再スローさせたい場合は
         /// <paramref name="canThrow"/>に<c>true</c>を指定します。
         /// </para>
@@ -137,15 +137,15 @@ namespace Unclazz.Parsec
         /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
         /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
         /// <param name="self">レシーバー</param>
-        /// <param name="transform">変換を行う関数</param>
-        /// <param name="canThrow"><paramref name="transform"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <param name="func">変換を行う関数</param>
+        /// <param name="canThrow"><paramref name="func"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<TResult> Map<TSource, TResult>(this Parser<TSource> self, Func<TSource, TResult> transform, bool canThrow = false)
+        public static Parser<TResult> Map<TSource, TResult>(this Parser<TSource> self, Func<TSource, TResult> func, bool canThrow = false)
         {
-            return new MapParser<TSource, TResult>(self.Configuration, self, transform, canThrow);
+            return new MapParser<TSource, TResult>(self.Configuration, self, func, canThrow);
         }
         /// <summary>
-        /// 読み取り結果の<see cref="Optional{T}"/>が内包する値を元に動的にパーサーを構築するパーサーを返します。
+        /// パース結果の値を元に動的にパーサーを構築するパーサーを返します。
         /// </summary>
         /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
         /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
@@ -157,6 +157,14 @@ namespace Unclazz.Parsec
         {
             return new FlatMapParser<TSource, TResult>(self.Configuration, self, mapper, canThrow);
         }
+        /// <summary>
+        /// パース結果の値を元に動的にパーサーを構築するパーサーを返します。
+        /// </summary>
+        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
+        /// <param name="self">レシーバー</param>
+        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
+        /// <param name="canThrow"><paramref name="mapper"/>がスローした例外をそのまま再スローさせる場合<c>true</c></param>
+        /// <returns>新しいパーサー</returns>
         public static Parser FlatMap<TSource>(this Parser<TSource> self, Func<TSource, Parser> mapper, bool canThrow = false)
         {
             return new FlatMapParser<TSource>(self.Configuration, self, mapper, canThrow);
@@ -392,14 +400,36 @@ namespace Unclazz.Parsec
         #endregion
 
         #region Typed/Untyped系の拡張メソッド
+        /// <summary>
+        /// パース結果型を持つパーサーに変換します。
+        /// <typeparamref name="T"/>のデフォルト値が結果値として採用されます。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static Parser<T> Typed<T>(this Parser self)
         {
             return new TypedParser<T>(self);
         }
+        /// <summary>
+        /// パース結果型を持つパーサーに変換します。
+        /// 引数で指定さた値が結果値として採用されます。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static Parser<T> Typed<T>(this Parser self, T value)
         {
             return new TypedParser<T>(self, value);
         }
+        /// <summary>
+        /// パース結果型を持たないパーサーに変換します。
+        /// 元のパーサーがキャプチャした値は破棄されます。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static Parser Untyped<T>(this Parser<T> self)
         {
             return new UntypedParser<T>(self);
