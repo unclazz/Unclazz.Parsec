@@ -338,10 +338,10 @@ class CustomParser : Parser<string>
 * またこのメソッドは原則として例外スローを行ってはなりません。
 * 正常・異常を問わずこのメソッド内で起こったことはすべて`ResultCore<T>`を通じて呼び出し元に通知される必要があります。
 
-### シーケンス
+### 順序
 
 例えばあるキーワードのあとに別のあるキーワードが続くとか、
-ある文字のあとにある文字クラスに属する文字の並びが続くとかのシーケンスを表現するには、
+ある文字のあとにある文字クラスに属する文字の並びが続くとかのシーケンスを表現する（それらにマッチするパーサーを組み立てる）には、
 `&`演算子もしくは`Parser<T>.Then(...)`メソッドのオーバーロードを使用します。
 
 演算子オーバーロードを使用する例を見てみましょう：
@@ -352,7 +352,7 @@ Parser helloWorld = hello & Keyword("world");
 helloWorld.Parse("helloworld"); // => OK. Result.Successful is true.
 helloWorld.Parse("hello world"); // => NG. Parse.Successful is false.
 
-Parser hello_ = hello & CharIn('!', '?');
+Parser hello_ = hello & CharIn("!?");
 hello_.Parse("hello"); // => NG.
 hello_.Parse("hello!"); // => OK.
 
@@ -372,3 +372,32 @@ C#言語仕様の制約により[FastParseの場合](http://www.lihaoyi.com/fast
 多種多様な状況では`&`が使用できません。`Unclazz.Parsec`において`&`演算子を使用可能なのは、
 左右の被演算子となるパーサーが同じ結果型を宣言している場合と、いずれか片方もしくは両方のパーサーが`Parser`である場合だけです。
 つまり`Parser<T>.Then<T, U>(Parser<U>)`メソッドに対応する演算子オーバーロードは存在しません。
+
+### 繰り返し
+
+ある文字やキーワードの繰り返しを表現する（それらにマッチするパーサーを組み立てる）には、`Repeat(int, int, int, Parser)`を使用します。
+このメソッドの引数はいずれもオプション引数となっています。使用例を見てみましょう：
+
+```cs
+var a = Char('a');
+var comma = Char(',');
+
+var min2Max4 = a.Repeat(min: 2, max: 3);
+min2Max4.Parse("a___"); // => NG.
+min2Max4.Parse("aa__"); // => OK.
+min2Max4.Parse("aaaa"); // => OK. 3文字目まで読み、EOFに到達しない
+
+var exactly2 = a.Repeat(exactly: 2);
+exactly2.Parse("a___"); // => NG.
+exactly2.Parse("aa__"); // => OK.
+exactly2.Parse("aaaa"); // => OK. ぴったり2文字読み、EOFに到達しない
+
+var zeroOrMore = a.Repeat(); // デフォルトで0回以上かつ上限なしの繰り返し
+zeroOrMore.Parse("____"); // => OK. しかし1文字も前進しない
+zeroOrMore.Parse("aaaa"); // => OK. EOFに到達する
+
+var sepComma = a.Repeat(sep: comma); // セパレータ指定も可能
+sepComma.Parse("a,a,a,b"); // => OK. 3つ目の'a'まで読む
+```
+
+
