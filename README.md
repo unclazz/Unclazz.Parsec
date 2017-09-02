@@ -312,9 +312,6 @@ class CustomParser : Parser<string>
 {
 	protected override ResultCore<string> DoParse(Reader input)
 	{
-		// パース開始時の文字位置を記録
-		var pos = input.Position;
-
 		// ...ここに独自のパースロジック...
 		// ...inputから文字を読み、何かしらのチェックや変換を行う...
 
