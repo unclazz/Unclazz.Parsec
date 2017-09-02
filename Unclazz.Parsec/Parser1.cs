@@ -261,7 +261,7 @@ namespace Unclazz.Parsec
             WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
             WriteLine("Successful : {0} ", result.Successful);
             if (result.Successful)
-                WriteLine("Capture    : {0} ", result.Value);
+                WriteLine("Capture    : {0} ", result.Capture);
             else
                 WriteLine("Message    : {0} ", result.Message);
             WriteLine("Position   : {0} ", pos);

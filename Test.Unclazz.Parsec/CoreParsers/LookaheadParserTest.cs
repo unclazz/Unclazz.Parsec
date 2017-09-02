@@ -53,7 +53,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("a"));
+            Assert.That(res.Capture, Is.EqualTo("a"));
             Assert.That(r.Position.Index, Is.EqualTo(1));
         }
     }

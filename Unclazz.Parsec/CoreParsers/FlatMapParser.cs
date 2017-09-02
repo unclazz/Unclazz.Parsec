@@ -24,7 +24,7 @@ namespace Unclazz.Parsec.CoreParsers
             {
                 if (r.Successful)
                 {
-                    return _mapper(r.Value).Parse(input);
+                    return _mapper(r.Capture).Parse(input);
                 }
                 return r.Retyped<TResult>();
             }
@@ -61,7 +61,7 @@ namespace Unclazz.Parsec.CoreParsers
             {
                 if (r.Successful)
                 {
-                    return _mapper(r.Value).Parse(input);
+                    return _mapper(r.Capture).Parse(input);
                 }
                 return r.Untyped();
             }

@@ -23,7 +23,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Value, Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => res.Capture, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
         public void Parse_Case2()
@@ -37,7 +37,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("0123"));
+            Assert.That(res.Capture, Is.EqualTo("0123"));
         }
     }
 }

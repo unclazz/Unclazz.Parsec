@@ -21,7 +21,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("3210"));
+            Assert.That(res.Capture, Is.EqualTo("3210"));
         }
     }
 }

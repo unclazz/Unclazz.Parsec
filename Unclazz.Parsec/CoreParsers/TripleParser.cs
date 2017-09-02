@@ -56,8 +56,8 @@ namespace Unclazz.Parsec.CoreParsers
                     return rightResult.Retyped<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
-                var rightTuple = rightResult.Value;
-                var finalTuple = new Tuple<U1, U2, U3>(leftResult.Value,
+                var rightTuple = rightResult.Capture;
+                var finalTuple = new Tuple<U1, U2, U3>(leftResult.Capture,
                     rightTuple == null ? default(U2) : rightTuple.Item1,
                     rightTuple == null ? default(U3) : rightTuple.Item2);
                 return Success(finalTuple, canBacktrack);
@@ -100,11 +100,11 @@ namespace Unclazz.Parsec.CoreParsers
                     return rightResult.Retyped<Tuple<U1, U2, U3>>().AllowBacktrack(canBacktrack);
                 }
 
-                var leftTuple = leftResult.Value;
+                var leftTuple = leftResult.Capture;
                 var finalTuple = new Tuple<U1, U2, U3>(
                     leftTuple == null ? default(U1) : leftTuple.Item1,
                     leftTuple == null ? default(U2) : leftTuple.Item2,
-                    rightResult.Value);
+                    rightResult.Capture);
                 return Success(finalTuple, canBacktrack);
             }
             public override string ToString()

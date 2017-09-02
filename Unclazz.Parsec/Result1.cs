@@ -99,7 +99,7 @@ namespace Unclazz.Parsec
         /// パースによりキャプチャされた値です。
         /// </summary>
         /// <exception cref="InvalidOperationException">パースが成功していない場合</exception>
-        public T Value => Successful ? _value : throw new InvalidOperationException();
+        public T Capture => Successful ? _value : throw new InvalidOperationException();
         /// <summary>
         /// パース失敗の理由を示すメッセージです。
         /// </summary>
@@ -156,7 +156,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// 異なる結果値型を持つ<see cref="Result{U}"/>に変換します。
-        /// <see cref="Result{U}.Value"/>は<typeparamref name="U"/>のデフォルト値を返します。
+        /// <see cref="Result{U}.Capture"/>は<typeparamref name="U"/>のデフォルト値を返します。
         /// </summary>
         /// <typeparam name="U"></typeparam>
         /// <returns></returns>
@@ -166,7 +166,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// 異なる結果値型を持つ<see cref="Result{U}"/>に変換します。
-        /// <see cref="Result{U}.Value"/>は引数で指定された値を返します。
+        /// <see cref="Result{U}.Capture"/>は引数で指定された値を返します。
         /// </summary>
         /// <typeparam name="U"></typeparam>
         /// <param name="value"></param>

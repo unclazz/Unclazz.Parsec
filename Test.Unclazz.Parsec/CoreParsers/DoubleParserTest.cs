@@ -22,7 +22,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Value, Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => res.Capture, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
         [Description("Parse - Case#2 - パース成功時 かつ キャプチャありのパーサー2つから構築された場合")]
@@ -37,8 +37,8 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value.Item1, Is.EqualTo("012"));
-            Assert.That(res.Value.Item2, Is.EqualTo("3"));
+            Assert.That(res.Capture.Item1, Is.EqualTo("012"));
+            Assert.That(res.Capture.Item2, Is.EqualTo("3"));
         }
         [Test]
         [Description("Parse - Case#4 - パース成功時 かつ キャプチャ失敗のパーサーから構築された場合")]
@@ -54,8 +54,8 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value.Item1, Is.EqualTo(new Optional<string>()));
-            Assert.That(res.Value.Item2, Is.EqualTo("0123"));
+            Assert.That(res.Capture.Item1, Is.EqualTo(new Optional<string>()));
+            Assert.That(res.Capture.Item2, Is.EqualTo("0123"));
         }
         [Test]
         [Description("Parse - Case#5 - パース成功時 かつ パース失敗時もキャプチャするパーサーから構築された場合")]
@@ -71,8 +71,8 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value.Item1, Is.EqualTo(string.Empty));
-            Assert.That(res.Value.Item2, Is.EqualTo("0123"));
+            Assert.That(res.Capture.Item1, Is.EqualTo(string.Empty));
+            Assert.That(res.Capture.Item2, Is.EqualTo("0123"));
         }
     }
 }

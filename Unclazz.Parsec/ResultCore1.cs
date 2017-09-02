@@ -78,7 +78,7 @@ namespace Unclazz.Parsec
         /// パースによりキャプチャされた値です。
         /// </summary>
         /// <exception cref="InvalidOperationException">パースが成功していない場合</exception>
-        public T Value => Successful ? _value : throw new InvalidOperationException();
+        public T Capture => Successful ? _value : throw new InvalidOperationException();
         /// <summary>
         /// パース失敗の理由を示すメッセージです。
         /// </summary>

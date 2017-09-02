@@ -21,7 +21,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("abcd"));
+            Assert.That(res.Capture, Is.EqualTo("abcd"));
         }
         [Test]
         [Description("Parse - Case4 - パース失敗 x 変換に失敗 x 例外スローNGの場合")]
@@ -36,7 +36,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Value, Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => res.Capture, Throws.InstanceOf<InvalidOperationException>());
         }
         [Test]
         [Description("Parse - Case5 - パース失敗 x 変換に失敗 x 例外スローOKの場合")]

@@ -84,7 +84,7 @@ namespace Unclazz.Parsec.CoreParsers
 
                     // キャプチャ・モードの場合
                     // 元のパーサーがキャプチャした内容をキューに追加
-                    if (_capture) list.Add(mainResult.Value);
+                    if (_capture) list.Add(mainResult.Capture);
                 }
                 // ループを無事抜けたならパースは成功
                 return Success(_capture ? list : null);
@@ -169,7 +169,7 @@ namespace Unclazz.Parsec.CoreParsers
 
                     // キャプチャ・モードの場合
                     // 元のパーサーがキャプチャした内容をキューに追加
-                    if (_capture) list.Add(r.Value);
+                    if (_capture) list.Add(r.Capture);
 
                     // min ＜ ループ回数 ならリセットのための準備を解除
                     if (_min < i) input.Unmark();

@@ -49,7 +49,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("0123"));
+            Assert.That(res.Capture, Is.EqualTo("0123"));
         }
         [Test]
         [Description("Parse - Case#4 - スキップ設定は継承される")]
@@ -64,7 +64,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("0123")); // kpではなくcpの事前処理でスキップが行われている
+            Assert.That(res.Capture, Is.EqualTo("0123")); // kpではなくcpの事前処理でスキップが行われている
         }
         [Test]
         [Description("Parse - Case#5 - " +
@@ -81,7 +81,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Value, Is.EqualTo("0123  0123"));
+            Assert.That(res.Capture, Is.EqualTo("0123  0123"));
         }
         [Test]
         [Description("Parse - Case#6 - スキップ設定の継承は下方のみで上方には起こらない")]
@@ -97,7 +97,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.False);
-            Assert.That(() => res.Value, Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => res.Capture, Throws.InstanceOf<InvalidOperationException>());
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Unclazz.Parsec.CoreParsers
             if (!rightResult.Successful) return Failure(rightResult.Message, canBacktrack);
 
             // 両側成功の場合、それぞれの結果をタプルにまとめて呼び出し元に返す
-            return Success(new Tuple<T1, T2>(leftResult.Value, rightResult.Value), canBacktrack);
+            return Success(new Tuple<T1, T2>(leftResult.Capture, rightResult.Capture), canBacktrack);
         }
         public override string ToString()
         {

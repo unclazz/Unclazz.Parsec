@@ -39,7 +39,7 @@ namespace Test.Unclazz.Parsec
             // Assert
             try
             {
-                var v0 = r0.Value;
+                var v0 = r0.Capture;
                 Assert.That(v0, Is.EqualTo(123));
             }
             catch (InvalidOperationException)
@@ -48,7 +48,7 @@ namespace Test.Unclazz.Parsec
             }
             try
             {
-                var v1 = r1.Value;
+                var v1 = r1.Capture;
                 Assert.Fail();
             }
             catch (InvalidOperationException)
@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec
             }
             catch (InvalidOperationException)
             {
-                Assert.That(r0.Value, Is.EqualTo(123));
+                Assert.That(r0.Capture, Is.EqualTo(123));
             }
             try
             {

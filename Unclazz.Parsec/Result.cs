@@ -114,7 +114,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// 結果値型を持つ<see cref="Result{T}"/>に変換します。
-        /// <see cref="Result{T}.Value"/>は<typeparamref name="T"/>のデフォルト値を返します。
+        /// <see cref="Result{T}.Capture"/>は<typeparamref name="T"/>のデフォルト値を返します。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -124,7 +124,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// 結果値型を持つ<see cref="Result{T}"/>に変換します。
-        /// <see cref="Result{T}.Value"/>は引数で指定された値を返します。
+        /// <see cref="Result{T}.Capture"/>は引数で指定された値を返します。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
