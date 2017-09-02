@@ -241,6 +241,19 @@ sealed class JsonExprParser : Parser<IJsonObject>
 * `Parser<T>`抽象クラスの派生クラスを実装する
 * `Parsers`ユーティリティが提供する静的ファクトリーメソッドを使用する
 
+`Parser<T>`で宣言されている主なメンバー：
+
+シグネチャ|戻り値|説明
+---|---|---
+`Parse(Reader)`|`Result<T>`|パース処理を実行する具象メソッド。
+`DoParse(Reader)`|`ResultCore<T>`|`Parse(...)`から呼び出される抽象メソッド。パーサー実装者はこのメソッドを実装しなくてはならない。
+`Success(T)`|`ResultCore<T>`|`DoParse(...)`実装コードのためのヘルパーメソッド。
+`Failure(string)`|`ResultCore<T>`|同上。
+`Char(char)`|`Parser`|ファクトリーメソッド。
+`CharsWhileIn(CharClass)`|`Parser`|ファクトリーメソッド。
+`Keyword(string)`|`Parser`|ファクトリーメソッド。
+`KeywordIn(params string[])`|`Parser`|ファクトリーメソッド。
+
 まずは`"hello"`というキーワードを読みとるパーサーを作ってみます：
 
 ```cs
