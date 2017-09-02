@@ -146,10 +146,19 @@ namespace Unclazz.Parsec
             if (_hasValue) return string.Format("Optional({0})", ParsecUtility.ValueToString(_value));
             else return "Optional()";
         }
+        /// <summary>
+        /// ハッシュ値を取得します。
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return _hasValue ? _value.GetHashCode() : 1;
         }
+        /// <summary>
+        /// 指定したオブジェクトが、現在のオブジェクトと等しいかどうかを判断します。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
