@@ -15,27 +15,28 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
-        /// <see cref="Parsers.For{T}(Func{Reader, ParseResult{T}})"/>と同義です。
+        /// デリゲートをもとにパーサーを生成します。
         /// </summary>
-        /// <param name="func">パース処理を行うデリゲート</param>
+        /// <param name="func"></param>
         public static implicit operator Parser<T>(Func<Reader, Result<T>> func)
         {
             return Parsers.For(func);
         }
         /// <summary>
-        /// <see cref="Parsers.Lazy{T}(Func{Parser{T}})"/>と同義です。
+        /// デリゲートを使用してパーサーを生成します。
+        /// デリゲートはパースの直前になるまで実行されません。
         /// </summary>
-        /// <param name="factory">パーサーを返すデリゲート</param>
-        /// <returns>新しいパーサー</returns>
+        /// <param name="factory"></param>
+        /// <returns></returns>
         public static implicit operator Parser<T>(Func<Parser<T>> factory)
         {
             return Parsers.Lazy(factory);
         }
         /// <summary>
-        /// <see cref="Parsers.Not{T}(Parser{T})"/>と同義です。
+        /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser operator !(Parser<T> operand)
         {
             return Parsers.Not(operand);
@@ -45,7 +46,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser<T> operator |(Parser<T> left, Parser<T> right)
         {
             return new OrParser<T>(left.Configuration, left, right);
@@ -55,7 +56,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser operator |(Parser<T> left, Parser right)
         {
             return new OrParser(left.Configuration, left.Untyped(), right);
@@ -65,7 +66,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser operator |(Parser left, Parser<T> right)
         {
             return new OrParser(left.Configuration, left, right.Untyped());
@@ -75,7 +76,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser<Tuple<T, T>> operator &(Parser<T> left, Parser<T> right)
         {
             return new DoubleParser<T, T>(left._factory, left, right);
@@ -85,7 +86,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser<T> operator &(Parser left, Parser<T> right)
         {
             return new ThenTakeRightParser<T>(left.Configuration, left, right);
@@ -95,15 +96,29 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="left">元のパーサー</param>
         /// <param name="right">元のパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         public static Parser<T> operator &(Parser<T> left, Parser right)
         {
             return new ThenTakeLeftParser<T>(left._factory, left, right);
         }
+        /// <summary>
+        /// <see cref="ParserExtension.Then{T}(Parser{T}, Parser)"/>と同義です。
+        /// 右被演算子は<see cref="Keyword(string, int)"/>によりパーサーに変換されます。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static Parser<T> operator &(Parser<T> left, string right)
         {
             return left.Then(new KeywordParser(right));
         }
+        /// <summary>
+        /// <see cref="ParserExtension.Then{T}(Parser{T}, Parser)"/>と同義です。
+        /// 左被演算子は<see cref="Keyword(string, int)"/>によりパーサーに変換されます。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static Parser<T> operator &(string left, Parser<T> right)
         {
             return new KeywordParser(left).Then(right);
@@ -143,11 +158,11 @@ namespace Unclazz.Parsec
         /// パースを行います。
         /// <para>
         /// パーサーの具象クラスを実装する場合、このメソッドを実装する必要があります。
-        /// パース成否は<see cref="ParseResult{T}"/>のインスタンスで表されます。
+        /// パース成否は<see cref="ResultCore{T}"/>のインスタンスで表されます。
         /// このメソッドはいかなる場合も<c>null</c>を返してはなりません。
         /// またこのメソッドは原則として例外スローを行ってはなりません。
         /// 正常・異常を問わずこのメソッド内で起こったことはすべて
-        /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知される必要があります。
+        /// <see cref="ResultCore{T}"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
         /// </summary>
         /// <param name="input">入力データ</param>
@@ -157,11 +172,11 @@ namespace Unclazz.Parsec
         /// <summary>
         /// パースを行います。
         /// <para>
-        /// パース成否は戻り値の<see cref="ParseResult{T}"/>のインスタンスで表されます。
+        /// パース成否は戻り値の<see cref="Result{T}"/>のインスタンスで表されます。
         /// このメソッドはいかなる場合も<c>null</c>を返しません。
         /// またこのメソッドは原則として例外スローも行いません。
         /// 正常・異常を問わずこのメソッド内で起こったことはすべて
-        /// <see cref="ParseResult{T}"/>を通じて呼び出し元に通知されます。
+        /// <see cref="Result{T}"/>を通じて呼び出し元に通知されます。
         /// </para>
         /// <para>
         /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Reader)"/>を呼び出します。
@@ -194,33 +209,41 @@ namespace Unclazz.Parsec
             _parseLogging = _factory.ParseLogging;
         }
         /// <summary>
-        /// パース成功を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
+        /// パース成功を表す<see cref="Result{T}"/>インスタンスを生成します。
         /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
-        /// <param name="capture">パースされた値を内包する可能性のある<see cref="Optional{T}"/>インスタンス</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
+        /// <param name="value"></param>
+        /// <returns></returns>
         protected ResultCore<T> Success(T value)
         {
             return ResultCore<T>.OfSuccess(value, true);
         }
+        /// <summary>
+        /// パース成功を表す<see cref="Result{T}"/>インスタンスを生成します。
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
+        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
+        /// <returns></returns>
         protected ResultCore<T> Success(T value, bool canBacktrack)
         {
             return ResultCore<T>.OfSuccess(value, canBacktrack);
         }
         /// <summary>
-        /// パース失敗を表す<see cref="ParseResult{T}"/>インスタンスを生成します。
+        /// パース失敗を表す<see cref="ResultCore{T}"/>インスタンスを生成します。
         /// </summary>
-        /// <param name="position">パース開始時の文字位置</param>
         /// <param name="message">パース失敗の理由を示すメッセージ</param>
-        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
-        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
-        /// <returns>パース成功を表すインスタンス</returns>
+        /// <returns></returns>
         protected ResultCore<T> Failure(string message)
         {
             return ResultCore<T>.OfFailure(message, true);
         }
+        /// <summary>
+        /// パース失敗を表す<see cref="ResultCore{T}"/>インスタンスを生成します。
+        /// </summary>
+        /// <param name="message">パース失敗の理由を示すメッセージ</param>
+        /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
+        /// 起点とするバックトラックを有効にするかどうか（デフォルトは<c>true</c>で、バックトラックは有効）</param>
+        /// <returns></returns>
         protected ResultCore<T> Failure(string message, bool canBacktrack)
         {
             return ResultCore<T>.OfFailure(message, canBacktrack);
@@ -281,26 +304,26 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="operand">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser Not<U>(Parser<U> operand) => _factory.Not(operand);
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser Not(Parser operand) => _factory.Not(operand);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser<U> For<U>(Func<Reader, Result<U>> func) => _factory.For(func);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser For(Func<Reader, Result> func) => _factory.For(func);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
@@ -308,46 +331,46 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <typeparam name="U">パーサーが返す値の型</typeparam>
         /// <param name="factory">パーサーを生成するデリゲート</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser<U> Lazy<U>(Func<Parser<U>> factory) => _factory.Lazy(factory);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。
         /// </summary>
         /// <param name="factory">パーサーを生成するデリゲート</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser Lazy(Func<Parser> factory) => _factory.Lazy(factory);
         /// <summary>
         /// 先読み（look-ahead）を行うパーサーを生成します。
         /// <para>このパーサーはその成否に関わらず文字位置を前進させません。</para>
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser Lookahead(Parser operand) => _factory.Lookahead(operand);
         /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="ch">文字</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser Char(char ch) => _factory.Char(ch);
         /// <summary>
         /// 指定された範囲に該当する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser CharBetween(char start, char end) => _factory.CharBetween(start, end);
         /// <summary>
         /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="clazz">文字クラス</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser CharIn(CharClass clazz) => _factory.CharIn(clazz);
         /// <summary>
         /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="chars">文字集合</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser CharIn(IEnumerable<char> chars) => _factory.CharIn(chars);
         /// <summary>
         /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
@@ -355,21 +378,21 @@ namespace Unclazz.Parsec
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <param name="min">最小の文字数</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser CharsWhileBetween(char start, char end, int min = 1) => _factory.CharsWhileBetween(start, end, min);
         /// <summary>
         /// 文字集合に属する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <param name="min">最小の文字数</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser CharsWhileIn(IEnumerable<char> chars, int min = 1) => _factory.CharsWhileIn(chars, min);
         /// <summary>
         /// 文字クラスに属する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <param name="min">最小の文字数</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser CharsWhileIn(CharClass clazz, int min = 1) => _factory.CharsWhileIn(clazz, min);
         /// <summary>
         /// 指定したキーワードにのみマッチするパーサーを生成します。
@@ -380,13 +403,13 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keyword">キーワード</param>
         /// <param name="cutIndex">カットを行う文字位置</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser Keyword(string keyword, int cutIndex = -1) => _factory.Keyword(keyword, cutIndex);
         /// <summary>
         /// 指定したキーワードのいずれかにのみマッチするパーサーを生成します。
         /// </summary>
         /// <param name="keywords">キーワード</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser KeywordIn(params string[] keywords) => _factory.KeywordIn(keywords);
         /// <summary>
         /// 指定した値をキャプチャ結果とするパーサーを生成します。
@@ -396,7 +419,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="value">キャプチャ結果となる値</param>
-        /// <returns>新しいパーサー</returns>
+        /// <returns></returns>
         protected Parser<U> Yield<U>(U value) => _factory.Yield(value);
         #endregion
     }
