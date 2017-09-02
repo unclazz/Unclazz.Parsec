@@ -44,6 +44,7 @@
     <Compile Include="CoreParsers\DoubleParser.cs" />
     <Compile Include="CoreParsers\LazyParser1.cs" />
     <Compile Include="CoreParsers\LookaheadParser.cs" />
+    <Compile Include="CoreParsers\OptionalParser1.cs" />
     <Compile Include="CoreParsers\ThenTakeLeftParser.cs" />
     <Compile Include="CoreParsers\ThenTakeRightParser.cs" />
     <Compile Include="CoreParsers\TypedParser.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="CoreParsers\EndOfFileParser.cs" />
     <Compile Include="CoreParsers\MapParser.cs" />
     <Compile Include="CoreParsers\NotParser.cs" />
-    <Compile Include="CoreParsers\OrNotParser.cs" />
+    <Compile Include="CoreParsers\OptionalParser.cs" />
     <Compile Include="CoreParsers\OrParser.cs" />
     <Compile Include="ParsecUtility.cs" />
     <Compile Include="Parser1.cs" />

@@ -214,7 +214,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser OrNot(this Parser self)
         {
-            return new OrNotParser(self.Configuration, self);
+            return new OptionalParser(self.Configuration, self);
         }
         /// <summary>
         /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
@@ -222,7 +222,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public static Parser<Optional<T>> OrNot<T>(this Parser<T> self)
         {
-            return new OrNotParser<T>(self.Configuration, self);
+            return new OptionalParser<T>(self.Configuration, self);
         }
         #endregion
 
