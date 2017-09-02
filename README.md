@@ -400,4 +400,6 @@ var sepComma = a.Repeat(sep: comma); // セパレータ指定も可能
 sepComma.Parse("a,a,a,b"); // => OK. 3つ目の'a'まで読む
 ```
 
+上記の例ではいずれのパーサーも`Parser`の派生クラスであるため結果型がなく、したがって`Repeat(...)`の型も`Parser`です。
+一方で`a.Capture().Repeat(...)`とした場合の型は`Parser<IList<string>>`となります。
 
