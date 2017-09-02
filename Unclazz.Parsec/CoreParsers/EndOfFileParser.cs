@@ -1,5 +1,9 @@
 ﻿namespace Unclazz.Parsec.CoreParsers
 {
+    /// <summary>
+    /// EOFにのみパッチするパーサーです。
+    /// このパーサーは文字位置の変更を行いません。
+    /// </summary>
     sealed class EndOfFileParser : Parser
     {
         internal EndOfFileParser(IParserConfiguration conf) : base(conf) { }
