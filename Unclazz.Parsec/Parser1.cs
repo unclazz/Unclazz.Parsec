@@ -209,7 +209,7 @@ namespace Unclazz.Parsec
             _parseLogging = _factory.ParseLogging;
         }
         /// <summary>
-        /// パース成功を表す<see cref="Result{T}"/>インスタンスを生成します。
+        /// パース成功を表す<see cref="ResultCore{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -218,7 +218,7 @@ namespace Unclazz.Parsec
             return ResultCore<T>.OfSuccess(value, true);
         }
         /// <summary>
-        /// パース成功を表す<see cref="Result{T}"/>インスタンスを生成します。
+        /// パース成功を表す<see cref="ResultCore{T}"/>インスタンスを生成します。
         /// </summary>
         /// <param name="value"></param>
         /// <param name="canBacktrack">直近の<c>|</c>や<c>Or(...)</c>を
