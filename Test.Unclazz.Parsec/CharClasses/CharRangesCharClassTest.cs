@@ -21,8 +21,7 @@ namespace Test.Unclazz.Parsec.CharClasses
         public void Contains_Case1(char start, char end, char checkTarget, bool result)
         {
             // Arrange
-            var range = CharRange.Between(start, end);
-            var clazz = CharRangesCharClass.AnyOf(range);
+            var clazz = CharClass.Between(start, end);
 
             // Act
             // Assert
@@ -42,7 +41,7 @@ namespace Test.Unclazz.Parsec.CharClasses
             // Arrange
             var range0 = CharRange.Between(range0Start, range0End);
             var range1 = CharRange.Between(range1Start, range1End);
-            var clazz = CharRangesCharClass.AnyOf(range0, range1);
+            var clazz = new CharRangeCharClass(range0, range1);
 
             // Act
             // Assert
@@ -62,32 +61,10 @@ namespace Test.Unclazz.Parsec.CharClasses
             // Arrange
             var range0 = CharRange.Between(range0Start, range0End);
             var range1 = CharRange.Between(range1Start, range1End);
-            var clazz0 = CharRangesCharClass.AnyOf(range0);
+            var clazz0 = new CharRangeCharClass(range0);
 
             // Act
-            var clazz1 = clazz0.Union(CharRangesCharClass.AnyOf(range1));
-
-            // Assert
-            Assert.That(clazz1.Contains(checkTarget), Is.EqualTo(result));
-            Assert.That(clazz1.Contains(checkTarget), Is.EqualTo(result));
-        }
-        [TestCase('b', 'y', '1', '8', 'a', false)]
-        [TestCase('b', 'y', '1', '8', 'b', true)]
-        [TestCase('b', 'y', '1', '8', 'y', true)]
-        [TestCase('b', 'y', '1', '8', 'z', false)]
-        [TestCase('b', 'y', '1', '8', '0', false)]
-        [TestCase('b', 'y', '1', '8', '1', true)]
-        [TestCase('b', 'y', '1', '8', '8', true)]
-        [TestCase('b', 'y', '1', '8', '9', false)]
-        public void Plus_Case1(char range0Start, char range0End, char range1Start, char range1End, char checkTarget, bool result)
-        {
-            // Arrange
-            var range0 = CharRange.Between(range0Start, range0End);
-            var range1 = CharRange.Between(range1Start, range1End);
-            var clazz0 = CharRangesCharClass.AnyOf(range0);
-
-            // Act
-            var clazz1 = clazz0.Plus(range1);
+            var clazz1 = clazz0.Union(new CharRangeCharClass(range1));
 
             // Assert
             Assert.That(clazz1.Contains(checkTarget), Is.EqualTo(result));
@@ -106,7 +83,7 @@ namespace Test.Unclazz.Parsec.CharClasses
             // Arrange
             var range0 = CharRange.Between(range0Start, range0End);
             var range1 = CharRange.Between(range1Start, range1End);
-            var clazz0 = CharRangesCharClass.AnyOf(range0);
+            var clazz0 = new CharRangeCharClass(range0);
 
             // Act
             var clazz1 = clazz0.Plus(checkTarget);

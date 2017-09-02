@@ -11,10 +11,18 @@ namespace Unclazz.Parsec.CharClasses
     {
         readonly CharClass[] _classes;
         readonly IDictionary<char, bool?> _cache = new Dictionary<char, bool?>();
+        string _descCache;
+
         internal UnionCharClass(params CharClass[] cs)
         {
             _classes = cs ?? throw new ArgumentNullException(nameof(cs));
         }
+
+        public override string Description => _descCache ??
+            (_descCache = _classes.Aggregate(new StringBuilder(),
+                (a, b) => a.Append(a.Length == 0 ? "(" : ") | (").Append(b.Description),
+                (a) => a.Append(")").ToString()));
+
         public override bool Contains(char ch)
         {
             bool? cachedResult = null;

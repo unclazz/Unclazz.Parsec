@@ -6,16 +6,26 @@ using System.Threading.Tasks;
 
 namespace Unclazz.Parsec.CharClasses
 {
-    sealed class DelegateCharClass : CharClass
+    sealed class PredicateCharClass : CharClass
     {
-        internal DelegateCharClass(Func<char, bool> func)
+        internal PredicateCharClass(Func<char, bool> pred)
         {
-            Delegate = func ?? throw new ArgumentNullException(nameof(func));
+            _pred = pred ?? throw new ArgumentNullException(nameof(pred));
+            _desc = ParsecUtility.ObjectTypeToString(pred);
         }
-        Func<char, bool> Delegate { get; }
+        internal PredicateCharClass(Func<char, bool> pred, string desc)
+        {
+            _pred = pred ?? throw new ArgumentNullException(nameof(pred));
+            _desc = desc ?? throw new ArgumentNullException(nameof(desc));
+        }
+        readonly string _desc;
+        readonly Func<char, bool> _pred;
+
+        public override string Description => _desc;
+
         public override bool Contains(char ch)
         {
-            return Delegate(ch);
+            return _pred(ch);
         }
     }
 }

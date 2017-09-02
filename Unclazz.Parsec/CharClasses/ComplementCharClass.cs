@@ -10,13 +10,15 @@ namespace Unclazz.Parsec.CharClasses
     {
         internal ComplementCharClass(CharClass original)
         {
-            Original = original ?? throw new ArgumentNullException(nameof(original));
+            _original = original ?? throw new ArgumentNullException(nameof(original));
         }
-
-        CharClass Original { get; }
+        readonly CharClass _original;
+        string _descCache;
+        public override string Description => _descCache ??
+            (_descCache = string.Format("not({0})", _original.Description));
         public override bool Contains(char ch)
         {
-            return !Original.Contains(ch);
+            return !_original.Contains(ch);
         }
     }
 }

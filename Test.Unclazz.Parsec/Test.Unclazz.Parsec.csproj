@@ -60,7 +60,6 @@
     <Compile Include="CoreParsers\YieldParserTest.cs" />
     <Compile Include="OptionalTest.cs" />
     <Compile Include="CharPositionTest.cs" />
-    <Compile Include="CharClasses\CharactersCharClassTest.cs" />
     <Compile Include="CharClasses\CharRangesCharClassTest.cs" />
     <Compile Include="CharClasses\CharRangeTest.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParserTest.cs" />

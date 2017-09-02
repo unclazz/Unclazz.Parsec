@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharClasses\CharRange.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
     <Compile Include="CoreParsers\LazyParser1.cs" />
     <Compile Include="CoreParsers\LookaheadParser.cs" />
@@ -67,16 +68,11 @@
     <Compile Include="Optional.cs" />
     <Compile Include="CharPosition.cs" />
     <Compile Include="CoreParsers\CharClassParser.cs" />
-    <Compile Include="CharRange.cs" />
     <Compile Include="CharClass.cs" />
     <Compile Include="CharClasses\DelegateCharClass.cs" />
     <Compile Include="CharClasses\ComplementCharClass.cs" />
-    <Compile Include="CharClasses\SingleCharRangeCharClass.cs" />
-    <Compile Include="CharClasses\CharRangesCharClass.cs" />
-    <Compile Include="CharClasses\CharactersCharClass.cs" />
-    <Compile Include="CharClasses\SingleCharacterCharClass.cs" />
-    <Compile Include="CharClasses\SingleUnicodeCategoryCharClass.cs" />
-    <Compile Include="CharClasses\UnicodeCategoriesCharClass.cs" />
+    <Compile Include="CharClasses\CharRangeCharClass.cs" />
+    <Compile Include="CharClasses\UnicodeCategoryCharClass.cs" />
     <Compile Include="CharClasses\UnionCharClass.cs" />
     <Compile Include="CoreParsers\CharsWhileBetweenParser.cs" />
     <Compile Include="CoreParsers\CharsWhileInParser.cs" />
@@ -107,6 +103,8 @@
     <Compile Include="ResultCore.cs" />
     <Compile Include="ResultCore1.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CharClazz\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
