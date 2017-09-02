@@ -15,13 +15,12 @@ C#言語の機能もしくは制約にあわせてAPIを構築しています。
 クラス|説明
 ---|---
 `Parser<T>`|パーサーを表す抽象クラスです。型パラメータはパース結果の型を表します。
-`Parser`|`Parser<T>`の派生型の抽象クラスです。このパーサーのパース結果型は`Nil`です。ここから想像がつくかもしれませんが、このパーサーはパース成否に関わらず決して値のキャプチャを行いません。`Char(char)`や`StringIn(string[])`など多くのパーサーがこのクラスの派生型です。
+`Parser`|パーサーを表す抽象クラスです。このパーサーはパース成否に関わらず決して値のキャプチャを行いません。`Char(char)`や`KeywordIn(params string[])`など多くのパーサーがこのクラスの派生型です。
 `Parsers`|定義済みパーサーの静的ファクトリーメソッドを提供するユーティリティです。`using static`ディレクティブの使用をおすすめします。
 `Reader`|パーサーの入力データとなるクラスです。このクラスが公開する静的ファクトリーメソッドを使い各種データ型からインスタンスを生成します。
-`ParseResult<T>`|パース結果を表す構造体です。`Successful`プロパティでパース成否を、`Capture`でキャプチャ結果を取得できます。
-`ParseResult`|`ParseResult<T>`のためのユーティリティです。
+`Result<T>`|`Parser<T>`のパース結果を表す構造体です。`Successful`プロパティでパース成否を、`Value`でキャプチャ結果を、`Message`でパース失敗の理由を示すメッセージを取得できます。
+`Result`|`Parser`のパース結果を表す構造体です。`Successful`プロパティでパース成否を、`Message`でパース失敗の理由を示すメッセージを取得できます。
 `Optional`|Java 8 における同名クラスやScalaにおける`Option`と同じ役割を持つ構造体です。`ParseResult<T>.Capture`はこの構造体のインスタンスを返します。
-`Nil`|`Parser`派生型のパーサーの結果型の宣言に使用されているクラスです。このクラスはインスタンス化できません。
 `CharClass`|文字クラスを表す抽象クラスです。`CharIn(CharClass)`などのファクトリーメソッドの引数として利用します。`CharClass`が公開する静的ファクトリーメソッドを通じて派生クラスのインスタンスを得られます。
 
 ## パーサー実装例
@@ -52,7 +51,7 @@ sealed class NumberParser : Parser<double>
         Parser<string> raw = (sign & integral & fractional.OrNot() & exponent.OrNot()).Capture();
         _number = raw.Map(double.Parse);
     }
-    protected override ParseResult<double> DoParse(Reader input)
+    protected override ResultCore<double> DoParse(Reader input)
     {
         return _number.Parse(input);
     }
@@ -93,7 +92,7 @@ sealed class JsonNullParser : Parser<IJsonObject>
         // "null"マッチ成功後、読み取り結果のキャプチャはせず、Yieldパーサーで直接値を産生
         _null = Keyword("null", cutIndex: 1) & Yield(JsonObject.OfNull());
     }
-    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    protected override ResultCore<IJsonObject> DoParse(Reader input)
     {
         return _null.Parse(input);
     }
@@ -105,9 +104,9 @@ sealed class JsonBooleanParser : Parser<IJsonObject>
     {
         // キーワード"false"もしくは"true"にマッチ
         // マッチした文字列をキャプチャして、それをマッパーにより真偽値に変換
-        _boolean = StringIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
+        _boolean = KeywordIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
     }
-    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    protected override ResultCore<IJsonObject> DoParse(Reader input)
     {
         return _boolean.Parse(input);
     }
@@ -136,7 +135,7 @@ sealed class JsonNumberParser : Parser<IJsonObject>
         var raw = (sign & integral & fractional.OrNot() & exponent.OrNot()).Capture();
         _number = raw.Map(double.Parse).Map(JsonObject.Of);
     }
-    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    protected override ResultCore<IJsonObject> DoParse(Reader input)
     {
         return _number.Parse(input);
     }
@@ -169,7 +168,7 @@ sealed class JsonStringParser : Parser<IJsonObject>
     {
         return Regex.Unescape(escaped);
     }
-    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    protected override ResultCore<IJsonObject> DoParse(Reader input)
     {
         return _string.Parse(input);
     }
@@ -227,7 +226,7 @@ sealed class JsonExprParser : Parser<IJsonObject>
             a0 => a0.Build());
     }
 
-    protected override ParseResult<IJsonObject> DoParse(Reader input)
+    protected override ResultCore<IJsonObject> DoParse(Reader input)
     {
         return jsonExpr.Parse(input);
     }
@@ -248,7 +247,7 @@ sealed class JsonExprParser : Parser<IJsonObject>
 class HelloParser : Parser<string>
 {
 	Parser<string> _hello;
-	protected override ParseResult<string> DoParse(Reader input)
+	protected override ResultCore<string> DoParse(Reader input)
 	{
 		return (_hello ?? (_hello = Keyword("hello").Capture())).Parse(input);
 	}
@@ -261,17 +260,23 @@ class HelloParser : Parser<string>
 `"hello"`というキーワードにマッチするパーサーを生成しています。
 `Keyword`以外にも多くの`protected`なファクトリーメソッドが提供されています。
 
-注意すべき点は、各種ファクトリーメソッドが返すパーサーは値のキャプチャを行わないパーサー
-`Parser`（型パラメータがない）のインスタンスであるということです。
+戻り値型の宣言には `ResultCore<string>` 構造体が使用されています。
+`ResultCore<T>`は`Result<T>`からパース開始・終了の文字位置を示すプロパティを除去したものです。
+`Parser<T>.Parse(...)`メソッドは、派生クラスで実装された`DoParse(...)`が返した`ResultCore<T>`に、
+パース前後の文字位置情報を付与した`Result<T>`を呼び出し元に返します。
+
+注意すべき点は、各種ファクトリーメソッドが返すパーサーはそのほとんどが
+値のキャプチャを行わないパーサー `Parser`（型パラメータがない）のインスタンスであるということです。
 これらのパーサーは例えば上記の例のように特定のキーワードをパースするものであったり、
 特定の文字クラスに属する文字のシーケンスをパースするものであったりしますが、
 いずれにせよパース成否に関わらず値のキャプチャを行いません。
-パース結果を示す構造体`ParseResult<Nil>`から分かるのはパースが成功したのか失敗したのかだけです。
+パース結果を示す構造体`Result`（これにも型パラメータがない）はパースが成功したのか失敗したのかを示すだけです。
 
 これらのパーサーが読み取った結果をキャプチャし、読み取られた値にアクセスしたい場合、
-`Parser.Capture()`を呼び出して`string`型の値をキャプチャするパーサーに変換します。
-変換後のパーサーはパース結果として`ParseResult<string>`を返します。
-`ParseResult<string>.Capture`プロパティはキャプチャした値を格納するコンテナ`Optional<string>`を返します。
+`Capture()`を呼び出して`string`型の値をキャプチャするパーサーに変換するか、
+`Map<T>(Func<string, T>)`を呼び出して任意の型をキャプチャするパーサーに変換するかします。
+変換後のパーサーはパース結果として`Result<T>`を返します。
+`ParseResult<T>.Value`プロパティはキャプチャした値を返します。
 
 ではこのパーサーを実行してみましょう：
 
@@ -282,7 +287,7 @@ class Program
     {
         new HelloParser().Parse(args[0])
             .IfSuccessful(
-                c => Console.WriteLine("result = {0}", c.Value), 
+                v => Console.WriteLine("result = {0}", v), 
                 m => Console.WriteLine("error = {0}", m));
     }
 }
@@ -305,7 +310,7 @@ error = expected 'e'(101) but found 'a'(97) at index 1 in "hello"
 ```cs
 class CustomParser : Parser<string>
 {
-	protected override ParseResult<string> DoParse(Reader input)
+	protected override ResultCore<string> DoParse(Reader input)
 	{
 		// パース開始時の文字位置を記録
 		var pos = input.Position;
@@ -313,8 +318,8 @@ class CustomParser : Parser<string>
 		// ...ここに独自のパースロジック...
 		// ...inputから文字を読み、何かしらのチェックや変換を行う...
 
-		// パースの結果を構造体にくるんで呼び出し元に返す
-		return Success(pos, capture: new Capture<string>(value));
+		// パースの結果を呼び出し元に返す
+		return Success(value);
 	}
 }
 ```
@@ -325,7 +330,7 @@ class CustomParser : Parser<string>
 
 独自のパーサーを実装する場合この`Reader`からいくばくかの文字を読み取って、
 その内容に応じて何かしらのチェックや変換の処理を行うことになるでしょう。
-その上でパース結果を`ParseResult<T>`構造体にラップして呼び出し元に返します。
+その上でパース結果を`ResultCore<T>`構造体にラップして呼び出し元に返します。
 この構造体のインスタンスを得るための手段として`Parser<T>`は`Success/Failure`という2つのメソッド
 およびそのオーバーロードを提供しています。
 
@@ -334,28 +339,30 @@ class CustomParser : Parser<string>
 
 * `DoParse(...)`メソッドはいかなる場合も`null`を返してはなりません。
 * またこのメソッドは原則として例外スローを行ってはなりません。
-* 正常・異常を問わずこのメソッド内で起こったことはすべて`ParseResult<T>`を通じて呼び出し元に通知される必要があります。
+* 正常・異常を問わずこのメソッド内で起こったことはすべて`ResultCore<T>`を通じて呼び出し元に通知される必要があります。
 
 ### シーケンス
 
 例えばあるキーワードのあとに別のあるキーワードが続くとか、
 ある文字のあとにある文字クラスに属する文字の並びが続くとかのシーケンスを表現するには、
-`&`演算子もしくは`Parser<T>.Then()`メソッドのオーバーロードを使用します。
+`&`演算子もしくは`Parser<T>.Then(...)`メソッドのオーバーロードを使用します。
 
 演算子オーバーロードを使用する例を見てみましょう：
 
 ```cs
-Parser helloWorld = Keyword("hello") & Keyword("world");
-helloWorld.Parse("helloworld"); // => OK. ParseResult<Nil>.Successful is true.
-helloWorld.Parse("hello world"); // => NG. ParseResult<Nil>.Successful is false.
+Parser hello = Keyword("hello");
+Parser helloWorld = hello & Keyword("world");
+helloWorld.Parse("helloworld"); // => OK. Result.Successful is true.
+helloWorld.Parse("hello world"); // => NG. Parse.Successful is false.
 
-Parser hello_ = Keyword("hello") & CharIn('!', '?');
+Parser hello_ = hello & CharIn('!', '?');
 hello_.Parse("hello"); // => NG.
 hello_.Parse("hello!"); // => OK.
 
-Parser<Tuple<string, string>> bothCapture = Keyword("hello").Capture() & Keyword("world").Capture();
-Parser<string> leftCapture = Keyword("hello").Capture() & Keyword("world");
-Parser<string> rightCapture = Keyword("hello") & Keyword("world").Capture();
+Parser<string> helloCapture = hello.Capture();
+Parser<Tuple<string,string>> bothCapture = helloCapture & helloCapture;
+Parser<string> leftCapture = helloCapture & hello;
+Parser<string> rightCapture = hello & helloCapture;
 ```
 
 左右の被演算子となるパーサーの結果型の違いが、合成された新しいパーサーの結果型に影響している点が見てとれます。
