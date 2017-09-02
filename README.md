@@ -250,9 +250,7 @@ sealed class JsonExprParser : Parser<IJsonObject>
 `Success(T)`|`ResultCore<T>`|`DoParse(...)`実装コードのためのヘルパーメソッド。
 `Failure(string)`|`ResultCore<T>`|同上。
 `Char(char)`|`Parser`|ファクトリーメソッド。
-`CharsWhileIn(CharClass)`|`Parser`|ファクトリーメソッド。
 `Keyword(string)`|`Parser`|ファクトリーメソッド。
-`KeywordIn(params string[])`|`Parser`|ファクトリーメソッド。
 
 まずは`"hello"`というキーワードを読みとるパーサーを作ってみます：
 
@@ -448,3 +446,34 @@ var result1 = ab.Parse("acd"); // OK. result1.Capture.Value は例外スロー
 `Value { get; }`|`T`|値を返すプロパティ。値が存在しない場合は例外をスローする。
 `OrElse(T)`|`T`|値を返すメソッド。値が存在しない場合は引数で指定した値を返す。
 `Map<U>(Func<T,U>)`|`Optional<U>`|値に関数を適用する。値が存在しない時は何もしない。
+
+### いずれか1つ
+
+いくつかの選択肢のうちいずれか1つに該当するという場合、
+`|`演算子もしくは`Parser<T>.Then<U>(...)`メソッドのオーバーロードを使用します。
+
+```cs
+var abcd = Char('a').Repeat() & (Char('b') | Char('c') | Char('d'));
+var result0 = abcd.Parse("aaaaab"); // OK.
+var result1 = abcd.Parse("aaaaae"); // NG.
+```
+
+### BOFとEOF
+
+`Unclazz.Parsec`のコンビネーターAPIで構築したパーサーは、
+入力となるテキストのうち`Reader`の現在の文字位置から条件にマッチする部分まで読み進めて、
+そこでそれ以上は読み進めずに処理を終えます。
+
+この通常の動作を変更し必ずデータソースの開始位置（BOF）にマッチするパーサーを構築するには`BeginningOfFile`を使用します。
+また必ずデータソースの終了位置（EOF）にマッチするパーサーを構築するには`EndOfFile`を使用します。
+
+```cs
+var ab = ((Char('a') | BeginningOfFile) & Char('b')).Repeat() & EndOfFile;
+var result0 = ab.Parse("abab"); // OK.
+var result1 = ab.Parse("babab"); // OK.
+var result2 = ab.Parse("abb"); // NG.
+```
+
+
+
+
