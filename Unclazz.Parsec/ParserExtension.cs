@@ -206,31 +206,7 @@ namespace Unclazz.Parsec
         {
             return new FlatMapParser<TSource, TResult>(self.Configuration, self, mapper, canThrow);
         }
-        /// <summary>
-        /// パース結果の値を元に動的にパーサーを構築するパーサーを返します。
-        /// </summary>
-        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser FlatMap<TSource>(this Parser<TSource> self, Func<TSource, Parser> mapper)
-        {
-            return new FlatMapParser<TSource>(self.Configuration, self, mapper, false);
-        }
-        /// <summary>
-        /// <see cref="FlatMap{TSource}(Parser{TSource}, Func{TSource, Parser})"/>とほぼ同義ですが、
-        /// <paramref name="canThrow"/>に<c>true</c>を指定することで
-        /// <paramref name="mapper"/>適用時にスローされた例外をそのまま再スローします。
-        /// </summary>
-        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
-        /// <param name="canThrow"><c>true</c>の場合<paramref name="mapper"/>がスローした例外をそのまま再スローする</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser FlatMap<TSource>(this Parser<TSource> self, Func<TSource, Parser> mapper, bool canThrow)
-        {
-            return new FlatMapParser<TSource>(self.Configuration, self, mapper, canThrow);
-        }
+
         #endregion
 
         #region Or系の拡張メソッド
