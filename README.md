@@ -523,14 +523,15 @@ var result1 = binaryNum.Parse("1100"); // result0.Capture == 12 (int).
 ### パース結果値からのパーサー構築 `FlatMap(...)`
 
 `Map(...)`の例では元になるパーサーのパース結果から別のパース結果を作り出しました。
+これをもう一歩進めてみます。
 `Parser<T>.FlatMap<T,U>(Func<T,Parser<U>>)`を使用すると元になるパーサーによるパース結果を使用して、
-動的に別のパーサーを構築することできます。具体例を見てもらったほうが良いでしょう：
+動的に別のパーサーを構築することができます。具体例を見てもらったほうが良いでしょう：
 
 ```cs
 var lt = Char('<');
-var gt = Char('g');
+var gt = Char('>');
 var leftTag = lt & CharIn(!CharClass.Exactly('>')).Repeat(min: 1).Capture() & gt;
-Func<string, Parser<string>> rightTag = s => lt & Char('/') & s & gt & Yield(s);
+Func<string,Parser<string>> rightTag = s => lt & Char('/') & s & gt & Yield(s);
 var tag = leftTag.FlatMap(rightTag);
 
 var result0 = tag.Parse("<a></a>"); // OK. result0.Capture == "a".
