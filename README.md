@@ -498,7 +498,7 @@ var result2 = helloNoSp.Parse("hello "); // NG.
 var result3 = helloNoSp.Parse("helloX"); // OK. result3.Capture == "hello" (!= "helloX")
 ```
 
-### マッピング `Map(...)`
+### パース結果値の変換 `Map(...)`
 
 `Parser<T>.Map<U>(Func<T,U>)`を使用すると元になるパーサー（レシーバー）の読み取り結果に関数を適用し、
 別の型の値に変換するパーサーを構築できます：
@@ -520,5 +520,24 @@ var result1 = binaryNum.Parse("1100"); // result0.Capture == 12 (int).
 しかしときとして例外をパーサー外部でキャッチしたいケースがあるかもしれません。
 この挙動は`Map(...)`の第2引数に`true`をアサインすることで変更可能です。
 
+### パース結果値からのパーサー構築 `FlatMap(...)`
 
+`Map(...)`の例では元になるパーサーのパース結果から別のパース結果を作り出しました。
+`Parser<T>.FlatMap<T,U>(Func<T,Parser<U>>)`を使用すると元になるパーサーによるパース結果を使用して、
+動的に別のパーサーを構築することできます。具体例を見てもらったほうが良いでしょう：
+
+```cs
+var lt = Char('<');
+var gt = Char('g');
+var leftTag = lt & CharIn(!CharClass.Exactly('>')).Repeat(min: 1).Capture() & gt;
+Func<string, Parser<string>> rightTag = s => lt & Char('/') & s & gt & Yield(s);
+var tag = leftTag.FlatMap(rightTag);
+
+var result0 = tag.Parse("<a></a>"); // OK. result0.Capture == "a".
+var result1 = tag.Parse("<a></b>"); // NG.
+var result2 = tag.Parse("<abcde></abcde>"); // OK. result2.Capture == "abcde".
+```
+
+この例では`leftTag`のパース成功時のみ、パース結果であるタグ名の文字列が`rightTag`に渡され、
+その値を使用して動的に構築されたパーサーがパースを試みます。
 
