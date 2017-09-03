@@ -498,4 +498,27 @@ var result2 = helloNoSp.Parse("hello "); // NG.
 var result3 = helloNoSp.Parse("helloX"); // OK. result3.Capture == "hello" (!= "helloX")
 ```
 
+### マッピング `Map(...)`
+
+`Parser<T>.Map<U>(Func<T,U>)`を使用すると元になるパーサー（レシーバー）の読み取り結果に関数を適用し、
+別の型の値に変換するパーサーを構築できます：
+
+```cs
+var binary = CharIn("01").Repeat(min: 1).Capture();
+var binaryNum = binary.Map(s => Convert.ToInt32(s, 2));
+
+var result0 = binary.Parse("1100"); // result0.Capture == "1100" (string).
+var result1 = binaryNum.Parse("1100"); // result0.Capture == 12 (int).
+```
+
+元になるパーサーが失敗した場合には関数は呼び出されません。適用する対象の値が存在しないからです。
+
+関数の中で例えば値の変換に失敗して例外がスローされた場合でも、
+そのエラーメッセージが`Result<U>.Message`に反映されるだけで、パーサー外部への例外再スローは行われません。
+これはパーサーを構成する個々のパーサーからの例外スローを許してしまうと、
+パーサーコンビネーターとしての動作に支障をきたす可能性があるからです。
+しかしときとして例外をパーサー外部でキャッチしたいケースがあるかもしれません。
+この挙動は`Map(...)`の第2引数に`true`をアサインすることで変更可能です。
+
+
 
