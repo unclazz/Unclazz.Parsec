@@ -405,10 +405,10 @@ C#言語仕様の制約により[FastParseの場合](http://www.lihaoyi.com/fast
 var a = Char('a');
 var comma = Char(',');
 
-var min2Max4 = a.Repeat(min: 2, max: 3);
-min2Max4.Parse("a___"); // => NG.
-min2Max4.Parse("aa__"); // => OK.
-min2Max4.Parse("aaaa"); // => OK. 3文字目まで読み、EOFに到達しない
+var min2Max3 = a.Repeat(min: 2, max: 3);
+min2Max3.Parse("a___"); // => NG.
+min2Max3.Parse("aa__"); // => OK.
+min2Max3.Parse("aaaa"); // => OK. 3文字目まで読み、EOFに到達しない
 
 var exactly2 = a.Repeat(exactly: 2);
 exactly2.Parse("a___"); // => NG.
