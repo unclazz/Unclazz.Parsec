@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
 {
     /// <summary>
-    /// パーサー・クラス<see cref="Parser"/>および<see cref="Parser{T}"/>のための拡張メソッドを提供する静的クラスです。
-    /// <para>このクラスで提供されるメソッドの多くは、双方のクラスに共通する名前を持ちながらも少しずつシグネチャや機能の異なるものです。</para>
+    /// <see cref="Parser{T}"/>のための拡張メソッドを提供する静的クラスです。
     /// </summary>
     public static class ParserExtension
     {
-        #region Aggregate系の拡張メソッド
         /// <summary>
         /// <see cref="IList{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>
@@ -73,352 +72,28 @@ namespace Unclazz.Parsec
         {
             return self.Map(ls => ls.Aggregate(seed, func, resultSelector));
         }
-        #endregion
-
-        #region Capture系の拡張メソッド
         /// <summary>
-        /// このパーサーの読み取り結果をキャプチャするパーサーを生成します。
-        /// <para>
-        /// パース処理そのものはこのパーサー（レシーバー）に委譲されます。
-        /// ただしこのパーサーが本来返す値の型がなんであれ、パース開始から終了（パース成功）までの区間のデータはあくまでも
-        /// <see cref="string"/>としてキャプチャされ、それがラッパーとなる新しいパーサーが返す値となります。</para>
-        /// <para>
-        /// 内部的な動作はおおよそ次のように進みます。
-        /// パース処理本体が実行される前に<see cref="Reader.Mark"/>が呼び出されます。
-        /// パース処理本体が成功した場合は<see cref="Reader.Capture(bool)"/>が呼び出されます。
-        /// パース処理本体が失敗した場合は単に<see cref="Reader.Unmark"/>が呼び出されます。</para>
+        /// <see cref="IList{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
         /// </summary>
-        /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
-        public static Parser<string> Capture(this Parser self)
-        {
-            return new CaptureParser(self.Configuration, self);
-        }
-        #endregion
-
-        #region Cut系の拡張メソッド
-        /// <summary>
-        /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックを無効化します。
-        /// <para>
-        /// レシーバーのパーサーが成功したあと後続のパーサーが失敗した場合バックトラックは機能せず、
-        /// <c>|</c>や<c>Or(...)</c>で連結された他のパーサーの実行が試行されることはありません。
-        /// このメソッドを呼び出す以前のパーサーが失敗した場合は引き続きバックトラックが有効です。
-        /// </para>
-        /// </summary>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Cut(this Parser self)
-        {
-            return new CutParser(self.Configuration, self);
-        }
-        /// <summary>
-        /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックを無効化します。
-        /// <para>
-        /// レシーバーのパーサーが成功したあと後続のパーサーが失敗した場合バックトラックは機能せず、
-        /// <c>|</c>や<c>Or(...)</c>で連結された他のパーサーの実行が試行されることはありません。
-        /// このメソッドを呼び出す以前のパーサーが失敗した場合は引き続きバックトラックが有効です。
-        /// </para>
-        /// </summary>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Cut<T>(this Parser<T> self)
-        {
-            return new CutParser<T>(self.Configuration, self);
-        }
-        #endregion
-
-        #region Map系の拡張メソッド
-        /// <summary>
-        /// 読み取り結果値に関数を適用するパーサーを生成します。
-        /// <para>
-        /// このメソッドが返すパーサーは関数<paramref name="func"/>が例外をスローした場合、
-        /// そのメッセージを使用してパース失敗を表す<see cref="Result{T}"/>インスタンスを返します。
-        /// </para>
-        /// </summary>
-        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
+        /// <typeparam name="TSource">要素の型</typeparam>
         /// <param name="self">レシーバー</param>
-        /// <param name="func">変換を行う関数</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<TResult> Map<TSource, TResult>(this Parser<TSource> self, Func<TSource, TResult> func)
-        {
-            return new MapParser<TSource, TResult>(self.Configuration, self, func, false);
-        }
-        /// <summary>
-        /// <see cref="Map{TSource, TResult}(Parser{TSource}, Func{TSource, TResult})"/>とほぼ同義ですが、
-        /// <paramref name="canThrow"/>に<c>true</c>を指定することで
-        /// <paramref name="func"/>適用時にスローされた例外をそのまま再スローします。
-        /// </summary>
-        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="func">変換を行う関数</param>
-        /// <param name="canThrow"><c>true</c>の場合<paramref name="func"/>がスローした例外をそのまま再スローする</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<TResult> Map<TSource, TResult>(this Parser<TSource> self, Func<TSource, TResult> func, bool canThrow)
-        {
-            return new MapParser<TSource, TResult>(self.Configuration, self, func, canThrow);
-        }
-        /// <summary>
-        /// <c>Capture().Map(...)</c>と同義です。
-        /// </summary>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="func">変換を行う関数</param>
         /// <returns></returns>
-        public static Parser<TResult> Map<TResult>(this Parser self, Func<string, TResult> func)
+        public static Parser<string> Join<TSource>(this Parser<IList<TSource>> self)
         {
-            return self.Capture().Map(func);
+            return self.Map(ls => ls.Aggregate(new StringBuilder(), (a, b) => a.Append(b)).ToString());
         }
         /// <summary>
-        /// <c>Capture().Map(...)</c>と同義です。
+        /// <see cref="IList{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
         /// </summary>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
+        /// <typeparam name="TSource">要素の型</typeparam>
         /// <param name="self">レシーバー</param>
-        /// <param name="func">変換を行う関数</param>
-        /// <param name="canThrow"><c>true</c>の場合<paramref name="func"/>がスローした例外をそのまま再スローする</param>
+        /// <param name="sep">セパレーター</param>
         /// <returns></returns>
-        public static Parser<TResult> Map<TResult>(this Parser self, Func<string, TResult> func, bool canThrow)
+        public static Parser<string> Join<TSource>(this Parser<IList<TSource>> self, object sep)
         {
-            return self.Capture().Map(func, canThrow);
-        }
-        /// <summary>
-        /// パース結果の値を元に動的にパーサーを構築するパーサーを返します。
-        /// </summary>
-        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<TResult> FlatMap<TSource, TResult>(this Parser<TSource> self, Func<TSource, Parser<TResult>> mapper)
-        {
-            return new FlatMapParser<TSource, TResult>(self.Configuration, self, mapper, false);
-        }
-        /// <summary>
-        /// <see cref="FlatMap{TSource, TResult}(Parser{TSource}, Func{TSource, Parser{TResult}})"/>とほぼ同義ですが、
-        /// <paramref name="canThrow"/>に<c>true</c>を指定することで
-        /// <paramref name="mapper"/>適用時にスローされた例外をそのまま再スローします。
-        /// </summary>
-        /// <typeparam name="TSource">元のパーサーの読み取り結果の型</typeparam>
-        /// <typeparam name="TResult">読み取り結果を変換した後の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="mapper">元のパーサーの読み取り結果から動的にパーサーを生成する関数</param>
-        /// <param name="canThrow"><c>true</c>の場合<paramref name="mapper"/>がスローした例外をそのまま再スローする</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<TResult> FlatMap<TSource, TResult>(this Parser<TSource> self, Func<TSource, Parser<TResult>> mapper, bool canThrow)
-        {
-            return new FlatMapParser<TSource, TResult>(self.Configuration, self, mapper, canThrow);
+            return self.Map(ls => ls.Aggregate(new StringBuilder(), (a, b) => a.Append(sep).Append(b), a => a.Remove(0, 1)).ToString());
         }
 
-        #endregion
-
-        #region Or系の拡張メソッド
-        /// <summary>
-        /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
-        /// <para>
-        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
-        /// その結果がそのまま新しいパーサーの返す結果となります。
-        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
-        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
-        /// </para>
-        /// <para>演算子<c>|</c>と<c>Or(...)</c>系メソッドはいずれも左結合です。
-        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
-        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
-        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
-        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Or(this Parser self, Parser another)
-        {
-            return new OrParser(self.Configuration, self, another);
-        }
-        /// <summary>
-        /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
-        /// <para>
-        /// このパーサー（レシーバーとなるパーサー）の読み取りが成功した場合は、
-        /// その結果がそのまま新しいパーサーの返す結果となります。
-        /// 一方、このパーサーの読み取りが失敗した場合は、データソースの読み取り位置はリセットされ（バックトラック）、
-        /// 引数で指定されたもう1つのパーサーの読み取りが試行され、その結果が新しいパーサーの返す結果となります。
-        /// </para>
-        /// <para>演算子<c>|</c>と<c>Or(...)</c>系メソッドはいずれも左結合です。
-        /// つまり<c>p0 | p1 | p2</c>や<c>p0.Or(p1).Or(p2)</c>というコードは、概念的には<c>(p0 | p1) | p2</c>と解釈されます。
-        /// もし仮に<c>p0</c>構築中のいずれかの地点で<see cref="Cut"/>が実行されており当該地点以降でトラックバックが無効化されている場合、
-        /// これ以降の区間でパースが失敗すると当然<c>p1</c>は実行されないとしても、<c>p2</c>は引き続き実行されるということです。
-        /// あえてこの挙動を変えるには<c>p0 | (p1 | p2)</c>や<c>p0.Or(p1.Or(p2))</c>というコードに変更する必要があります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Or<T>(this Parser<T> self, Parser<T> another)
-        {
-            return new OrParser<T>(self.Configuration, self, another);
-        }
-        /// <summary>
-        /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
-        /// </summary>
-        /// <returns>新しいパーサー</returns>
-        public static Parser OrNot(this Parser self)
-        {
-            return new OptionalParser(self.Configuration, self);
-        }
-        /// <summary>
-        /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
-        /// </summary>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<Optional<T>> OrNot<T>(this Parser<T> self)
-        {
-            return new OptionalParser<T>(self.Configuration, self);
-        }
-        #endregion
-
-        #region Repeat系の拡張メソッド
-        /// <summary>
-        /// シーケンスを読み取るパーサーを生成します。
-        /// <para>
-        /// 4つの引数はいずれもオプションです。
-        /// 何も指定しなかった場合、0回以上で上限なしの繰り返しを表します。
-        /// <paramref name="exactly"/>を指定した場合はまさにその回数の繰り返しです。
-        /// <paramref name="min"/>および/もしくは<paramref name="max"/>を指定した場合は下限および/もしくは上限付きの繰り返しです。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="min">繰り返しの最小回数</param>
-        /// <param name="max">繰り返しの最大回数</param>
-        /// <param name="exactly">繰り返しの回数</param>
-        /// <param name="sep">セパレーターのためのパーサー</param>
-        /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public static Parser Repeat(this Parser self, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
-        {
-            return RepeatParser<string>.Create(self.Typed<string>(), min, max, exactly, sep).Untyped();
-        }
-        /// <summary>
-        /// シーケンスを読み取るパーサーを生成します。
-        /// <para>
-        /// 4つの引数はいずれもオプションです。
-        /// 何も指定しなかった場合、0回以上で上限なしの繰り返しを表します。
-        /// <paramref name="exactly"/>を指定した場合はまさにその回数の繰り返しです。
-        /// <paramref name="min"/>および/もしくは<paramref name="max"/>を指定した場合は下限および/もしくは上限付きの繰り返しです。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="min">繰り返しの最小回数</param>
-        /// <param name="max">繰り返しの最大回数</param>
-        /// <param name="exactly">繰り返しの回数</param>
-        /// <param name="sep">セパレーターのためのパーサー</param>
-        /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public static Parser<IList<T>> Repeat<T>(this Parser<T> self, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
-        {
-            return RepeatParser<T>.Create(self, min, max, exactly, sep);
-        }
-        #endregion
-
-        #region Skip系の拡張メソッド
-        /// <summary>
-        /// パース対象に先行する空白文字もしくは指定された文字クラスをスキップするパーサーを返します。
-        /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="target">スキップ対象の文字クラス</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Skip(this Parser self, CharClass target = null)
-        {
-            return new SkipParser(self.Configuration, self, true, target ?? CharClass.SpaceAndControl);
-        }
-        /// <summary>
-        /// パース対象に先行する空白文字もしくは指定された文字クラスをスキップするパーサーを返します。
-        /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="target">スキップ対象の文字クラス</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Skip<T>(this Parser<T> self, CharClass target = null)
-        {
-            return new SkipSpaceParser<T>(self.Configuration, self, true, target ?? CharClass.SpaceAndControl);
-        }
-        #endregion
-
-        #region Then系の拡張メソッド
-        /// <summary>
-        /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
-        /// <para>
-        /// 例えば<c>var p2 = p0.Then(p1); p2.Parse(...);</c>というコードがあったとき、
-        /// p0のパースが成功した場合は、引き続きp1のパースが実行されます。
-        /// p1が成功した場合はp2の結果も成功となります。p1が失敗した場合はp2の結果も失敗です。
-        /// p0が失敗した場合はp1は実行されず、p2の結果は失敗となります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Then<T>(this Parser self, Parser<T> another)
-        {
-            return new ThenTakeRightParser<T>(self.Configuration, self, another);
-        }
-        /// <summary>
-        /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
-        /// <para>
-        /// 例えば<c>var p2 = p0.Then(p1); p2.Parse(...);</c>というコードがあったとき、
-        /// p0のパースが成功した場合は、引き続きp1のパースが実行されます。
-        /// p1が成功した場合はp2の結果も成功となります。p1が失敗した場合はp2の結果も失敗です。
-        /// p0が失敗した場合はp1は実行されず、p2の結果は失敗となります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser Then(this Parser self, Parser another)
-        {
-            return new ThenParser(self.Configuration, self, another);
-        }
-        /// <summary>
-        /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
-        /// <para>
-        /// 例えば<c>var p2 = p0.Then(p1); p2.Parse(...);</c>というコードがあったとき、
-        /// p0のパースが成功した場合は、引き続きp1のパースが実行されます。
-        /// p1が成功した場合はp2の結果も成功となります。p1が失敗した場合はp2の結果も失敗です。
-        /// p0が失敗した場合はp1は実行されず、p2の結果は失敗となります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<Tuple<T, U>> Then<T, U>(this Parser<T> self, Parser<U> another)
-        {
-            return new DoubleParser<T, U>(self.Configuration, self, another);
-        }
-        /// <summary>
-        /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
-        /// <para>
-        /// 例えば<c>var p2 = p0.Then(p1); p2.Parse(...);</c>というコードがあったとき、
-        /// p0のパースが成功した場合は、引き続きp1のパースが実行されます。
-        /// p1が成功した場合はp2の結果も成功となります。p1が失敗した場合はp2の結果も失敗です。
-        /// p0が失敗した場合はp1は実行されず、p2の結果は失敗となります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<T> Then<T>(this Parser<T> self, Parser another)
-        {
-            return new ThenTakeLeftParser<T>(self.Configuration, self, another);
-        }
-        /// <summary>
-        /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
-        /// <para>
-        /// 例えば<c>var p2 = p0.Then(p1); p2.Parse(...);</c>というコードがあったとき、
-        /// p0のパースが成功した場合は、引き続きp1のパースが実行されます。
-        /// p1が成功した場合はp2の結果も成功となります。p1が失敗した場合はp2の結果も失敗です。
-        /// p0が失敗した場合はp1は実行されず、p2の結果は失敗となります。
-        /// </para>
-        /// </summary>
-        /// <param name="self">レシーバー</param>
-        /// <param name="another">別のパーサー</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<Tuple<T1, T2, T3>> Then<T1, T2, T3>(this Parser<T1> self, Parser<Tuple<T2, T3>> another)
-        {
-            return TripleParser<T1, T2, T3>.Create(self, another);
-        }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
         /// <para>
@@ -435,43 +110,5 @@ namespace Unclazz.Parsec
         {
             return TripleParser<T1, T2, T3>.Create(self, another);
         }
-        #endregion
-
-        #region Typed/Untyped系の拡張メソッド
-        /// <summary>
-        /// パース結果型を持つパーサーに変換します。
-        /// <typeparamref name="T"/>のデフォルト値が結果値として採用されます。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static Parser<T> Typed<T>(this Parser self)
-        {
-            return new TypedParser<T>(self);
-        }
-        /// <summary>
-        /// パース結果型を持つパーサーに変換します。
-        /// 引数で指定さた値が結果値として採用されます。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="self"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static Parser<T> Typed<T>(this Parser self, T value)
-        {
-            return new TypedParser<T>(self, value);
-        }
-        /// <summary>
-        /// パース結果型を持たないパーサーに変換します。
-        /// 元のパーサーがキャプチャした値は破棄されます。
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static Parser Untyped<T>(this Parser<T> self)
-        {
-            return new UntypedParser<T>(self);
-        }
-        #endregion
     }
 }

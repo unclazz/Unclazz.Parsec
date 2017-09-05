@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             var angleLeft = Char('<');
             var angleRight = Char('>');
             var leftTag = angleLeft & CharsWhileIn(CharClass.Alphabetic).Capture() & angleRight;
-            Func<string,Parser> rightTag = (string s) => angleLeft & Char('/') & Keyword(s) & angleRight;
+            Func<string,Parser<string>> rightTag = (string s) => angleLeft & Char('/') & Keyword(s) & angleRight & Yield(s);
             var tag = leftTag.FlatMap(rightTag);
 
             // Act
