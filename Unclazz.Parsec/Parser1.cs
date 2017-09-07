@@ -538,7 +538,7 @@ namespace Unclazz.Parsec
         /// <param name="exactly">繰り返しの回数</param>
         /// <param name="sep">セパレーターのためのパーサー</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<IList<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
+        public Parser<Seq<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             return RepeatParser<T>.Create(this, min, max, exactly, sep);
         }

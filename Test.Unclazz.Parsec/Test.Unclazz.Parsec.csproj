@@ -75,6 +75,7 @@
     <Compile Include="Readers\ResettableReaderTest.cs" />
     <Compile Include="CoreParsers\CharsWhileInParserTest.cs" />
     <Compile Include="CoreParsers\KeywordParserTest.cs" />
+    <Compile Include="SeqTest.cs" />
     <Compile Include="TestUtility.cs" />
   </ItemGroup>
   <ItemGroup>

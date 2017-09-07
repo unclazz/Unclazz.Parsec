@@ -41,7 +41,7 @@ namespace Example.Unclazz.Parsec
             // JSONオブジェクト表現はObject、Array、String、Boolean、Null、Numberのいずれかである
             return _object | (_array | (_string | (_boolean | (_null | _number))));
         }
-        IJsonObject PairsToObject(IList<Tuple<IJsonObject,IJsonObject>> pairs)
+        IJsonObject PairsToObject(Seq<Tuple<IJsonObject,IJsonObject>> pairs)
         {
             return pairs.Aggregate(JsonObject.Builder(),
                 (a0,a1) => a0.Append(a1.Item1.AsString(), a1.Item2),

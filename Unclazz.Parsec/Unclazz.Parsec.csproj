@@ -102,6 +102,7 @@
     <Compile Include="Result.cs" />
     <Compile Include="ResultCore.cs" />
     <Compile Include="ResultCore1.cs" />
+    <Compile Include="Seq.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CharClazz\" />

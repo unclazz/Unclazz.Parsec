@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Unclazz.Parsec.CoreParsers
 {
 
-    abstract class RepeatParser<T> : Parser<IList<T>>
+    abstract class RepeatParser<T> : Parser<Seq<T>>
     {
         public static RepeatParser<T> Create(Parser<T> parser, int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
@@ -55,7 +55,7 @@ namespace Unclazz.Parsec.CoreParsers
             readonly Parser _sep;
             readonly bool _capture;
 
-            protected override ResultCore<IList<U>> DoParse(Reader input)
+            protected override ResultCore<Seq<U>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
@@ -87,7 +87,7 @@ namespace Unclazz.Parsec.CoreParsers
                     if (_capture) list.Add(mainResult.Capture);
                 }
                 // ループを無事抜けたならパースは成功
-                return Success(_capture ? list : null);
+                return Success(_capture ? Seq<U>.Of(list) : null);
             }
             public override string ToString()
             {
@@ -125,7 +125,7 @@ namespace Unclazz.Parsec.CoreParsers
             readonly Parser _sep;
             readonly bool _capture;
 
-            protected override ResultCore<IList<U>> DoParse(Reader input)
+            protected override ResultCore<Seq<U>> DoParse(Reader input)
             {
                 // キャプチャ・モードの場合
                 // 元のパーサーがキャプチャした内容を格納するためキューを初期化
@@ -174,7 +174,7 @@ namespace Unclazz.Parsec.CoreParsers
                     // min ＜ ループ回数 ならリセットのための準備を解除
                     if (_min < i) input.Unmark();
                 }
-                return Success(_capture ? list : null);
+                return Success(_capture ? Seq<U>.Of(list) : null);
             }
 
             public override string ToString()

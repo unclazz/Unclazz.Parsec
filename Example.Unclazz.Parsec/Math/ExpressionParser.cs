@@ -49,7 +49,7 @@ namespace Example.Unclazz.Parsec.Math
             return number | (parenLeft.Cut() & expr & parenRight);
         }
 
-        double Eval(Tuple<double, IList<Tuple<string, double>>> tree)
+        double Eval(Tuple<double, Seq<Tuple<string, double>>> tree)
         {
             var leftSeed = tree.Item1;
             var opRights = tree.Item2;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Unclazz.Parsec.CoreParsers;
@@ -12,7 +11,7 @@ namespace Unclazz.Parsec
     public static class ParserExtension
     {
         /// <summary>
-        /// <see cref="IList{T}"/>型のパース結果に対して集約を行うパーサーを返します。
+        /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>
         /// <paramref name="func"/>呼び出しの初回はリストの1番目の要素と2番目の要素が引数にアサインされます。
         /// 2回目は初回の呼び出し結果とリストの3番目の要素が引数にアサインされます。
@@ -24,12 +23,12 @@ namespace Unclazz.Parsec
         /// <param name="self">レシーバー</param>
         /// <param name="func">集約の実処理を担う関数</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<TSource> Aggregate<TSource>(this Parser<IList<TSource>> self, Func<TSource, TSource, TSource> func)
+        public static Parser<TSource> Aggregate<TSource>(this Parser<Seq<TSource>> self, Func<TSource, TSource, TSource> func)
         {
             return self.Map(ls => ls.Aggregate(func));
         }
         /// <summary>
-        /// <see cref="IList{T}"/>型のパース結果に対して集約を行うパーサーを返します。
+        /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>
         /// <paramref name="func"/>呼び出しの初回は<paramref name="seed"/>とリストの1番目の要素が引数にアサインされます。
         /// 2回目は初回の呼び出し結果とリストの2番目の要素が引数にアサインされます。
@@ -44,12 +43,12 @@ namespace Unclazz.Parsec
         /// <param name="func">集約の実処理を担う関数</param>
         /// <returns>新しいパーサー</returns>
         public static Parser<TAccumulate> Aggregate<TSource, TAccumulate>
-            (this Parser<IList<TSource>> self, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+            (this Parser<Seq<TSource>> self, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
         {
             return self.Map(ls => ls.Aggregate(seed, func));
         }
         /// <summary>
-        /// <see cref="IList{T}"/>型のパース結果に対して集約を行うパーサーを返します。
+        /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>
         /// <paramref name="func"/>呼び出しの初回は<paramref name="seed"/>とリストの1番目の要素が引数にアサインされます。
         /// 2回目は初回の呼び出し結果とリストの2番目の要素が引数にアサインされます。
@@ -67,29 +66,29 @@ namespace Unclazz.Parsec
         /// <param name="resultSelector">集約結果を返す関数</param>
         /// <returns></returns>
         public static Parser<TResult> Aggregate<TSource, TAccumulate, TResult>
-            (this Parser<IList<TSource>> self, TAccumulate seed,
+            (this Parser<Seq<TSource>> self, TAccumulate seed,
             Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate, TResult> resultSelector)
         {
             return self.Map(ls => ls.Aggregate(seed, func, resultSelector));
         }
         /// <summary>
-        /// <see cref="IList{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
+        /// <see cref="Seq{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
         /// </summary>
         /// <typeparam name="TSource">要素の型</typeparam>
         /// <param name="self">レシーバー</param>
         /// <returns></returns>
-        public static Parser<string> Join<TSource>(this Parser<IList<TSource>> self)
+        public static Parser<string> Join<TSource>(this Parser<Seq<TSource>> self)
         {
             return self.Map(ls => ls.Aggregate(new StringBuilder(), (a, b) => a.Append(b)).ToString());
         }
         /// <summary>
-        /// <see cref="IList{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
+        /// <see cref="Seq{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
         /// </summary>
         /// <typeparam name="TSource">要素の型</typeparam>
         /// <param name="self">レシーバー</param>
         /// <param name="sep">セパレーター</param>
         /// <returns></returns>
-        public static Parser<string> Join<TSource>(this Parser<IList<TSource>> self, object sep)
+        public static Parser<string> Join<TSource>(this Parser<Seq<TSource>> self, object sep)
         {
             return self.Map(ls => ls.Aggregate(new StringBuilder(), (a, b) => a.Append(sep).Append(b), a => a.Remove(0, 1)).ToString());
         }
