@@ -21,6 +21,7 @@ namespace Example.Unclazz.Parsec
 
         readonly Parser _hello;
         readonly Parser<Seq<string>> _helloHello;
+        readonly Parser _spEof;
         readonly Parser<string> _helloX;
 
         Program()
@@ -29,8 +30,10 @@ namespace Example.Unclazz.Parsec
             _hello = Keyword("hello");
             // キャプチャありに切替え、1回以上の繰返し、かつセパレータとして空白文字を指定
             _helloHello = _hello.Capture().Repeat(min:1, sep: WhileSpaceAndControls);
-            // "hello"の繰返しをintに、その後さらにstringに変換
-            _helloX = _helloHello.Map(a => a.Count).Map(a => string.Format("hello x {0}", a));
+            // 空白文字とEOFにマッチするパーサー（キャプチャなし）
+            _spEof = WhileSpaceAndControls & EndOfFile;
+            // "hello"の繰返しをintに、その後さらにstringに変換、後続にはEOF
+            _helloX = _helloHello.Map(a => a.Count).Map(a => string.Format("hello x {0}", a)) & _spEof;
         }
 
         protected override ResultCore<string> DoParse(Reader input)
