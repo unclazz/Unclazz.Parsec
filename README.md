@@ -24,27 +24,23 @@ class Program : Parser<string>
         // 成功したら結果をSTDOUT、さもなくばメッセージをSTDERRに出力
         result.IfSuccessful(Console.WriteLine,　Console.Error.WriteLine);
     }
-
-    readonly Parser _hello;
-    readonly Parser<Seq<string>> _helloHello;
-    readonly Parser _spEof;
-    readonly Parser<string> _helloX;
-
+    readonly Parser<string> _helloXSpEof;
     Program()
     {
         // "hello"というキーワードにマッチするパーサー（キャプチャなし）
-        _hello = Keyword("hello");
+        var hello = Keyword("hello");
         // キャプチャありに切替え、1回以上の繰返し、かつセパレータとして空白文字を指定
-        _helloHello = _hello.Capture().Repeat(min:1, sep: WhileSpaceAndControls);
+        var helloHello = hello.Capture().Repeat(min:1, sep: WhileSpaceAndControls);
         // 空白文字とEOFにマッチするパーサー（キャプチャなし）
-        _spEof = WhileSpaceAndControls & EndOfFile;
-        // "hello"の繰返しをintに、その後さらにstringに変換、後続にはEOF
-        _helloX = _helloHello.Map(a => a.Count).Map(a => string.Format("hello x {0}", a)) & _spEof;
+        var spEof = WhileSpaceAndControls & EndOfFile;
+        // "hello"の繰返しをintに、その後さらにstringに変換
+        var helloX = helloHello.Map(a => a.Count).Map(a => string.Format("hello x {0}", a));
+        // 後続にはEOF
+        _helloXSpEof = helloX & spEof;
     }
-
     protected override ResultCore<string> DoParse(Reader input)
     {
-        return _helloX.Parse(input);
+        return _helloXSpEof.Parse(input);
     }
 }
 ```
