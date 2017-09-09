@@ -11,7 +11,7 @@
         {
             var p = input.Position;
             if (p.Index == 0) return Success();
-            else return Failure(string.Format("expected BOF but already index is {0}", p.Index));
+            else return Failure(string.Format("BOF(index = 0) expected but already index is {0}.", p.Index));
         }
         public override string ToString()
         {

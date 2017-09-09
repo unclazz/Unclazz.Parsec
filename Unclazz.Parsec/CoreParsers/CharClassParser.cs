@@ -20,7 +20,7 @@ namespace Unclazz.Parsec.CoreParsers
             }
             else
             {
-                return Failure(string.Format("expected a member of {0} but found {1}.", 
+                return Failure(string.Format("a member of {0} expected but {1} found.", 
                     _clazz, ParsecUtility.CharToString(ch)));
             }
         }

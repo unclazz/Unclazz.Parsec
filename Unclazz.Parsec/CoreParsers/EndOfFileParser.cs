@@ -10,7 +10,8 @@
         protected override ResultCore DoParse(Reader input)
         {
             return input.EndOfFile ? Success() 
-                : Failure(string.Format("expected EOF but found '{0}'", (char)input.Peek()));
+                : Failure(string.Format("EOF expected but found {0}.", 
+                ParsecUtility.CharToString(input.Peek())));
         }
         public override string ToString()
         {
