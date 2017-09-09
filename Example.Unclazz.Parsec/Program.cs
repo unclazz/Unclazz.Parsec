@@ -1,23 +1,41 @@
-﻿using Example.Unclazz.Parsec.Math;
-using System;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unclazz.Parsec;
 
 namespace Example.Unclazz.Parsec
 {
-    class Program
+    class Program : Parser<string>
     {
         static void Main(string[] args)
         {
-            var parser = new ExpressionParser();
-            var input = args.Aggregate(new StringBuilder(),
-                (b, a) => b.Append(a).Append(' ')).ToString();
+            // 何らかの入力データソースを用意
+            var text = args.Aggregate((a, b) => a + ' ' + b);
+            // 文字列、ファイル、その他ストリームからReaderオブジェクトを生成
+            var input = Reader.From(text);
+            // パースを行う
+            var result = new Program().Parse(input);
 
-            parser.Parse(input)
-                .IfSuccessful(v => Console.WriteLine("result = {0}", v),
-                                m => Console.WriteLine("error = {0}", m));
+            // 成功したら結果をSTDOUT、さもなくばメッセージをSTDERRに出力
+            result.IfSuccessful(Console.WriteLine,　Console.Error.WriteLine);
+        }
+
+        readonly Parser _hello;
+        readonly Parser<Seq<string>> _helloHello;
+        readonly Parser<string> _helloX;
+
+        Program()
+        {
+            // "hello"というキーワードにマッチするパーサー（キャプチャなし）
+            _hello = Keyword("hello");
+            // キャプチャありに切替え、1回以上の繰返し、かつセパレータとして空白文字を指定
+            _helloHello = _hello.Capture().Repeat(min:1, sep: WhileSpaceAndControls);
+            // "hello"の繰返しをintに、その後さらにstringに変換
+            _helloX = _helloHello.Map(a => a.Count).Map(a => string.Format("hello x {0}", a));
+        }
+
+        protected override ResultCore<string> DoParse(Reader input)
+        {
+            return _helloX.Parse(input);
         }
     }
 }
