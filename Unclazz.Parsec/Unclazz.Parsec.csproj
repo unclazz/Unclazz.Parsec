@@ -104,8 +104,6 @@
     <Compile Include="ResultCore1.cs" />
     <Compile Include="Seq.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CharClazz\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
