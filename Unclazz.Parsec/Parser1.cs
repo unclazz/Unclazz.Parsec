@@ -543,14 +543,24 @@ namespace Unclazz.Parsec
             return RepeatParser<T>.Create(this, min, max, exactly, sep);
         }
         /// <summary>
-        /// パース対象に先行する空白文字もしくは指定された文字クラスをスキップするパーサーを返します。
+        /// パース対象に先行する指定された文字クラスをスキップするパーサーを返します。
         /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
         /// </summary>
         /// <param name="target">スキップ対象の文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> Skip(CharClass target = null)
+        public Parser<T> AutoSkip(CharClass target)
         {
-            return new SkipSpaceParser<T>(Configuration, this, true, target ?? CharClass.SpaceAndControl);
+            if (target == null) throw new ArgumentNullException(nameof(target));
+            return new SkipSpaceParser<T>(Configuration, this, true, target);
+        }
+        /// <summary>
+        /// パース対象に先行する空白文字をスキップするパーサーを返します。
+        /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
+        public Parser<T> AutoSkip()
+        {
+            return new SkipSpaceParser<T>(Configuration, this, true, CharClass.SpaceAndControl);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。

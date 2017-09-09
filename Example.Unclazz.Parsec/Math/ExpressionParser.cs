@@ -16,10 +16,7 @@ namespace Example.Unclazz.Parsec.Math
 
         public ExpressionParser()
         {
-            Configure(a =>
-            {
-                a.SetSkipTarget(CharClass.SpaceAndControl);
-            });
+            Configure(c => c.SetAutoSkip(true));
             addSub = CharIn("+-").Capture();
             mulDiv = CharIn("*/").Capture();
             parenLeft = Char('(');

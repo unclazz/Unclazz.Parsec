@@ -14,7 +14,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var ssp = kp.Skip();
+            var ssp = kp.AutoSkip();
 
             // Act
             var res = ssp.Parse("012XXXXX");
@@ -28,7 +28,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var ssp = kp.Skip();
+            var ssp = kp.AutoSkip();
 
             // Act
             var res = ssp.Parse("0123XXXX");
@@ -42,7 +42,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             var kp = Keyword("0123");
             var cp = kp.Capture();
-            var ssp = cp.Skip();
+            var ssp = cp.AutoSkip();
 
             // Act
             var res = ssp.Parse("  0123XXXX");
@@ -56,7 +56,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case4()
         {
             var kp = Keyword("0123");
-            var ssp = kp.Skip();
+            var ssp = kp.AutoSkip();
             var cp = ssp.Capture(); // sspのCaptureを呼び出すことでcpへとコンフィギュレーションが継承される
 
             // Act
@@ -73,7 +73,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case5()
         {
             var kp = Keyword("0123");
-            var ssp = kp & kp.Skip();
+            var ssp = kp & kp.AutoSkip();
             var cp = ssp.Capture();
 
             // Act
@@ -88,7 +88,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case6()
         {
             var kp = Keyword("0123");
-            var ssp = kp.Skip();
+            var ssp = kp.AutoSkip();
             var cp = ssp.Capture(); // sspのCaptureを呼び出すことでcpへとコンフィギュレーションが継承される
             var ssp2 = cp & kp;
 
