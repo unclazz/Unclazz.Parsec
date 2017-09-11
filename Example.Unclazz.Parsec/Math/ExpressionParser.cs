@@ -8,8 +8,8 @@ namespace Example.Unclazz.Parsec.Math
 {
     sealed class ExpressionParser : Parser<double>
     {
-        readonly Parser<string> addSub;
-        readonly Parser<string> mulDiv;
+        readonly Parser<char> addSub;
+        readonly Parser<char> mulDiv;
         readonly Parser parenLeft;
         readonly Parser parenRight;
         readonly Parser<double> number;
@@ -46,28 +46,28 @@ namespace Example.Unclazz.Parsec.Math
             return number | (parenLeft.Cut() & expr & parenRight);
         }
 
-        double Eval(Tuple<double, Seq<Tuple<string, double>>> tree)
+        double Eval(Tuple<double, Seq<Tuple<char, double>>> tree)
         {
             var leftSeed = tree.Item1;
             var opRights = tree.Item2;
             return opRights.Aggregate(leftSeed, Eval_Accumulator);
         }
 
-        double Eval_Accumulator(double left, Tuple<string, double> opRight)
+        double Eval_Accumulator(double left, Tuple<char, double> opRight)
         {
-            if (opRight.Item1 == "+")
+            if (opRight.Item1 == '+')
             {
                 return left + opRight.Item2;
             }
-            else if (opRight.Item1 == "-")
+            else if (opRight.Item1 == '-')
             {
                 return left - opRight.Item2;
             }
-            else if (opRight.Item1 == "*")
+            else if (opRight.Item1 == '*')
             {
                 return left * opRight.Item2;
             }
-            else if (opRight.Item1 == "/")
+            else if (opRight.Item1 == '/')
             {
                 return left / opRight.Item2;
             }

@@ -82,26 +82,26 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser Char(char ch) => _factory.Char(ch);
+        public static CharParser Char(char ch) => _factory.Char(ch);
         /// <summary>
         /// 指定された範囲に該当する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharBetween(char start, char end) => _factory.CharBetween(start, end);
+        public static CharParser CharBetween(char start, char end) => _factory.CharBetween(start, end);
         /// <summary>
         /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharIn(CharClass clazz) => _factory.CharIn(clazz);
+        public static CharParser CharIn(CharClass clazz) => _factory.CharIn(clazz);
         /// <summary>
         /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser CharIn(IEnumerable<char> chars) => _factory.CharIn(chars);
+        public static CharParser CharIn(IEnumerable<char> chars) => _factory.CharIn(chars);
         /// <summary>
         /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>

@@ -1,28 +1,22 @@
 ﻿namespace Unclazz.Parsec.CoreParsers
 {
-    sealed class CharParser : Parser
+    /// <summary>
+    /// 文字にマッチするパーサーです。
+    /// </summary>
+    public abstract class CharParser : Parser
     {
-        internal CharParser(IParserConfiguration conf, char ch) : base(conf)
+        /// <summary>
+        /// コンストラクタです。
+        /// </summary>
+        /// <param name="conf"></param>
+        protected CharParser(IParserConfiguration conf) : base(conf) { }
+        /// <summary>
+        /// 値をキャプチャするパーサーを返します。
+        /// </summary>
+        /// <returns></returns>
+        public new Parser<char> Capture()
         {
-            _ch = ch;
-        }
-        readonly char _ch;
-        protected override ResultCore DoParse(Reader input)
-        {
-            var actual = input.Read();
-            if (_ch == actual)
-            {
-                return Success();
-            }
-            else
-            {
-                return Failure(string.Format("expected {0} but found {1}.",
-                    ParsecUtility.CharToString(_ch), ParsecUtility.CharToString(actual)));
-            }
-        }
-        public override string ToString()
-        {
-            return string.Format("Char({0})", ParsecUtility.CharToString(_ch));
+            return new CharCaptureParser(this);
         }
     }
 }

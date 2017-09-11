@@ -42,7 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharClasses\CharRange.cs" />
+    <Compile Include="CoreParsers\CharCaptureParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
+    <Compile Include="CoreParsers\ExactCharParser.cs" />
     <Compile Include="CoreParsers\LazyParser1.cs" />
     <Compile Include="CoreParsers\LookaheadParser.cs" />
     <Compile Include="CoreParsers\OptionalParser1.cs" />

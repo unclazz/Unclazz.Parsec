@@ -158,9 +158,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Char(char ch)
+        public CharParser Char(char ch)
         {
-            return new CharParser(this, ch);
+            return new ExactCharParser(this, ch);
         }
         /// <summary>
         /// 指定された範囲に該当する文字にマッチするパーサーを返します。
@@ -168,7 +168,7 @@ namespace Unclazz.Parsec
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharBetween(char start, char end)
+        public CharParser CharBetween(char start, char end)
         {
             return new CharClassParser(this, CharClass.Between(start, end));
         }
@@ -177,7 +177,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharIn(CharClass clazz)
+        public CharParser CharIn(CharClass clazz)
         {
             return new CharClassParser(this, clazz);
         }
@@ -186,7 +186,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharIn(IEnumerable<char> chars)
+        public CharParser CharIn(IEnumerable<char> chars)
         {
             return new CharClassParser(this, CharClass.AnyOf(chars));
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unclazz.Parsec.CharClasses;
+using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
 {
@@ -36,26 +37,26 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        Parser Char(char ch);
+        CharParser Char(char ch);
         /// <summary>
         /// 指定された範囲に該当する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        Parser CharBetween(char start, char end);
+        CharParser CharBetween(char start, char end);
         /// <summary>
         /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        Parser CharIn(CharClass clazz);
+        CharParser CharIn(CharClass clazz);
         /// <summary>
         /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        Parser CharIn(IEnumerable<char> chars);
+        CharParser CharIn(IEnumerable<char> chars);
         /// <summary>
         /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
         /// </summary>

@@ -256,6 +256,7 @@ namespace Unclazz.Parsec
         /// <returns>キャプチャ機能をサポートする新しいパーサー</returns>
         public Parser<string> Capture()
         {
+
             return new CaptureParser(Configuration, this);
         }
         /// <summary>
