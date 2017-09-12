@@ -11,26 +11,30 @@ namespace Unclazz.Parsec
     public static class ParserExtension
     {
         /// <summary>
-        /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
+        /// シーケンスを読み取るパーサーを生成します。
         /// <para>
-        /// <paramref name="func"/>呼び出しの初回はリストの1番目の要素と2番目の要素が引数にアサインされます。
-        /// 2回目は初回の呼び出し結果とリストの3番目の要素が引数にアサインされます。
-        /// 3回目以降は前回の呼び出し結果とリストの次の要素が引数にアサインされます。
-        /// 最終回の呼び出し結果が新しいパーサーの返す結果の値となります。
+        /// 4つの引数はいずれもオプションです。
+        /// 何も指定しなかった場合、0回以上で上限なしの繰り返しを表します。
+        /// <paramref name="exactly"/>を指定した場合はまさにその回数の繰り返しです。
+        /// <paramref name="min"/>および/もしくは<paramref name="max"/>を指定した場合は下限および/もしくは上限付きの繰り返しです。
         /// </para>
         /// </summary>
-        /// <typeparam name="TSource">要素の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="func">集約の実処理を担う関数</param>
-        /// <returns>新しいパーサー</returns>
-        public static Parser<TSource> Aggregate<TSource>(this Parser<Seq<TSource>> self, Func<TSource, TSource, TSource> func)
+        /// <param name="self"></param>
+        /// <param name="min">繰り返しの最小回数</param>
+        /// <param name="max">繰り返しの最大回数</param>
+        /// <param name="exactly">繰り返しの回数</param>
+        /// <param name="sep">セパレーターのためのパーサー</param>
+        /// <returns>繰り返しをサポートする新しいパーサー</returns>
+        public static Parser Repeat(this Parser self,
+            int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return self.Map(ls => ls.Aggregate(func));
+            return new CountParser<int>(self.Typed<int>(), new RepeatConfiguration(min, max, exactly, sep)).Untyped();
         }
         /// <summary>
         /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>
-        /// <paramref name="func"/>呼び出しの初回は<paramref name="seed"/>とリストの1番目の要素が引数にアサインされます。
+        /// <paramref name="accumulator"/>呼び出しの初回は
+        /// <paramref name="seedFactory"/>が返す値とリストの1番目の要素が引数にアサインされます。
         /// 2回目は初回の呼び出し結果とリストの2番目の要素が引数にアサインされます。
         /// 3回目以降は前回の呼び出し結果とリストの次の要素が引数にアサインされます。
         /// 最終回の呼び出し結果が新しいパーサーの返す結果の値となります。
@@ -39,18 +43,21 @@ namespace Unclazz.Parsec
         /// <typeparam name="TSource">要素の型</typeparam>
         /// <typeparam name="TAccumulate">集約中/集約後の型</typeparam>
         /// <param name="self">レシーバー</param>
-        /// <param name="seed">集約の起点となる値</param>
-        /// <param name="func">集約の実処理を担う関数</param>
+        /// <param name="seedFactory">集約の起点となる値を生成するファクトリー</param>
+        /// <param name="accumulator">集約の実処理を担う関数</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<TAccumulate> Aggregate<TSource, TAccumulate>
-            (this Parser<Seq<TSource>> self, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
+        public static Parser<TAccumulate> Aggregate<TSource, TAccumulate>(this Parser<Seq<TSource>> self,
+            Func<TAccumulate> seedFactory, Func<TAccumulate, TSource, TAccumulate> accumulator)
         {
-            return self.Map(ls => ls.Aggregate(seed, func));
+            var seqParser = self as SeqParser<TSource>;
+            if (seqParser == null) return self.Map(a => a.Aggregate(seedFactory(), accumulator));
+            return seqParser.ReAggregate(seedFactory, accumulator);
         }
         /// <summary>
         /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>
-        /// <paramref name="func"/>呼び出しの初回は<paramref name="seed"/>とリストの1番目の要素が引数にアサインされます。
+        /// <paramref name="accumulator"/>呼び出しの初回は
+        /// <paramref name="seedFactory"/>が返す値とリストの1番目の要素が引数にアサインされます。
         /// 2回目は初回の呼び出し結果とリストの2番目の要素が引数にアサインされます。
         /// 3回目以降は前回の呼び出し結果とリストの次の要素が引数にアサインされます。
         /// 最終回の呼び出し結果は<paramref name="resultSelector"/>の引数にアサインされます。
@@ -61,36 +68,17 @@ namespace Unclazz.Parsec
         /// <typeparam name="TAccumulate">集約中の型</typeparam>
         /// <typeparam name="TResult">集約後の型</typeparam>
         /// <param name="self">レシーバー</param>
-        /// <param name="seed">集約の起点となる値</param>
-        /// <param name="func">集約の実処理を担う関数</param>
+        /// <param name="seedFactory">集約の起点となる値</param>
+        /// <param name="accumulator">集約の実処理を担う関数</param>
         /// <param name="resultSelector">集約結果を返す関数</param>
         /// <returns></returns>
-        public static Parser<TResult> Aggregate<TSource, TAccumulate, TResult>
-            (this Parser<Seq<TSource>> self, TAccumulate seed,
-            Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate, TResult> resultSelector)
+        public static Parser<TResult> Aggregate<TSource, TAccumulate, TResult>(this Parser<Seq<TSource>> self,
+            Func<TAccumulate> seedFactory, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
         {
-            return self.Map(ls => ls.Aggregate(seed, func, resultSelector));
-        }
-        /// <summary>
-        /// <see cref="Seq{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
-        /// </summary>
-        /// <typeparam name="TSource">要素の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <returns></returns>
-        public static Parser<string> Join<TSource>(this Parser<Seq<TSource>> self)
-        {
-            return self.Map(ls => ls.Aggregate(new StringBuilder(), (a, b) => a.Append(b)).ToString());
-        }
-        /// <summary>
-        /// <see cref="Seq{T}"/>型のパース結果に対してその各要素を連結して文字列にするパーサーを返します。
-        /// </summary>
-        /// <typeparam name="TSource">要素の型</typeparam>
-        /// <param name="self">レシーバー</param>
-        /// <param name="sep">セパレーター</param>
-        /// <returns></returns>
-        public static Parser<string> Join<TSource>(this Parser<Seq<TSource>> self, object sep)
-        {
-            return self.Map(ls => ls.Aggregate(new StringBuilder(), (a, b) => a.Append(sep).Append(b), a => a.Remove(0, 1)).ToString());
+            var seqParser = self as SeqParser<TSource>;
+            if (seqParser == null) return self.Map(a => a.Aggregate(seedFactory(), accumulator, resultSelector));
+
+            return seqParser.ReAggregate(seedFactory, accumulator, resultSelector);
         }
 
         /// <summary>

@@ -540,7 +540,7 @@ namespace Unclazz.Parsec
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
         public Parser<Seq<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return RepeatParser<T>.Create(this, min, max, exactly, sep);
+            return new SeqParser<T>(this, new RepeatConfiguration(min, max, exactly, sep));
         }
         /// <summary>
         /// パース対象に先行する指定された文字クラスをスキップするパーサーを返します。

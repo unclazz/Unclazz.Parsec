@@ -14,7 +14,7 @@
         /// 値をキャプチャするパーサーを返します。
         /// </summary>
         /// <returns></returns>
-        public new Parser<char> Capture()
+        public new CharCaptureParser Capture()
         {
             return new CharCaptureParser(this);
         }
