@@ -30,6 +30,19 @@ namespace Unclazz.Parsec
         {
             return new CountParser<int>(self.Typed<int>(), new RepeatConfiguration(min, max, exactly, sep)).Untyped();
         }
+        public static Parser<string> Join(this Parser<Seq<char>> self)
+        {
+            var seqParser = self as SeqParser<char>;
+            if (seqParser == null) return self.Map(a => a.Aggregate(new StringBuilder(), (b,c)=>b.Append(c), b => b.ToString()));
+            return seqParser.ReAggregate(() => new StringBuilder(), (a, b) => a.Append(b), a => a.ToString());
+        }
+        public static Parser<TAccumulate> Aggregate<TAccumulate>(
+            this Parser<Seq<TAccumulate>> self, Func<TAccumulate, TAccumulate, TAccumulate> accumulator)
+        {
+            var seqParser = self as SeqParser<TAccumulate>;
+            if (seqParser == null) return self.Map(a => a.Aggregate(accumulator));
+            return seqParser.ReAggregate(accumulator);
+        }
         /// <summary>
         /// <see cref="Seq{T}"/>型のパース結果に対して集約を行うパーサーを返します。
         /// <para>

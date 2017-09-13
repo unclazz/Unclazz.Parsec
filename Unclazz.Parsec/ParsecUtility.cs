@@ -83,5 +83,19 @@ namespace Unclazz.Parsec
                 b.Append('>');
             }
         }
+        public static ResultCore Or(Reader input, Parser left, Parser right)
+        {
+            input.Mark();
+            var leftResult = left.Parse(input);
+            if (leftResult.Successful || !leftResult.CanBacktrack)
+            {
+                input.Unmark();
+                return leftResult.AllowBacktrack(true);
+            }
+            input.Reset();
+            var rightResult = right.Parse(input);
+            input.Unmark();
+            return rightResult.AllowBacktrack(true);
+        }
     }
 }

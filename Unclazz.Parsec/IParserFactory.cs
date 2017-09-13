@@ -33,6 +33,39 @@ namespace Unclazz.Parsec
 
         #region 定義済みパーサーを提供するメソッドの宣言
         /// <summary>
+        /// <c>"\\u"</c>もしくは任意の接頭辞から始まるUnicodeエスケープシーケンスを読み取ります。
+        /// Unicode拡張領域の文字は上位サロゲートと下位サロゲートのそれぞれ単体でパースされます。
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="cutIndex"></param>
+        /// <returns></returns>
+        Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1);
+        /// <summary>
+        /// 制御文字のエスケープシーケンスを読み取ります。
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        Parser<char> ControlEscape(char prefix = '\\');
+        /// <summary>
+        /// 任意の文字のエスケープシーケンスを読み取ります。
+        /// 読み取り結果はその文字そのもの、つまりエスケープシーケンスから接頭辞を除去したものです。
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\');
+        /// <summary>
+        /// 引用符で囲われた文字列を読み取ります。
+        /// デフォルトでは引用符自体を含めていかなるエスケープシーケンスも認識しません。
+        /// パース対象文字列にエスケープシーケンスが含まれる場合は、
+        /// 当該シーケンスを適切にハンドルするパーサーを引数で指定してください。
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <param name="escape"></param>
+        /// <returns></returns>
+        Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null);
+
+        /// <summary>
         /// 指定された文字にマッチするパーサーを返します。
         /// </summary>
         /// <param name="ch">文字</param>

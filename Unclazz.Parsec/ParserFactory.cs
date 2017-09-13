@@ -68,6 +68,7 @@ namespace Unclazz.Parsec
         Parser _cachedBeginningOfFile;
         Parser _cachedEndOfFile;
         Parser _cachedWhileSpaceAndControls;
+        Parser<int> _hexDigits;
 
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
@@ -83,6 +84,24 @@ namespace Unclazz.Parsec
         /// </summary>
         public Parser WhileSpaceAndControls => _cachedWhileSpaceAndControls 
             ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(this, CharClass.SpaceAndControl, 0));
+
+        public Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
+        public Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1)
+        {
+            return new Utf16UnicodeEscapeParser(prefix, cutIndex);
+        }
+        public Parser<char> ControlEscape (char prefix = '\\')
+        {
+            return new ControlEscapeParser(prefix);
+        }
+        public Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
+        {
+            return new EscapeCharInParser(chars, prefix);
+        }
+        public Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
+        {
+            return new QuotedStringParser(quote, escape);
+        }
 
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。

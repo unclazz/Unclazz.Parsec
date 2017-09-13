@@ -16,39 +16,47 @@ namespace Unclazz.Parsec.CoreParsers
             _repConf = repConf ?? throw new ArgumentNullException(nameof(repConf));
             _aggConf = aggConf ?? throw new ArgumentNullException(nameof(aggConf));
             _original = original ?? throw new ArgumentNullException(nameof(original));
-            _capture = original.GetType() != typeof(TypedParser<TResult>);
+
+            _repMin = _repConf.Minimal;
+            _repMax = _repConf.Maximum;
+            _repBreakable = _repConf.Breakable;
+            _repSep = _repConf.Separator;
+            _aggNoSeed = _aggConf.SeedFactory == null;
         }
 
         readonly RepeatConfiguration _repConf;
         readonly AggregateConfiguration<TSource, TAccumulate, TResult> _aggConf;
         readonly Parser<TSource> _original;
-        readonly bool _capture;
+
+        readonly int _repMin;
+        readonly int _repMax;
+        readonly bool _repBreakable;
+        readonly Parser _repSep;
+        readonly bool _aggNoSeed;
 
         protected override ResultCore<TResult> DoParse(Reader input)
         {
-            // キャプチャ・モードの場合
-            // 元のパーサーがキャプチャした内容を格納するためキューを初期化
-            var acc = _capture ? _aggConf.SeedFactory() : default(TAccumulate);
+            // シードの有無を確認
+            var acc = _aggNoSeed 
+                // なしの場合、ダミー値として型のデフォルト値をアサイン
+                ? default(TAccumulate)
+                // ありの場合、ファクトリーで値を生成してアサイン
+                : _aggConf.SeedFactory();
 
             // 予め指定された回数のパースを試みる
-            var max = _repConf.Maximum;
-            var min = _repConf.Minimal;
-            var breakable = _repConf.Breakable;
-            var sep = _repConf.Separator;
-
-            for (var i = 1; i <= max; i++)
+            for (var i = 1; i <= _repMax; i++)
             {
                 // min ＜ ループ回数 ならリセットのための準備
-                if (breakable && min < i) input.Mark();
+                if (_repBreakable && _repMin < i) input.Mark();
 
                 // ループが2回目 かつ セパレーターのパーサーが指定されている場合
-                if (1 < i && sep != null)
+                if (1 < i && _repSep != null)
                 {
                     // セパレーターのトークンのパース
-                    var sepResult = sep.Parse(input);
+                    var sepResult = _repSep.Parse(input);
                     if (!sepResult.Successful)
                     {
-                        if (breakable && min < i)
+                        if (_repBreakable && _repMin < i)
                         {
                             // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
                             input.Reset();
@@ -62,7 +70,7 @@ namespace Unclazz.Parsec.CoreParsers
                 var mainResult = _original.Parse(input);
                 if (!mainResult.Successful)
                 {
-                    if (breakable && min < i)
+                    if (_repBreakable && _repMin < i)
                     {
                         // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
                         input.Reset();
@@ -72,14 +80,17 @@ namespace Unclazz.Parsec.CoreParsers
                     return Failure(mainResult.Message);
                 }
 
-                // キャプチャ・モードの場合
-                // 元のパーサーがキャプチャした内容をキューに追加
-                if (_capture)  acc = _aggConf.Accumulator(acc, mainResult.Capture);
+                // ループ回数のシードの有無を確認
+                acc = (i == 1 && _aggNoSeed) 
+                    // ループ1回目 かつ シードなし の場合、初回キャプチャをそのままアキュームレート
+                    ? ((TAccumulate)((object)mainResult.Capture)) 
+                    // それ以外の場合、
+                    : _aggConf.Accumulator(acc, mainResult.Capture);
 
                 // min ＜ ループ回数 ならリセットのための準備を解除
-                if (breakable && min < i) input.Unmark();
+                if (_repBreakable && _repMin < i) input.Unmark();
             }
-            return Success(_capture ? _aggConf.ResultSelector(acc) : default(TResult));
+            return Success(_aggConf.ResultSelector(acc));
         }
 
         public override string ToString()
@@ -111,17 +122,11 @@ namespace Unclazz.Parsec.CoreParsers
                 }
             }
         }
-
-        public RepeatAggregateParser<TSource, UAccumulate, UResult>
-            ReAggregate<UAccumulate, UResult>(
-            Func<UAccumulate> seedFactory,
-            Func<UAccumulate, TSource, UAccumulate> accumulator,
-            Func<UAccumulate, UResult> resultSelector)
+        public RepeatAggregateParser<TSource, UAccumulate, UAccumulate>
+            ReAggregate<UAccumulate>(Func<UAccumulate, TSource, UAccumulate> accumulator)
         {
-            return new RepeatAggregateParser<TSource, UAccumulate, UResult>
-                (_original, _repConf,
-                new AggregateConfiguration<TSource, UAccumulate, UResult>
-                (seedFactory, accumulator, resultSelector));
+            return new RepeatAggregateParser<TSource, UAccumulate, UAccumulate>(_original, _repConf,
+                new AggregateConfiguration<TSource, UAccumulate, UAccumulate>(accumulator, a => a));
         }
         public RepeatAggregateParser<TSource, UAccumulate, UAccumulate>
             ReAggregate<UAccumulate>(
@@ -133,6 +138,17 @@ namespace Unclazz.Parsec.CoreParsers
                 new AggregateConfiguration<TSource, UAccumulate, UAccumulate>
                 (seedFactory, accumulator, a => a));
         }
+        public RepeatAggregateParser<TSource, UAccumulate, UResult>
+            ReAggregate<UAccumulate, UResult>(
+            Func<UAccumulate> seedFactory,
+            Func<UAccumulate, TSource, UAccumulate> accumulator,
+            Func<UAccumulate, UResult> resultSelector)
+        {
+            return new RepeatAggregateParser<TSource, UAccumulate, UResult>
+                (_original, _repConf,
+                new AggregateConfiguration<TSource, UAccumulate, UResult>
+                (seedFactory, accumulator, resultSelector));
+        }
     }
     sealed class AggregateConfiguration<TSource,TAccumulate,TResult>
     {
@@ -140,10 +156,17 @@ namespace Unclazz.Parsec.CoreParsers
             Func<TAccumulate, TSource, TAccumulate> accumulator,
             Func<TAccumulate, TResult> resultSelector)
         {
-            SeedFactory = seedFactory ?? throw new ArgumentNullException(nameof(seedFactory));
+            if (seedFactory == null && typeof(TSource) != typeof(TAccumulate))
+            {
+                throw new ArgumentNullException(nameof(seedFactory));
+            }
+            SeedFactory = seedFactory;
             Accumulator = accumulator ?? throw new ArgumentNullException(nameof(accumulator));
             ResultSelector = resultSelector ?? throw new ArgumentNullException(nameof(resultSelector));
         }
+        public AggregateConfiguration(
+            Func<TAccumulate, TSource, TAccumulate> accumulator,
+            Func<TAccumulate, TResult> resultSelector) : this(null, accumulator, resultSelector) { }
         public Func<TAccumulate> SeedFactory { get; }
         public Func<TAccumulate, TSource, TAccumulate> Accumulator { get; }
         public Func<TAccumulate, TResult> ResultSelector { get; }
@@ -152,28 +175,8 @@ namespace Unclazz.Parsec.CoreParsers
     {
         public RepeatConfiguration(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            // 後続処理のためexactlyだけはまず範囲チェック
-            if (exactly == 0 | exactly < -1) throw new ArgumentOutOfRangeException(nameof(exactly));
             // exactlyが明示的に指定されているかチェック
-            if (exactly > 0)
-            {
-                //　指定されている場合
-                // min・maxが明示的に指定されているか（デフォルト値以外が設定されているか）をチェック
-                if (min != 0 || max != -1)
-                {
-                    // exactlyが明示的に指定され かつ min・maxがデフォルト値でない場合
-                    // 3値が整合性を持っているかチェックし、結果がNGの場合は引数の矛盾として例外スロー
-                    // OKの例：　(exactly = 3, min = 3, max = 3)
-                    // NGの例：　(exactly = 3, min = 2, max = 3)
-                    if (exactly != min || min != max) throw new ArgumentException(
-                        string.Format("arguments conflict. exactly = {0}, but min = {1} and max = {2}.",
-                        exactly, min, max));
-                }
-                Minimal = exactly;
-                Maximum = exactly;
-                Breakable = false;
-            }
-            else
+            if (exactly == -1)
             {
                 max = max == -1 ? int.MaxValue : max;
                 min = min == -1 ? 0 : min;
@@ -185,6 +188,13 @@ namespace Unclazz.Parsec.CoreParsers
                 Minimal = min;
                 Maximum = max;
                 Breakable = min != max;
+            }
+            else
+            {
+                if (exactly <= 1) throw new ArgumentOutOfRangeException(nameof(exactly));
+                Minimal = exactly;
+                Maximum = exactly;
+                Breakable = false;
             }
             Separator = sep;
         }

@@ -16,6 +16,7 @@ namespace Unclazz.Parsec
         static CharClass _alphabetic;
         static CharClass _numeric;
         static CharClass _alphanumeric;
+        static CharClass _hexDigit;
         static CharClass _control;
         static CharClass _spaceAndControl;
         static CharClass _newline;
@@ -36,6 +37,10 @@ namespace Unclazz.Parsec
         /// <see cref="Alphabetic"/>と<see cref="Numeric"/>を合わせたクラスです。
         /// </summary>
         public static CharClass Alphanumeric => _alphanumeric ?? (_alphanumeric = Alphabetic | Numeric);
+        /// <summary>
+        /// 16進数の数字を表す文字クラスです。
+        /// </summary>
+        public static CharClass HexDigit => _hexDigit ?? (_hexDigit = Between('0', '9') | Between('a', 'f') | Between('A', 'F'));
         /// <summary>
         /// 制御文字（コードポイントで<c>0</c>から<c>31</c>と<c>127</c>）を内容とするクラスです。
         /// </summary>
@@ -170,7 +175,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しい文字クラス</returns>
-        public static CharClass Exactly(char ch)
+        public static CharClass Exact(char ch)
         {
             return new CharRangeCharClass(CharRange.Exactly(ch));
         }
@@ -202,7 +207,7 @@ namespace Unclazz.Parsec
         /// <returns>新しい文字クラス</returns>
         public virtual CharClass Plus(char ch)
         {
-            return new UnionCharClass(this, Exactly(ch));
+            return new UnionCharClass(this, Exact(ch));
         }
         /// <summary>
         /// この文字クラスに引数で指定されたUnicodeカテゴリーを加えます。

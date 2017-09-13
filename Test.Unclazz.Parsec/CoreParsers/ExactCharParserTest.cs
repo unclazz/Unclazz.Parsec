@@ -6,7 +6,7 @@ using static Unclazz.Parsec.Parsers;
 namespace Test.Unclazz.Parsec.CoreParsers
 {
     [TestFixture]
-    public class CharParserTest
+    public class ExactCharParserTest
     {
         [Test]
         public void Parse_Case1()
@@ -43,7 +43,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture, Is.EqualTo("a"));
+            Assert.That(res.Capture, Is.EqualTo('a'));
         }
     }
 }

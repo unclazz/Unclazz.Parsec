@@ -50,8 +50,9 @@
     <Compile Include="CharClasses\CharClassTest.cs" />
     <Compile Include="CoreParsers\CaptureParserTest.cs" />
     <Compile Include="CoreParsers\LookaheadParserTest.cs" />
+    <Compile Include="CoreParsers\QuotedStringParserTest.cs" />
     <Compile Include="CoreParsers\TypedParserTest.cs" />
-    <Compile Include="CoreParsers\CharParserTest.cs" />
+    <Compile Include="CoreParsers\ExactCharParserTest.cs" />
     <Compile Include="CoreParsers\DelegateParserTest.cs" />
     <Compile Include="CoreParsers\DoubleParserTest.cs" />
     <Compile Include="CoreParsers\FlatMapParserTest.cs" />

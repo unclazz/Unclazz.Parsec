@@ -38,7 +38,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Assert
             Assert.That(res.Successful, Is.True);
             Assert.That(res.Capture.Item1, Is.EqualTo("012"));
-            Assert.That(res.Capture.Item2, Is.EqualTo("3"));
+            Assert.That(res.Capture.Item2, Is.EqualTo('3'));
         }
         [Test]
         [Description("Parse - Case#4 - パース成功時 かつ キャプチャ失敗のパーサーから構築された場合")]
@@ -54,7 +54,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
 
             // Assert
             Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture.Item1, Is.EqualTo(new Optional<string>()));
+            Assert.That(res.Capture.Item1, Is.EqualTo(new Optional<char>()));
             Assert.That(res.Capture.Item2, Is.EqualTo("0123"));
         }
         [Test]

@@ -43,11 +43,15 @@
   <ItemGroup>
     <Compile Include="CharClasses\CharRange.cs" />
     <Compile Include="CoreParsers\CharCaptureParser.cs" />
+    <Compile Include="CoreParsers\ControlEscapeParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
+    <Compile Include="CoreParsers\EscapeCharInParser.cs" />
     <Compile Include="CoreParsers\ExactCharParser.cs" />
+    <Compile Include="CoreParsers\HexDigitsParser.cs" />
     <Compile Include="CoreParsers\LazyParser1.cs" />
     <Compile Include="CoreParsers\LookaheadParser.cs" />
     <Compile Include="CoreParsers\OptionalParser1.cs" />
+    <Compile Include="CoreParsers\QuotedStringParser.cs" />
     <Compile Include="CoreParsers\ThenTakeLeftParser.cs" />
     <Compile Include="CoreParsers\ThenTakeRightParser.cs" />
     <Compile Include="CoreParsers\TypedParser.cs" />
@@ -58,6 +62,7 @@
     <Compile Include="CoreParsers\LazyParser.cs" />
     <Compile Include="CoreParsers\TripleParser.cs" />
     <Compile Include="CoreParsers\UntypedParser.cs" />
+    <Compile Include="CoreParsers\Utf16UnicodeEscapeParser.cs" />
     <Compile Include="IParserConfiguration.cs" />
     <Compile Include="IParserConfigurer.cs" />
     <Compile Include="IParserFactory.cs" />
