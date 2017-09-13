@@ -102,7 +102,7 @@
     <Compile Include="Readers\TextReaderProxy.cs" />
     <Compile Include="CoreParsers\RepeatParser.cs" />
     <Compile Include="CoreParsers\CaptureParser.cs" />
-    <Compile Include="CoreParsers\CharParser.cs" />
+    <Compile Include="CharParser.cs" />
     <Compile Include="CoreParsers\YieldParser.cs" />
     <Compile Include="CoreParsers\KeywordParser.cs" />
     <Compile Include="Result1.cs" />

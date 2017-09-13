@@ -1,4 +1,6 @@
-﻿namespace Unclazz.Parsec.CoreParsers
+﻿using Unclazz.Parsec.CoreParsers;
+
+namespace Unclazz.Parsec
 {
     /// <summary>
     /// 文字にマッチするパーサーです。
