@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="CharClasses\CharClassTest.cs" />
     <Compile Include="CoreParsers\CaptureParserTest.cs" />
+    <Compile Include="CoreParsers\CharEscapeParserTest.cs" />
     <Compile Include="CoreParsers\LookaheadParserTest.cs" />
     <Compile Include="CoreParsers\QuotedStringParserTest.cs" />
     <Compile Include="CoreParsers\TypedParserTest.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="CoreParsers\FlatMapParserTest.cs" />
     <Compile Include="CoreParsers\MapParserTest.cs" />
     <Compile Include="CoreParsers\SkipSpaceParserTest.cs" />
+    <Compile Include="CoreParsers\Utf16UnicodeEscapeParserTest.cs" />
     <Compile Include="CoreParsers\YieldParserTest.cs" />
     <Compile Include="OptionalTest.cs" />
     <Compile Include="CharPositionTest.cs" />
