@@ -52,8 +52,8 @@
     <Compile Include="CoreParsers\LookaheadParser.cs" />
     <Compile Include="CoreParsers\OptionalParser1.cs" />
     <Compile Include="CoreParsers\QuotedStringParser.cs" />
-    <Compile Include="CoreParsers\RepeatAggregate\AggregateConfiguration.cs" />
-    <Compile Include="CoreParsers\RepeatAggregate\RepeatAggregateParser.cs" />
+    <Compile Include="CoreParsers\RepeatAggregate\ReduceConfiguration.cs" />
+    <Compile Include="CoreParsers\RepeatAggregate\RepeatReduceParser.cs" />
     <Compile Include="CoreParsers\RepeatAggregate\RepeatConfiguration.cs" />
     <Compile Include="CoreParsers\RepeatAggregate\SeqParser.cs" />
     <Compile Include="CoreParsers\ThenTakeLeftParser.cs" />

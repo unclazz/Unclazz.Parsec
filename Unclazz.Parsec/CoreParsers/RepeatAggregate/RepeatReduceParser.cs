@@ -3,14 +3,14 @@ using System.Text;
 
 namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
 {
-    class RepeatAggregateParser<TSource, TAccumulate, TResult> : Parser<TResult>
+    class RepeatReduceParser<T, U, V> : Parser<V>
     {
-        internal RepeatAggregateParser(Parser<TSource> original, RepeatConfiguration repConf,
-            AggregateConfiguration<TSource, TAccumulate, TResult> aggConf) 
+        internal RepeatReduceParser(Parser<T> original, RepeatConfiguration repConf,
+            ReduceConfiguration<T, U, V> aggConf) 
             : this(original.Configuration, original, repConf, aggConf) { }
-        internal RepeatAggregateParser(
-            IParserConfiguration conf, Parser<TSource> original, RepeatConfiguration repConf, 
-            AggregateConfiguration<TSource, TAccumulate, TResult> aggConf) : base(conf)
+        internal RepeatReduceParser(
+            IParserConfiguration conf, Parser<T> original, RepeatConfiguration repConf, 
+            ReduceConfiguration<T, U, V> aggConf) : base(conf)
         {
             _repConf = repConf ?? throw new ArgumentNullException(nameof(repConf));
             _aggConf = aggConf ?? throw new ArgumentNullException(nameof(aggConf));
@@ -24,8 +24,8 @@ namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
         }
 
         readonly RepeatConfiguration _repConf;
-        readonly AggregateConfiguration<TSource, TAccumulate, TResult> _aggConf;
-        readonly Parser<TSource> _original;
+        readonly ReduceConfiguration<T, U, V> _aggConf;
+        readonly Parser<T> _original;
 
         readonly int _repMin;
         readonly int _repMax;
@@ -33,12 +33,12 @@ namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
         readonly Parser _repSep;
         readonly bool _aggNoSeed;
 
-        protected override ResultCore<TResult> DoParse(Reader input)
+        protected override ResultCore<V> DoParse(Reader input)
         {
             // シードの有無を確認
             var acc = _aggNoSeed 
                 // なしの場合、ダミー値として型のデフォルト値をアサイン
-                ? default(TAccumulate)
+                ? default(U)
                 // ありの場合、ファクトリーで値を生成してアサイン
                 : _aggConf.SeedFactory();
 
@@ -82,7 +82,7 @@ namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
                 // ループ回数のシードの有無を確認
                 acc = (i == 1 && _aggNoSeed) 
                     // ループ1回目 かつ シードなし の場合、初回キャプチャをそのままアキュームレート
-                    ? ((TAccumulate)((object)mainResult.Capture)) 
+                    ? ((U)((object)mainResult.Capture)) 
                     // それ以外の場合、
                     : _aggConf.Accumulator(acc, mainResult.Capture);
 
@@ -122,32 +122,23 @@ namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
             }
         }
 
-        public RepeatAggregateParser<TSource, TSource, TSource>
-            ReAggregate(Func<TSource, TSource, TSource> accumulator)
+        public RepeatReduceParser<T, T, T> ReReduce(Func<T, T, T> accumulator)
         {
-            return new RepeatAggregateParser<TSource, TSource, TSource>(_original, _repConf,
-                new AggregateConfiguration<TSource, TSource, TSource>(accumulator, a => a));
+            return new RepeatReduceParser<T, T, T>(_original, _repConf,
+                new ReduceConfiguration<T, T, T>(accumulator, a => a));
         }
-        public RepeatAggregateParser<TSource, UAccumulate, UAccumulate>
-            ReAggregate<UAccumulate>(
-            Func<UAccumulate> seedFactory,
-            Func<UAccumulate, TSource, UAccumulate> accumulator)
+        public RepeatReduceParser<T, U2, U2> ReReduce<U2>(
+            Func<U2> seedFactory, Func<U2, T, U2> accumulator)
         {
-            return new RepeatAggregateParser<TSource, UAccumulate, UAccumulate>
-                (_original, _repConf,
-                new AggregateConfiguration<TSource, UAccumulate, UAccumulate>
-                (seedFactory, accumulator, a => a));
+            return new RepeatReduceParser<T, U2, U2>(_original, _repConf,
+                new ReduceConfiguration<T, U2, U2>(seedFactory, accumulator, a => a));
         }
-        public RepeatAggregateParser<TSource, UAccumulate, UResult>
-            ReAggregate<UAccumulate, UResult>(
-            Func<UAccumulate> seedFactory,
-            Func<UAccumulate, TSource, UAccumulate> accumulator,
-            Func<UAccumulate, UResult> resultSelector)
+        public RepeatReduceParser<T, U2, V2> ReReduce<U2, V2>(
+            Func<U2> seedFactory, Func<U2, T, U2> accumulator,
+            Func<U2, V2> resultSelector)
         {
-            return new RepeatAggregateParser<TSource, UAccumulate, UResult>
-                (_original, _repConf,
-                new AggregateConfiguration<TSource, UAccumulate, UResult>
-                (seedFactory, accumulator, resultSelector));
+            return new RepeatReduceParser<T, U2, V2> (_original, _repConf,
+                new ReduceConfiguration<T, U2, V2>(seedFactory, accumulator, resultSelector));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Unclazz.Parsec.CoreParsers
             if (min < 1) throw new ArgumentOutOfRangeException(nameof(min));
             _hexDigits = CharIn(CharClass.HexDigit).Capture()
                 .Map(HexDigits_HexDigitToInt).Repeat(min, max, exactly)
-                .Aggregate((a, b) => a * 16 + b);
+                .Reduce((a, b) => a * 16 + b);
         }
         protected override ResultCore<int> DoParse(Reader input)
         {

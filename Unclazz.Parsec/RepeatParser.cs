@@ -35,9 +35,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="accumulator"></param>
         /// <returns></returns>
-        public Parser<T> Aggregate(Func<T, T, T> accumulator)
+        public Parser<T> Reduce(Func<T, T, T> accumulator)
         {
-            return _inner.ReAggregate(accumulator);
+            return _inner.ReReduce(accumulator);
         }
         /// <summary>
         /// シーケンス要素の集約を行います。
@@ -48,14 +48,13 @@ namespace Unclazz.Parsec
         /// 最後の適用結果がパーサーの読み取り結果型となります。
         /// </para>
         /// </summary>
-        /// <typeparam name="TAccumulate"></typeparam>
+        /// <typeparam name="U"></typeparam>
         /// <param name="seedFactory"></param>
         /// <param name="accumulator"></param>
         /// <returns></returns>
-        public Parser<TAccumulate> Aggregate<TAccumulate>(Func<TAccumulate> 
-            seedFactory, Func<TAccumulate, T, TAccumulate> accumulator)
+        public Parser<U> Reduce<U>(Func<U> seedFactory, Func<U, T, U> accumulator)
         {
-            return _inner.ReAggregate(seedFactory, accumulator);
+            return _inner.ReReduce(seedFactory, accumulator);
         }
         /// <summary>
         /// シーケンス要素の集約を行います。
@@ -65,14 +64,13 @@ namespace Unclazz.Parsec
         /// 最後の適用結果がパーサーの読み取り結果型となります。
         /// </para>
         /// </summary>
-        /// <typeparam name="TAccumulate"></typeparam>
+        /// <typeparam name="U"></typeparam>
         /// <param name="seed"></param>
         /// <param name="accumulator"></param>
         /// <returns></returns>
-        public Parser<TAccumulate> Aggregate<TAccumulate>(TAccumulate seed, 
-            Func<TAccumulate, T, TAccumulate> accumulator) where TAccumulate : struct
+        public Parser<U> Reduce<U>(U seed, Func<U, T, U> accumulator) where U : struct
         {
-            return _inner.ReAggregate(() => seed, accumulator);
+            return _inner.ReReduce(() => seed, accumulator);
         }
         /// <summary>
         /// シーケンス要素の集約を行います。
@@ -84,16 +82,15 @@ namespace Unclazz.Parsec
         /// この結果がパーサーの読み取り結果型となります。
         /// </para>
         /// </summary>
-        /// <typeparam name="TAccumulate"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <typeparam name="V"></typeparam>
         /// <param name="seedFactory"></param>
         /// <param name="accumulator"></param>
         /// <param name="resultSelector"></param>
         /// <returns></returns>
-        public Parser<TResult> Aggregate<TAccumulate, TResult>(Func<TAccumulate> seedFactory,
-            Func<TAccumulate, T, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
+        public Parser<V> Reduce<U, V>(Func<U> seedFactory, Func<U, T, U> accumulator, Func<U, V> resultSelector)
         {
-            return _inner.ReAggregate(seedFactory, accumulator, resultSelector);
+            return _inner.ReReduce(seedFactory, accumulator, resultSelector);
         }
         /// <summary>
         /// シーケンス要素の集約を行います。
@@ -104,17 +101,16 @@ namespace Unclazz.Parsec
         /// この結果がパーサーの読み取り結果型となります。
         /// </para>
         /// </summary>
-        /// <typeparam name="TAccumulate"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <typeparam name="V"></typeparam>
         /// <param name="seed"></param>
         /// <param name="accumulator"></param>
         /// <param name="resultSelector"></param>
         /// <returns></returns>
-        public Parser<TResult> Aggregate<TAccumulate, TResult>(TAccumulate seed,
-            Func<TAccumulate, T, TAccumulate> accumulator, Func<TAccumulate, TResult> 
-            resultSelector) where TAccumulate : struct
+        public Parser<V> Reduce<U, V>(U seed, Func<U, T, U> accumulator, Func<U, V> 
+            resultSelector) where U : struct
         {
-            return _inner.ReAggregate(() => seed, accumulator, resultSelector);
+            return _inner.ReReduce(() => seed, accumulator, resultSelector);
         }
         /// <summary>
         /// シーケンス要素のカウントを行います。
@@ -122,7 +118,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public Parser<int> Count()
         {
-            return _inner.ReAggregate(() => 0, (a, b) => a + 1);
+            return _inner.ReReduce(() => 0, (a, b) => a + 1);
         }
         /// <summary>
         /// シーケンス要素を文字列として連結します。
@@ -130,7 +126,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public Parser<string> Join()
         {
-            return _inner.ReAggregate(Join_SeedFactory, Join_Accumulator, Join_ResultSelector);
+            return _inner.ReReduce(Join_SeedFactory, Join_Accumulator, Join_ResultSelector);
         }
         /// <summary>
         /// シーケンス要素を文字列として連結します。
@@ -139,7 +135,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public Parser<string> Join(object sep)
         {
-            return _inner.ReAggregate(Join_SeedFactory, Join_Accumulator(sep), Join_ResultSelector);
+            return _inner.ReReduce(Join_SeedFactory, Join_Accumulator(sep), Join_ResultSelector);
         }
         StringBuilder Join_SeedFactory() => new StringBuilder();
         StringBuilder Join_Accumulator(StringBuilder a, T b) => a.Append(b);
