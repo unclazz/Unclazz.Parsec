@@ -538,9 +538,9 @@ namespace Unclazz.Parsec
         /// <param name="exactly">繰り返しの回数</param>
         /// <param name="sep">セパレーターのためのパーサー</param>
         /// <returns>繰り返しをサポートする新しいパーサー</returns>
-        public Parser<Seq<T>> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
+        public RepeatParser<T> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
-            return new SeqParser<T>(this, new RepeatConfiguration(min, max, exactly, sep));
+            return new RepeatParser<T>(this, min, max, exactly, sep);
         }
         /// <summary>
         /// パース対象に先行する指定された文字クラスをスキップするパーサーを返します。

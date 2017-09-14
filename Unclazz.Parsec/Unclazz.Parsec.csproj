@@ -52,6 +52,10 @@
     <Compile Include="CoreParsers\LookaheadParser.cs" />
     <Compile Include="CoreParsers\OptionalParser1.cs" />
     <Compile Include="CoreParsers\QuotedStringParser.cs" />
+    <Compile Include="CoreParsers\RepeatAggregate\AggregateConfiguration.cs" />
+    <Compile Include="CoreParsers\RepeatAggregate\RepeatAggregateParser.cs" />
+    <Compile Include="CoreParsers\RepeatAggregate\RepeatConfiguration.cs" />
+    <Compile Include="CoreParsers\RepeatAggregate\SeqParser.cs" />
     <Compile Include="CoreParsers\ThenTakeLeftParser.cs" />
     <Compile Include="CoreParsers\ThenTakeRightParser.cs" />
     <Compile Include="CoreParsers\TypedParser.cs" />
@@ -100,7 +104,7 @@
     <Compile Include="Readers\ResettableReader.cs" />
     <Compile Include="Readers\AbstractTextReader.cs" />
     <Compile Include="Readers\TextReaderProxy.cs" />
-    <Compile Include="CoreParsers\RepeatParser.cs" />
+    <Compile Include="RepeatParser.cs" />
     <Compile Include="CoreParsers\CaptureParser.cs" />
     <Compile Include="CharParser.cs" />
     <Compile Include="CoreParsers\YieldParser.cs" />
