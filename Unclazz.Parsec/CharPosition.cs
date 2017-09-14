@@ -81,7 +81,7 @@ namespace Unclazz.Parsec
         /// <returns>文字列表現</returns>
         public override string ToString()
         {
-            return string.Format("CharacterPosition(Line = {0}, Column = {1}, Index = {2})", Line, Column, Index);
+            return string.Format("CharPosition(Line = {0}, Column = {1}, Index = {2})", Line, Column, Index);
         }
         /// <summary>
         /// ハッシュコードを返します。

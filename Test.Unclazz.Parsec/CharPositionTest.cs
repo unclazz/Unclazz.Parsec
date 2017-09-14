@@ -50,10 +50,10 @@ namespace Test.Unclazz.Parsec
             var zeroNextColumnNextLine = zero.NextColumn.NextLine.ToString();
 
             // Assert
-            Assert.That(zeroString, Is.EqualTo("CharacterPosition(Line = 1, Column = 1, Index = 0)"));
-            Assert.That(zeroNextColumn, Is.EqualTo("CharacterPosition(Line = 1, Column = 2, Index = 1)"));
-            Assert.That(zeroNextLine, Is.EqualTo("CharacterPosition(Line = 2, Column = 1, Index = 1)"));
-            Assert.That(zeroNextColumnNextLine, Is.EqualTo("CharacterPosition(Line = 2, Column = 1, Index = 2)"));
+            Assert.That(zeroString, Is.EqualTo("CharPosition(Line = 1, Column = 1, Index = 0)"));
+            Assert.That(zeroNextColumn, Is.EqualTo("CharPosition(Line = 1, Column = 2, Index = 1)"));
+            Assert.That(zeroNextLine, Is.EqualTo("CharPosition(Line = 2, Column = 1, Index = 1)"));
+            Assert.That(zeroNextColumnNextLine, Is.EqualTo("CharPosition(Line = 2, Column = 1, Index = 2)"));
         }
         [Test]
         public void OperatorEqualEqual_Case1()
