@@ -421,6 +421,51 @@ namespace Unclazz.Parsec
         /// <param name="value">キャプチャ結果となる値</param>
         /// <returns></returns>
         protected Parser<U> Yield<U>(U value) => _factory.Yield(value);
+
+        /// <summary>
+        /// <c>"\\u"</c>もしくは任意の接頭辞から始まるUnicodeエスケープシーケンスを読み取ります。
+        /// Unicode拡張領域の文字は上位サロゲートと下位サロゲートのそれぞれ単体でパースされます。
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="cutIndex"></param>
+        /// <returns></returns>
+        public Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1)
+        {
+            return _factory.Utf16UnicodeEscape(prefix, cutIndex);
+        }
+        /// <summary>
+        /// 制御文字のエスケープシーケンスを読み取ります。
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public Parser<char> ControlEscape(char prefix = '\\')
+        {
+            return _factory.ControlEscape(prefix);
+        }
+        /// <summary>
+        /// 任意の文字のエスケープシーケンスを読み取ります。
+        /// 読み取り結果はその文字そのもの、つまりエスケープシーケンスから接頭辞を除去したものです。
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
+        {
+            return _factory.CharEscape(chars, prefix);
+        }
+        /// <summary>
+        /// 引用符で囲われた文字列を読み取ります。
+        /// デフォルトでは引用符自体を含めていかなるエスケープシーケンスも認識しません。
+        /// パース対象文字列にエスケープシーケンスが含まれる場合は、
+        /// 当該シーケンスを適切にハンドルするパーサーを引数で指定してください。
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <param name="escape"></param>
+        /// <returns></returns>
+        public Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
+        {
+            return _factory.QuotedString(quote, escape);
+        }
         #endregion
 
         /// <summary>
