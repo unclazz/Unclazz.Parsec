@@ -429,7 +429,7 @@ namespace Unclazz.Parsec
         /// <param name="prefix"></param>
         /// <param name="cutIndex"></param>
         /// <returns></returns>
-        public Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1)
+        protected Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1)
         {
             return _factory.Utf16UnicodeEscape(prefix, cutIndex);
         }
@@ -438,7 +438,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public Parser<char> ControlEscape(char prefix = '\\')
+        protected Parser<char> ControlEscape(char prefix = '\\')
         {
             return _factory.ControlEscape(prefix);
         }
@@ -449,7 +449,7 @@ namespace Unclazz.Parsec
         /// <param name="chars"></param>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
+        protected Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
         {
             return _factory.CharEscape(chars, prefix);
         }
@@ -462,7 +462,7 @@ namespace Unclazz.Parsec
         /// <param name="quote"></param>
         /// <param name="escape"></param>
         /// <returns></returns>
-        public Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
+        protected Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
         {
             return _factory.QuotedString(quote, escape);
         }
