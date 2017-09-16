@@ -113,6 +113,46 @@ namespace Unclazz.Parsec
             return _inner.ReReduce(() => seed, accumulator, resultSelector);
         }
         /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果がすべて<c>true</c>のときこのパーサーのキャプチャ値もまた<c>true</c>となります。
+        /// </summary>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public Parser<bool> All(Func<T, bool> pred)
+        {
+            return _inner.ReReduce(() => true, (a, b) => a && pred(b));
+        }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果にいずれかが<c>true</c>のときこのパーサーのキャプチャ値もまた<c>true</c>となります。
+        /// </summary>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public Parser<bool> Any(Func<T, bool> pred)
+        {
+            return _inner.ReReduce(() => false, (a, b) => a || pred(b));
+        }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果が<c>true</c>となる最初の要素がこのパーサーのキャプチャ値となります。
+        /// </summary>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public Parser<Optional<T>> First(Func<T, bool> pred)
+        {
+            return _inner.ReReduce(() => new Optional<T>(), (a, b) => (!a.Present || pred(b)) ? new Optional<T>(b) : a);
+        }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果が<c>true</c>となる最後の要素がこのパーサーのキャプチャ値となります。
+        /// </summary>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public Parser<Optional<T>> Last(Func<T, bool> pred)
+        {
+            return _inner.ReReduce(() => new Optional<T>(), (a, b) => pred(b) ? new Optional<T>(b) : a);
+        }
+        /// <summary>
         /// シーケンス要素のカウントを行います。
         /// </summary>
         /// <returns></returns>

@@ -111,6 +111,50 @@ namespace Unclazz.Parsec
         {
             return self.Map(a => a.Aggregate(seed, accumulator, resultSelector));
         }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果がすべて<c>true</c>のときこのパーサーのキャプチャ値もまた<c>true</c>となります。
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public static Parser<bool> All<T>(this Parser<Seq<T>> self, Func<T, bool> pred)
+        {
+            return self.Reduce(() => true, (a, b) => a && pred(b));
+        }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果にいずれかが<c>true</c>のときこのパーサーのキャプチャ値もまた<c>true</c>となります。
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public static Parser<bool> Any<T>(this Parser<Seq<T>> self, Func<T, bool> pred)
+        {
+            return self.Reduce(() => false, (a, b) => a || pred(b));
+        }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果が<c>true</c>となる最初の要素がこのパーサーのキャプチャ値となります。
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public static Parser<Optional<T>> First<T>(this Parser<Seq<T>> self, Func<T, bool> pred)
+        {
+            return self.Reduce(() => new Optional<T>(), (a, b) => (!a.Present || pred(b)) ? new Optional<T>(b) : a);
+        }
+        /// <summary>
+        /// シーケンス要素に述語関数を適用します。
+        /// 適用結果が<c>true</c>となる最後の要素がこのパーサーのキャプチャ値となります。
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="pred"></param>
+        /// <returns></returns>
+        public static Parser<Optional<T>> Last<T>(this Parser<Seq<T>> self, Func<T, bool> pred)
+        {
+            return self.Reduce(() => new Optional<T>(), (a, b) => pred(b) ? new Optional<T>(b) : a);
+        }
 
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
