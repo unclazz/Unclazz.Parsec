@@ -14,7 +14,7 @@ namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
 
                 if (max < 1) throw new ArgumentOutOfRangeException(nameof(max));
                 if (min < 0) throw new ArgumentOutOfRangeException(nameof(max));
-                if (max <= min) throw new ArgumentOutOfRangeException("max <= min");
+                if (max < min) throw new ArgumentOutOfRangeException(nameof(max));
 
                 Minimal = min;
                 Maximum = max;

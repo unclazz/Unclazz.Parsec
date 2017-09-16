@@ -52,6 +52,7 @@
     <Compile Include="CoreParsers\CharEscapeParserTest.cs" />
     <Compile Include="CoreParsers\LookaheadParserTest.cs" />
     <Compile Include="CoreParsers\QuotedStringParserTest.cs" />
+    <Compile Include="CoreParsers\RepeatConfigurationTest.cs" />
     <Compile Include="CoreParsers\TypedParserTest.cs" />
     <Compile Include="CoreParsers\ExactCharParserTest.cs" />
     <Compile Include="CoreParsers\DelegateParserTest.cs" />
