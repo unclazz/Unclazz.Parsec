@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Unclazz.Parsec.Readers;
 
 namespace Unclazz.Parsec
@@ -12,7 +9,7 @@ namespace Unclazz.Parsec
     /// 文字のシーケンスを読み取るためのクラスです。
     /// <para>
     /// あらかじめ<see cref="Mark"/>により文字位置を記録しておくことで、
-    /// <see cref="ITextReader.Read"/>により文字位置を先に進めたあとで
+    /// <see cref="Read"/>により文字位置を先に進めたあとで
     /// <see cref="Reset()"/>により文字位置を元に戻すことができます。
     /// </para>
     /// <para>
@@ -30,7 +27,7 @@ namespace Unclazz.Parsec
     /// 2つのメソッド呼び出しの間に前進した文字位置の区間の文字列が取得できます。
     /// </para>
     /// </summary>
-    public sealed class Reader : AutoDispose
+    public sealed class Reader : IDisposable
     {
         /// <summary>
         /// <see cref="TextReader"/>から<see cref="Reader"/>に暗黙のキャストを行います。
@@ -93,12 +90,17 @@ namespace Unclazz.Parsec
         {
             _inner = new ResettableReader(reader);
         }
+        /// <summary>
+        /// デストラクタです。
+        /// </summary>
+        ~Reader()
+        {
+            Dispose(false);
+        }
 
+        bool _disposed;
         readonly IResettableReader _inner;
 
-        /// <summary>
-        /// </summary>
-        protected override IDisposable Disposable => _inner;
         /// <summary>
         /// 現在の文字位置です。
         /// <see cref="Read"/>のたびにインクリメントされます。
@@ -170,5 +172,22 @@ namespace Unclazz.Parsec
         /// まだ<see cref="Mark"/>が呼び出された実績がない場合、このメソッドは何も行わず、例外もスローしません。
         /// </summary>
         public void Unmark() => _inner.Unmark();
+        /// <summary>
+        /// アンマネージ・リソースを解放します。
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                _inner.Dispose();
+            }
+            _disposed = true;
+        }
     }
 }

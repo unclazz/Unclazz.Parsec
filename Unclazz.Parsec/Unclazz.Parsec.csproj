@@ -74,7 +74,7 @@
     <Compile Include="ParserFactory.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="Parsers.cs" />
-    <Compile Include="AutoDispose.cs" />
+    <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="CoreParsers\BeginningOfFileParser.cs" />
     <Compile Include="Optional.cs" />
     <Compile Include="CharPosition.cs" />

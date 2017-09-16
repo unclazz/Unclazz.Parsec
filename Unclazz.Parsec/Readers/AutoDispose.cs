@@ -12,7 +12,7 @@ namespace Unclazz.Parsec
     /// 具象クラスは<see cref="Disposable"/>を通じて解放対象のアンマネージ・リソースへの参照を返します。
     /// </para>
     /// </summary>
-    public abstract class AutoDispose : IDisposable
+    abstract class AutoDispose : IDisposable
     {
         /// <summary>
         /// デストラクタです。
