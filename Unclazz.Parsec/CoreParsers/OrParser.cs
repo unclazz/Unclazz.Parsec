@@ -24,8 +24,8 @@ namespace Unclazz.Parsec.CoreParsers
                 return leftResult.AllowBacktrack(true);
             }
             input.Reset();
-            var rightResult = Right.Parse(input);
             input.Unmark();
+            var rightResult = Right.Parse(input);
             return rightResult.AllowBacktrack(true);
         }
         public override string ToString()

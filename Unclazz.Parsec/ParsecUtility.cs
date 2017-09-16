@@ -93,8 +93,8 @@ namespace Unclazz.Parsec
                 return leftResult.AllowBacktrack(true);
             }
             input.Reset();
-            var rightResult = right.Parse(input);
             input.Unmark();
+            var rightResult = right.Parse(input);
             return rightResult.AllowBacktrack(true);
         }
     }
