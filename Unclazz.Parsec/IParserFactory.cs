@@ -29,6 +29,18 @@ namespace Unclazz.Parsec
         /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         Parser WhileSpaceAndControls { get; }
+        /// <summary>
+        /// 数値リテラルを読み取ります。
+        /// <para>
+        /// 構文はJSONの<c>Number</c>型リテラルと同じです。
+        /// オプションの符合で始まり、整数部、オプションの小数部、そしてオプションの指数部を含みます。
+        /// </para>
+        /// </summary>
+        Parser<double> Number { get; }
+        /// <summary>
+        /// 16進数リテラルを読み取ります。
+        /// </summary>
+        Parser<int> HexDigits { get; }
         #endregion
 
         #region 定義済みパーサーを提供するメソッドの宣言

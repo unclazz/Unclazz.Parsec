@@ -69,6 +69,7 @@ namespace Unclazz.Parsec
         Parser _cachedEndOfFile;
         Parser _cachedWhileSpaceAndControls;
         Parser<int> _hexDigits;
+        Parser<double> _number;
 
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
@@ -86,6 +87,7 @@ namespace Unclazz.Parsec
             ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(this, CharClass.SpaceAndControl, 0));
 
         public Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
+        public Parser<double> Number => _number ?? (_number = new NumberParser());
         public Parser<char> Utf16UnicodeEscape(string prefix = "\\u")
         {
             return new Utf16UnicodeEscapeParser(prefix);

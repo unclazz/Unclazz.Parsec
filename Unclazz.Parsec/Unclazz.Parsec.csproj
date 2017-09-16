@@ -48,6 +48,7 @@
     <Compile Include="CoreParsers\EscapeCharInParser.cs" />
     <Compile Include="CoreParsers\ExactCharParser.cs" />
     <Compile Include="CoreParsers\HexDigitsParser.cs" />
+    <Compile Include="CoreParsers\NumberParser.cs" />
     <Compile Include="CoreParsers\LazyParser1.cs" />
     <Compile Include="CoreParsers\LookaheadParser.cs" />
     <Compile Include="CoreParsers\OptionalParser1.cs" />
