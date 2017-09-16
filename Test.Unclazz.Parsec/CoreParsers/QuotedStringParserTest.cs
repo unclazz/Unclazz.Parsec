@@ -188,5 +188,26 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(res.Successful);
             Assert.That(res.Capture, Is.EqualTo(text.Substring(1, text.Length - 2).Replace("\\", string.Empty)));
         }
+
+        [Test]
+        public void Parse_Case30_CSV()
+        {
+            // Arrange
+            var quoteEscape = CharEscape("\"", '"');
+            var quoted2 = QuotedString(escape: quoteEscape).Repeat(min: 2, sep: Char(','));
+
+            // Act
+            var csv = quoted2.Parse("\"\",\"111\",\"222\",\"\"\"333\",\"4\"\"44\",\"555\"\"\"");
+
+            // Assert
+            csv.IfSuccessful(a =>
+            {
+                Assert.That(a.ToArray(), Is.EqualTo(new[] { "", "111", "222", "\"333", "4\"44", "555\"" }));
+            },
+            m =>
+            {
+                Assert.Fail(m + csv);
+            });
+        }
     }
 }
