@@ -396,7 +396,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public Parser<T> Typed<T>()
+        public Parser<T> Typed<T>() where T : struct
         {
             return new TypedParser<T>(this);
         }
