@@ -6,8 +6,9 @@ namespace Unclazz.Parsec
     /// <summary>
     /// キャプチャを行わず結果型を持たないパーサーを表す抽象クラスです。
     /// <para>
+    /// <see cref="Parser{T}"/>とは対照的に、
     /// この抽象クラスから派生するパーサーはパースした値のキャプチャを行わず、パース成否のみを呼び出し元に返します。
-    /// キャプチャが必要な場合は<c>Capture()</c>や<c>Map(...)</c>メソッドを呼び出します。
+    /// キャプチャが必要な場合は<see cref="Capture"/>や<see cref="Map{U}(Func{string, U})"/>メソッドを呼び出します。
     /// </para>
     /// </summary>
     public abstract class Parser
