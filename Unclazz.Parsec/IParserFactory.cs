@@ -37,9 +37,8 @@ namespace Unclazz.Parsec
         /// Unicode拡張領域の文字は上位サロゲートと下位サロゲートのそれぞれ単体でパースされます。
         /// </summary>
         /// <param name="prefix"></param>
-        /// <param name="cutIndex"></param>
         /// <returns></returns>
-        Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1);
+        Parser<char> Utf16UnicodeEscape(string prefix = "\\u");
         /// <summary>
         /// 制御文字のエスケープシーケンスを読み取ります。
         /// </summary>

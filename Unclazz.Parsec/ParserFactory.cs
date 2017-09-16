@@ -86,9 +86,9 @@ namespace Unclazz.Parsec
             ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(this, CharClass.SpaceAndControl, 0));
 
         public Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
-        public Parser<char> Utf16UnicodeEscape(string prefix = "\\u", int cutIndex = -1)
+        public Parser<char> Utf16UnicodeEscape(string prefix = "\\u")
         {
-            return new Utf16UnicodeEscapeParser(prefix, cutIndex);
+            return new Utf16UnicodeEscapeParser(prefix);
         }
         public Parser<char> ControlEscape (char prefix = '\\')
         {
