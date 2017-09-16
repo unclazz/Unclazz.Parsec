@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Linq;
 using Unclazz.Parsec;
 using static Unclazz.Parsec.Parsers;
 
@@ -64,6 +65,48 @@ namespace Test.Unclazz.Parsec.CoreParsers
                 Assert.That(result.Successful);
                 Assert.That(result.Capture, Is.EqualTo('x'));
                 Assert.That(result.End.Index, Is.EqualTo(3));
+            },
+            m => Assert.Fail(m));
+        }
+        [Test]
+        [Description("Case4 - その文字そのものによるエスケープ - 読み取りが正しいこと")]
+        public void Parse_Case4()
+        {
+            // Arrange
+            var input = Reader.From("xaaxzxbbx_");
+            var parser = (Char('x') & (CharEscape("x", 'x') | CharIn("ab").Capture()).Repeat().Join() & Char('x'))
+                .Repeat(sep: Char('z'));
+
+            // Act
+            var result = parser.Parse(input);
+
+            // Assert
+            result.IfSuccessful(a =>
+            {
+                Assert.That(result.Successful);
+                Assert.That(result.Capture.ToArray(), Is.EqualTo(new[] { "aa", "bb" }));
+                Assert.That(result.End.Index, Is.EqualTo(9));
+            },
+            m => Assert.Fail(m));
+        }
+        [Test]
+        [Description("Case5 - その文字そのものによるエスケープ - 読み取りが正しいこと")]
+        public void Parse_Case5()
+        {
+            // Arrange
+            var input = Reader.From("xaxxaxzxbxxbx_");
+            var parser = (Char('x') & (CharEscape("x", 'x') | CharIn("ab").Capture()).Repeat().Join() & Char('x'))
+                .Repeat(sep: Char('z'));
+
+            // Act
+            var result = parser.Parse(input);
+
+            // Assert
+            result.IfSuccessful(a =>
+            {
+                Assert.That(result.Successful);
+                Assert.That(result.Capture.ToArray(), Is.EqualTo(new[] { "axa", "bxb" }));
+                Assert.That(result.End.Index, Is.EqualTo(13));
             },
             m => Assert.Fail(m));
         }
