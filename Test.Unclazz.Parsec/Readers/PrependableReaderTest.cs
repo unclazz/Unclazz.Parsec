@@ -19,6 +19,7 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("def", "", 'd', 'e')]
         [TestCase("de", "f", 'd', 'e')]
         [TestCase("", "", -1, -1)]
+        [Description("Read - Case1 - コンストラクタに渡されたプレフィクスと本文を順番に返す")]
         public void Read_Case1(string prefixText, string readerText, int firstChar, int secondChar)
         {
             // Arrange
@@ -37,6 +38,7 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("def", "", 'd', 'e')]
         [TestCase("de", "f", 'd', 'e')]
         [TestCase("", "", -1, -1)]
+        [Description("Peek - Case1 - 現在の文字位置の文字を返す")]
         public void Peek_Case1(string prefixText, string readerText, int firstChar, int secondChar)
         {
             // Arrange
@@ -56,7 +58,8 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("def", "", 1)]
         [TestCase("de", "f", 1)]
         [TestCase("", "", 0)]
-        public void Position_Case1(string prefixText, string readerText, int resultIndex)
+        [Description("Position.Index - Case1 - 現在の文字位置情報を返す")]
+        public void PositionIndex_Case1(string prefixText, string readerText, int resultIndex)
         {
             // Arrange
             var r = new PrependableReader(CharPosition.BeginningOfFile, prefixText.ToArray(), new StringReader(readerText));
@@ -75,7 +78,8 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("def", "", 3)]
         [TestCase("de", "f", 3)]
         [TestCase("", "", 0)]
-        public void Position_Case2(string prefixText, string readerText, int resultIndex)
+        [Description("Position.Index - Case2 - 現在の文字位置情報を返す（終端状態）")]
+        public void PositionIndex_Case2(string prefixText, string readerText, int resultIndex)
         {
             // Arrange
             var r = new PrependableReader(CharPosition.BeginningOfFile, prefixText.ToArray(), new StringReader(readerText));
@@ -93,7 +97,8 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("de\n", "fg")]
         [TestCase("de", "\nfg")]
         [TestCase("de", "\n")]
-        public void LinePosition_Case1(string prefixText, string readerText)
+        [Description("Position.Line - Case1 - 現在の文字位置情報を返す")]
+        public void PositionLine_Case1(string prefixText, string readerText)
         {
             // Arrange
             var r = new PrependableReader(CharPosition.BeginningOfFile, prefixText.ToArray(), new StringReader(readerText));
@@ -113,7 +118,8 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("a", "b\r\ncd")]
         [TestCase("de\r\nfg", "")]
         [TestCase("de\r", "\nfg")]
-        public void LinePosition_Case2(string prefixText, string readerText)
+        [Description("Position.Line - Case2 - 現在の文字位置情報を返す（終端状態）")]
+        public void PositionLine_Case2(string prefixText, string readerText)
         {
             // Arrange
             var r = new PrependableReader(CharPosition.BeginningOfFile, prefixText.ToArray(), new StringReader(readerText));
@@ -138,7 +144,8 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("de\n", "fg")]
         [TestCase("de", "\nfg")]
         [TestCase("de", "\n")]
-        public void ColumnPosition_Case1(string prefixText, string readerText)
+        [Description("Position.Column - Case1 - 現在の文字位置情報を返す")]
+        public void PositionColumn_Case1(string prefixText, string readerText)
         {
             // Arrange
             var r = new PrependableReader(CharPosition.BeginningOfFile, prefixText.ToArray(), new StringReader(readerText));
@@ -158,6 +165,7 @@ namespace Test.Unclazz.Parsec.Readers
         [TestCase("a", "bc")]
         [TestCase("ab", "c")]
         [TestCase("abc", "")]
+        [Description("Reattach - Case1 - 文字位置を引数で指定した値で初期化する")]
         public void Reattach_Case1(string prefixText, string readerText)
         {
             // Arrange
@@ -176,6 +184,101 @@ namespace Test.Unclazz.Parsec.Readers
             Assert.That(l, Is.EqualTo(1));
             Assert.That(c, Is.EqualTo(1));
             Assert.That(ch, Is.EqualTo(prefixText.Length == 0 ? readerText[1] : (prefixText + readerText)[0]));
+        }
+        [TestCase("", "0123456789")]
+        [TestCase("0", "123456789")]
+        [TestCase("01", "23456789")]
+        [TestCase("012", "3456789")]
+        [TestCase("0123", "456789")]
+        [TestCase("01234", "56789")]
+        [Description("Reattach - Case2 - プレフィクスを再設定するが、その際既存プレフィクスも考慮する")]
+        public void Reattach_Case2(string prefixText, string readerText)
+        {
+            // Arrange
+            var r = new PrependableReader(CharPosition.BeginningOfFile, prefixText.ToArray(), new StringReader(readerText));
+            r.Read();
+            r.Read();
+            r.Read();
+
+            // Act
+            r.Reattach(CharPosition.BeginningOfFile.NextColumn, "ab".ToArray());
+            var p = r.Position.Index;
+            var l = r.Position.Line;
+            var c = r.Position.Column;
+            var ch = r.Peek();
+
+            // Assert
+            Assert.That(p, Is.EqualTo(1));
+            Assert.That(l, Is.EqualTo(1));
+            Assert.That(c, Is.EqualTo(2));
+            Assert.That(ch, Is.EqualTo('a'));
+            Assert.That(r.ReadToEnd(), Is.EqualTo("ab3456789"));
+        }
+        [Test]
+        [Description("ReadToEnd - Case1 - 現在の文字位置から末尾までのテキストを返す")]
+        public void ReadToEnd_Case1()
+        {
+            // Arrange
+            var r0 = new PrependableReader(CharPosition.BeginningOfFile, "01234".ToArray(), new StringReader("56789"));
+            var r1 = new PrependableReader(CharPosition.BeginningOfFile, "01234".ToArray(), new StringReader("56789"));
+            r1.Read();
+
+            // Act
+            var s0 = r0.ReadToEnd();
+            var s1 = r1.ReadToEnd();
+
+            // Assert
+            Assert.That(s0, Is.EqualTo("0123456789"));
+            Assert.That(s1, Is.EqualTo("123456789"));
+        }
+        [Test]
+        [Description("ReadToEnd - Case2 - 文字位置がEOFの場合はnullを返す")]
+        public void ReadToEnd_Case2()
+        {
+            // Arrange
+            var r0 = new PrependableReader(CharPosition.BeginningOfFile, "01234".ToArray(), new StringReader("56789"));
+            var s0 = r0.ReadToEnd();
+
+            // Act
+            var s1 = r0.ReadToEnd();
+
+            // Assert
+            Assert.That(s1, Is.Null);
+        }
+        [Test]
+        [Description("ReadLine - Case1 - 現在の文字位置から末尾までのテキストを返す")]
+        public void ReadLine_Case1()
+        {
+            // Arrange
+            var r0 = new PrependableReader(CharPosition.BeginningOfFile, "012\n34".ToArray(), new StringReader("5\r\n6789"));
+            var r1 = new PrependableReader(CharPosition.BeginningOfFile, "012\r\n34".ToArray(), new StringReader("5\n6789"));
+            var r2 = new PrependableReader(CharPosition.BeginningOfFile, "012\r\n34".ToArray(), new StringReader("5\n6789"));
+            r1.Read();
+            r2.Read();
+            r2.Read();
+            r2.Read();
+
+            // Act
+            var s0 = r0.ReadLine();
+            var s0_1 = r0.ReadLine();
+            var s0_2 = r0.ReadLine();
+            var s0_3 = r0.ReadLine();
+            var s1 = r1.ReadLine();
+            var s1_1 = r1.ReadLine();
+            var s1_2 = r1.ReadLine();
+            var s1_3 = r1.ReadLine();
+            var s2 = r2.ReadLine();
+
+            // Assert
+            Assert.That(s0, Is.EqualTo("012"));
+            Assert.That(s0_1, Is.EqualTo("345"));
+            Assert.That(s0_2, Is.EqualTo("6789"));
+            Assert.That(s0_3, Is.Null);
+            Assert.That(s1, Is.EqualTo("12"));
+            Assert.That(s1_1, Is.EqualTo("345"));
+            Assert.That(s1_2, Is.EqualTo("6789"));
+            Assert.That(s1_3, Is.Null);
+            Assert.That(s2, Is.Empty);
         }
     }
 }

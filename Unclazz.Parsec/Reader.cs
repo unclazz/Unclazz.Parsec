@@ -130,7 +130,7 @@ namespace Unclazz.Parsec
         /// <see cref="Read"/>と異なり文字位置を進めることはありません。
         /// </para>
         /// </summary>
-        /// <returns>文字</returns>
+        /// <returns></returns>
         public int Peek() => _inner.Peek();
         /// <summary>
         /// データソースから現在の文字位置の文字を読み取って返します。
@@ -138,8 +138,22 @@ namespace Unclazz.Parsec
         /// データソースから読み取った文字を呼び出し元に返す前に、文字位置を次に進めます。
         /// </para>
         /// </summary>
-        /// <returns>文字</returns>
+        /// <returns></returns>
         public int Read() => _inner.Read();
+        /// <summary>
+        /// 現在の文字位置から行末までの文字を読み取り文字列として返します。
+        /// <para><see cref="Read"/>により文字位置が行頭から移動している場合、
+        /// このメソッドが返す文字列は当該行の文字すべてを含む文字列ではなくなる点に注意してください。
+        /// 文字位置がデータソースの末尾（EOF）に到達している場合、このメソッドは<c>null</c>を返します。</para>
+        /// </summary>
+        /// <returns></returns>
+        public string ReadLine() => _inner.ReadLine();
+        /// <summary>
+        /// 現在の文字位置からデータソースの末尾（EOF）までの文字を読み取り文字列として返します。
+        /// <para>文字位置がデータソースの末尾（EOF）に到達している場合、このメソッドは<c>null</c>を返します。</para>
+        /// </summary>
+        /// <returns></returns>
+        public string ReadToEnd() => _inner.ReadToEnd();
         /// <summary>
         /// あらかじめ印をつけておいた文字位置に戻ります。
         /// まだ<see cref="Mark"/>が呼び出された実績がない場合、このメソッドは何も行わず、例外もスローしません。

@@ -44,5 +44,6 @@ namespace Unclazz.Parsec.Readers
         /// </summary>
         /// <returns>文字列</returns>
         string ReadLine();
+        string ReadToEnd();
     }
 }
