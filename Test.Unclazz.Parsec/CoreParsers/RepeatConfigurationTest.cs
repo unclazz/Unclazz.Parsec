@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unclazz.Parsec;
 using Unclazz.Parsec.CoreParsers.RepeatAggregate;
 
 namespace Test.Unclazz.Parsec.CoreParsers
@@ -100,6 +101,19 @@ namespace Test.Unclazz.Parsec.CoreParsers
             // Assert
             Assert.That(() => new RepeatConfiguration(min: 6, max: 5),
                 Throws.InstanceOf<ArgumentOutOfRangeException>());
+        }
+        [Test]
+        public void Ctor_Case31_HasSeparator()
+        {
+            // Arrange
+            // Act
+            var c = new RepeatConfiguration(sep: Parsers.Char('a'));
+
+            // Assert
+            Assert.That(c.Breakable, Is.True);
+            Assert.That(c.Maximum, Is.EqualTo(int.MaxValue));
+            Assert.That(c.Minimal, Is.EqualTo(0));
+            Assert.That(c.Separator, Is.Not.Null);
         }
     }
 }
