@@ -32,12 +32,44 @@ namespace Unclazz.Parsec.Readers
         public override int Peek() => _prefix.Count == 0 ? _inner.Peek() : _prefix.Peek();
         public override int ReadSimply()
         {
-            return _prefix.Count == 0 ? _inner.Read() : _prefix.Dequeue();
+//#if DEBUG
+//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(start):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
+//                nameof(PrependableReader), nameof(ReadSimply),
+//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
+//                _inner.Peek(), Position);
+//#endif
+
+            var ch = _prefix.Count == 0 ? _inner.Read() : _prefix.Dequeue();
+
+//#if DEBUG
+//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(end):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
+//                nameof(PrependableReader), nameof(ReadSimply),
+//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
+//                _inner.Peek(), Position);
+//#endif
+
+            return ch;
         }
         public void Reattach(CharPosition p, Queue<char> prefix)
         {
+//#if DEBUG
+//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(start):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
+//                nameof(PrependableReader), nameof(Reattach),
+//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
+//                _inner.Peek(), Position);
+//#endif
+
             Position = p;
+            var origPrefix = _prefix;
             _prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
+            foreach (var e in origPrefix) _prefix.Enqueue(e);
+
+//#if DEBUG
+//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(end):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
+//                nameof(PrependableReader), nameof(Reattach),
+//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
+//                _inner.Peek(), Position);
+//#endif
         }
     }
 }

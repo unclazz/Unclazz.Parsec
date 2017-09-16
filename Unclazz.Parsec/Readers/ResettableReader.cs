@@ -102,8 +102,23 @@ namespace Unclazz.Parsec.Readers
         public int Peek() => _inner.Peek();
         public int Read()
         {
+//#if DEBUG
+//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(start):\t_backup={2}\t_inner.Peek={3}\tPosition={4}\t_marked={5}",
+//                nameof(ResettableReader), nameof(Read),
+//                _backup.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
+//                _inner.Peek(), Position, _marked);
+//#endif
+
             var ch = _inner.Read();
             if (_marked && ch != -1) _backup.Enqueue((char)ch);
+
+//#if DEBUG
+//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(end):\t_backup={2}\t_inner.Peek={3}\tPosition={4}\t_marked={5}",
+//                nameof(ResettableReader), nameof(Read),
+//                _backup.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
+//                _inner.Peek(), Position, _marked);
+//#endif
+
             return ch;
         }
         public string ReadLine() => _inner.ReadLine();
