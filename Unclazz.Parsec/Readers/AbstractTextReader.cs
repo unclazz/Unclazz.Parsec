@@ -45,7 +45,7 @@ namespace Unclazz.Parsec.Readers
         {
             var startedOn = Position.Line;
             var buff = new StringBuilder();
-            while (startedOn == Position.Line && EndOfFile)
+            while (startedOn == Position.Line && !EndOfFile)
             {
                 var ch = Read();
                 if (ch != '\r' && ch != '\n') buff.Append(ch);
