@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,63 +15,85 @@ namespace Unclazz.Parsec.Readers
         internal PrependableReader(ITextReader r)
         {
             Position = r.Position;
-            _prefix = new Queue<char>();
+            _prefixQueue = PrefixQueue.Empty;
             _inner = r ?? throw new ArgumentNullException(nameof(r));
         }
-        internal PrependableReader(CharPosition p, Queue<char> q, TextReader r) : this(p, q, new TextReaderProxy(r)) { }
-        internal PrependableReader(CharPosition p, Queue<char> q, ITextReader r)
+        internal PrependableReader(CharPosition p, char[] q, TextReader r) : this(p, q, new TextReaderProxy(r)) { }
+        internal PrependableReader(CharPosition p, char[] q, ITextReader r)
         {
             Position = p;
-            _prefix = q ?? throw new ArgumentNullException(nameof(q));
+            _prefixQueue = PrefixQueue.From(q ?? throw new ArgumentNullException(nameof(q)));
             _inner = r ?? throw new ArgumentNullException(nameof(r));
         }
 
-        Queue<char> _prefix;
+        PrefixQueue _prefixQueue;
         readonly ITextReader _inner;
 
         protected override IDisposable Disposable => _inner;
 
-        public override int Peek() => _prefix.Count == 0 ? _inner.Peek() : _prefix.Peek();
+        public override int Peek()
+        {
+            return _prefixQueue.HasItems ? _prefixQueue.Peek() : _inner.Peek();
+        }
         public override int ReadSimply()
         {
-//#if DEBUG
-//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(start):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
-//                nameof(PrependableReader), nameof(ReadSimply),
-//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
-//                _inner.Peek(), Position);
-//#endif
-
-            var ch = _prefix.Count == 0 ? _inner.Read() : _prefix.Dequeue();
-
-//#if DEBUG
-//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(end):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
-//                nameof(PrependableReader), nameof(ReadSimply),
-//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
-//                _inner.Peek(), Position);
-//#endif
-
-            return ch;
+            return _prefixQueue.HasItems ? _prefixQueue.Dequeue() : _inner.Read();
         }
-        public void Reattach(CharPosition p, Queue<char> prefix)
+        public void Reattach(CharPosition p, char[] prefix)
         {
-//#if DEBUG
-//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(start):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
-//                nameof(PrependableReader), nameof(Reattach),
-//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
-//                _inner.Peek(), Position);
-//#endif
-
             Position = p;
-            var origPrefix = _prefix;
-            _prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
-            foreach (var e in origPrefix) _prefix.Enqueue(e);
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
 
-//#if DEBUG
-//            Console.WriteLine("[DEBUG]\t{0}.{1}\t(end):\t_prefix={2}\t_inner.Peek={3}\tPosition={4}",
-//                nameof(PrependableReader), nameof(Reattach),
-//                _prefix.Aggregate(new StringBuilder(), (a, b) => a.Append(b), a => a.ToString()),
-//                _inner.Peek(), Position);
-//#endif
+            _prefixQueue = _prefixQueue.Prepend(prefix);
+        }
+
+        public sealed class PrefixQueue : IEnumerable<char>
+        {
+            public static PrefixQueue Empty => new PrefixQueue(new char[0]);
+            public static PrefixQueue From(char[] items)
+            {
+                if (items == null) throw new ArgumentNullException(nameof(items));
+                var copy = new char[items.Length];
+                items.CopyTo(copy, 0);
+                return new PrefixQueue(copy);
+            }
+
+            PrefixQueue(char[] items)
+            {
+                _items = items;
+            }
+
+            readonly char[] _items;
+            int _index;
+
+            public int Count => _items.Length - _index;
+            public bool HasItems => _index < _items.Length;
+            public char Peek() => HasItems ? _items[_index] : throw new InvalidOperationException("no item.");
+            public char Dequeue() => HasItems ? _items[_index++] : throw new InvalidOperationException("no item.");
+            public PrefixQueue Prepend(char[] prefix)
+            {
+                if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+                if (prefix.Length == 0) return this;
+                if (!HasItems) return From(prefix);
+
+                var restCount = Count;
+                var newItems = new char[prefix.Length + restCount];
+
+                Array.Copy(prefix, 0, newItems, 0, prefix.Length);
+                Array.Copy(_items, _index, newItems, prefix.Length, restCount);
+
+                return new PrefixQueue(newItems);
+            }
+
+            public IEnumerator<char> GetEnumerator()
+            {
+                while (HasItems) yield return Dequeue();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
     }
 }

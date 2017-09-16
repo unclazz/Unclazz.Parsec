@@ -74,18 +74,25 @@ namespace Unclazz.Parsec.Readers
                 {
                     // 一致する場合は完全リセット
                     // バックアップされていた要素すべてを使用してリセットを行う
-                    _inner.Reattach(lastMark, new Queue<char>(bkList));
+                    _inner.Reattach(lastMark, bkList);
                 }
                 else if (delta < bkCount)
                 {
                     // 一致しない場合は部分リセット
                     // バックアップされていた要素のうち必要な分だけを使用してリセットを行う
                     // バックアップの残りは再度バックアップ・キューに投入
-                    var newPrefix = new Queue<char>();
                     var newBkCount = bkCount - delta;
+                    var newPrefix = new char[bkCount - newBkCount];
                     for (var i = 0; i < bkCount; i++)
                     {
-                        (i < newBkCount ? _backup : newPrefix).Enqueue(bkList[i]);
+                        if (i < newBkCount)
+                        {
+                            _backup.Enqueue(bkList[i]);
+                        }
+                        else
+                        {
+                            newPrefix[i - newBkCount] = bkList[i];
+                        }
                     }
                     _inner.Reattach(lastMark, newPrefix);
                 }
