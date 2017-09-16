@@ -9,6 +9,15 @@ namespace Unclazz.Parsec
 {
     /// <summary>
     /// パーサーを表す抽象クラスです。
+    /// <para>
+    /// <see cref="Parser"/>とは対照的に、
+    /// この抽象クラスから派生するパーサーはパースした値のキャプチャを行い、パース成否の情報とともに呼び出し元に返します。
+    /// キャプチャ結果が不要な場合は<see cref="Untyped"/>を使用します。
+    /// </para>
+    /// <para>
+    /// <see cref="Parser{T}"/>はまた多くの<c>protected</c>なファクトリーメソッドを派生クラスに対して公開しています。
+    /// ライブラリのユーザー開発者はこの抽象クラスの派生クラスを宣言することで独自のパーサーを組み立てることができます。
+    /// </para>
     /// </summary>
     /// <typeparam name="T">パース結果の型</typeparam>
     public abstract class Parser<T>
