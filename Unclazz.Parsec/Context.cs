@@ -105,7 +105,7 @@ namespace Unclazz.Parsec
             if (LogAppender == null) return;
 
             // パース終了を示すログメッセージを作成してアペンダーをコール
-            var buff = MakeLabel('-').Append(result.Successful ? "Success(" : "Failure(");
+            var buff = MakeLabel('-');
             if (result.Successful) buff.Append("Success(");
             else buff.Append("Failure(").Append(result.Message);
             if (!result.CanBacktrack) buff.Append(", cut");
@@ -120,7 +120,7 @@ namespace Unclazz.Parsec
             if (LogAppender == null) return;
 
             // パース終了を示すログメッセージを作成してアペンダーをコール
-            var buff = MakeLabel('-').Append(result.Successful ? "Success(" : "Failure(");
+            var buff = MakeLabel('-');
             if (result.Successful) buff.Append("Success(").Append(result.Capture);
             else buff.Append("Failure(").Append(result.Message);
             if (!result.CanBacktrack) buff.Append(", cut");
