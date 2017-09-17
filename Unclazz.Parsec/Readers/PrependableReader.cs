@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Unclazz.Parsec.Readers
 {
-    sealed partial class PrependableReader : AbstractTextReader
+    sealed class PrependableReader : AbstractTextReader
     {
         internal PrependableReader(TextReader r) : this(new TextReaderProxy(r)) { }
         internal PrependableReader(ITextReader r)

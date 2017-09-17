@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Unclazz.Parsec.Readers.PrependableReader;
+using Unclazz.Parsec.Readers;
 
 namespace Test.Unclazz.Parsec.Readers
 {
