@@ -10,27 +10,7 @@ namespace Unclazz.Parsec
     /// </summary>
     public static class Parsers
     {
-        static readonly ParserFactory _defaultFactory = ParserFactory.Default;
-        static IParserFactory _factory = _defaultFactory;
-
-        /// <summary>
-        /// <see cref="Parsers"/>が使用するファクトリー・オブジェクトにアクセスします。
-        /// </summary>
-        public static IParserFactory Factory
-        {
-            get => _factory;
-            set => _factory = value ?? throw new ArgumentNullException(nameof(value));
-        }
-        /// <summary>
-        /// <see cref="Parsers"/>が使用するファクトリー・オブジェクトの構成を変更します。
-        /// </summary>
-        /// <param name="act"></param>
-        public static void Configure(Action<IParserConfigurer> act)
-        {
-            var newFactory = new ParserFactory(Factory.Configuration);
-            act(newFactory);
-            Factory = newFactory;
-        }
+        readonly static IParserFactory _factory = new ParserFactory();
 
         #region 定義済みパーサーを提供するプロパティの宣言
         /// <summary>

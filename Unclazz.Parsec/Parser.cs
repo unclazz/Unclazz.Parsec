@@ -106,7 +106,7 @@ namespace Unclazz.Parsec
             _name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        readonly ParserFactory _factory = ParserFactory.Default;
+        readonly static ParserFactory _factory = new ParserFactory();
         readonly string _name;
 
         /// <summary>

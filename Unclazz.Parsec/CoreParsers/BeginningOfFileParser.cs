@@ -6,7 +6,7 @@
     /// </summary>
     sealed class BeginningOfFileParser : Parser
     {
-        internal BeginningOfFileParser(IParserConfiguration conf) : base("BOF") { }
+        internal BeginningOfFileParser() : base("BOF") { }
         protected override ResultCore DoParse(Context ctx)
         {
             var p = ctx.Source.Position;

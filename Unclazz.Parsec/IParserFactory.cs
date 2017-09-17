@@ -10,11 +10,6 @@ namespace Unclazz.Parsec
     /// </summary>
     public interface IParserFactory
     {
-        /// <summary>
-        /// このファクトリーで使用されるコンフィギュレーションです。
-        /// </summary>
-        IParserConfiguration Configuration { get; }
-
         #region 定義済みパーサーを提供するプロパティの宣言
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。

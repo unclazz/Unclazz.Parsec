@@ -8,63 +8,10 @@ using Unclazz.Parsec.CoreParsers;
 namespace Unclazz.Parsec
 {
 
-    sealed class ParserFactory : IParserConfiguration, IParserConfigurer, IParserFactory
+    sealed class ParserFactory : IParserFactory
     {
-        internal static ParserFactory Default => new ParserFactory();
-
-        ParserFactory() { }
-        internal ParserFactory(IParserConfiguration original)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-            SetAutoSkip(original.AutoSkip);
-            SetParseLogging(original.ParseLogging);
-            SetSkipTarget(original.SkipTarget);
-            SetParseLogger(original.ParseLogger);
-        }
-
-        #region IParserConfigurationメンバーの宣言
-        CharClass _skipTarget = CharClass.SpaceAndControl;
-        Action<string> _parseLogger = Console.WriteLine;
-        bool _autoSkip;
-        bool _parseLogging;
-
-        public Action<string> ParseLogger => _parseLogger;
-        public bool ParseLogging => _parseLogging;
-        public CharClass SkipTarget => _skipTarget;
-        public bool AutoSkip => _autoSkip;
-
-        public IParserConfiguration Copy()
-        {
-            return new ParserFactory(this);
-        }
-        #endregion
-
-
-        #region IParserConfigurerメンバーの宣言
-        public IParserConfigurer SetSkipTarget(CharClass clazz)
-        {
-            _skipTarget = clazz ?? throw new ArgumentNullException(nameof(clazz));
-            return this;
-        }
-        public IParserConfigurer SetParseLogger(Action<string> logger)
-        {
-            _parseLogger = logger ?? throw new ArgumentNullException(nameof(logger));
-            return this;
-        }
-        public IParserConfigurer SetAutoSkip(bool onOff)
-        {
-            _autoSkip = onOff;
-            return this;
-        }
-        public IParserConfigurer SetParseLogging(bool onOff)
-        {
-            _parseLogging = onOff;
-            return this;
-        }
-        #endregion
 
         #region IParserFactoryメンバーの宣言
-        public IParserConfiguration Configuration { get; }
         Parser _cachedBeginningOfFile;
         Parser _cachedEndOfFile;
         Parser _cachedWhileSpaceAndControls;
@@ -74,7 +21,7 @@ namespace Unclazz.Parsec
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
         /// </summary>
-        public Parser BeginningOfFile => _cachedEndOfFile ?? (_cachedBeginningOfFile = new BeginningOfFileParser(this));
+        public Parser BeginningOfFile => _cachedEndOfFile ?? (_cachedBeginningOfFile = new BeginningOfFileParser());
         /// <summary>
         /// データソースの終端（EOF）にだけマッチするパーサーです。
         /// </summary>
