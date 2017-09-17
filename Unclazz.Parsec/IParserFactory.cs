@@ -8,7 +8,7 @@ namespace Unclazz.Parsec
     /// <summary>
     /// 定義済みパーサーのファクトリーオブジェクトを表すインターフェースです。
     /// </summary>
-    public interface IParserFactory
+    interface IParserFactory
     {
         #region 定義済みパーサーを提供するプロパティの宣言
         /// <summary>
