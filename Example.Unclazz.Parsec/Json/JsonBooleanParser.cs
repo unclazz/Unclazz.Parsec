@@ -12,9 +12,9 @@ namespace Example.Unclazz.Parsec
             // マッチした文字列をキャプチャして、それをマッパーにより真偽値に変換
             _boolean = KeywordIn("false", "true").Capture().Map(a => JsonObject.Of(a == "true"));
         }
-        protected override ResultCore<IJsonObject> DoParse(Reader input)
+        protected override ResultCore<IJsonObject> DoParse(Context ctx)
         {
-            return _boolean.Parse(input);
+            return _boolean.Parse(ctx);
         }
     }
 }

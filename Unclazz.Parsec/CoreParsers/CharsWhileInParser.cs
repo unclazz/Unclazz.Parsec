@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharsWhileInParser : Parser
     {
-        internal CharsWhileInParser(IParserConfiguration conf, CharClass clazz, int min) : base(conf)
+        internal CharsWhileInParser(CharClass clazz, int min) : base("CharsWhileIn")
         {
             _clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
             if (min < 0) throw new ArgumentOutOfRangeException(nameof(min));
@@ -15,14 +15,14 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _min;
         readonly CharClass _clazz;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
             var count = 0;
-            while (!input.EndOfFile)
+            while (!ctx.Source.EndOfFile)
             {
-                var ch = (char)input.Peek();
+                var ch = (char)ctx.Source.Peek();
                 if (!_clazz.Contains(ch)) break;
-                input.Read();
+                ctx.Source.Read();
                 count++;
             }
             if (_min <= count)
@@ -36,10 +36,6 @@ namespace Unclazz.Parsec.CoreParsers
                     _min, count);
                 return Failure(m);
             }
-        }
-        public override string ToString()
-        {
-            return string.Format("CharsWhileIn({0}, min = {1})", _clazz, _min);
         }
     }
 }

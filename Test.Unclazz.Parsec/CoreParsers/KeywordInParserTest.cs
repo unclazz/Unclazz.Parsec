@@ -30,24 +30,6 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(() => KeywordIn("hello", null), Throws.InstanceOf<ArgumentException>());
         }
         [Test]
-        public void ToString_Case1()
-        {
-            // Arrange
-            var p0 = KeywordIn("hello", "bonjour");
-            var p1 = KeywordIn("h", "hello");
-            var p2 = KeywordIn("hello");
-
-            // Act
-            var r0 = p0.ToString();
-            var r1 = p1.ToString();
-            var r2 = p2.ToString();
-
-            // Assert
-            Assert.That(r0, Is.EqualTo("StringIn(bonjour, hello)"));
-            Assert.That(r1, Is.EqualTo("StringIn(h, hello)"));
-            Assert.That(r2, Is.EqualTo("StringIn(hello)"));
-        }
-        [Test]
         public void Parse_Case1()
         {
             // Arrange

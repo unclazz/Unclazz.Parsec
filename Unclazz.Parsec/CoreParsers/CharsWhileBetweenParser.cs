@@ -5,7 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharsWhileBetweenParser : Parser
     {
-        internal CharsWhileBetweenParser(IParserConfiguration conf, char start, char end, int min) : base(conf)
+        internal CharsWhileBetweenParser(char start, char end, int min) : base("CharsWhileBetween")
         {
             if (min < 0) throw new ArgumentOutOfRangeException(nameof(min));
             _min = min;
@@ -17,14 +17,14 @@ namespace Unclazz.Parsec.CoreParsers
         readonly char _start;
         readonly char _end;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
             var count = 0;
-            while (!input.EndOfFile)
+            while (!ctx.Source.EndOfFile)
             {
-                var ch = input.Peek();
+                var ch = ctx.Source.Peek();
                 if (ch < _start || _end < ch) break;
-                input.Read();
+                ctx.Source.Read();
                 count++;
             }
             if (_min <= count)
@@ -38,10 +38,6 @@ namespace Unclazz.Parsec.CoreParsers
                     _min, count);
                 return Failure(m);
             }
-        }
-        public override string ToString()
-        {
-            return string.Format("CharsWhileBetween(start = {0}, end = {1}, min = {2})", _start, _end, _min);
         }
     }
 }

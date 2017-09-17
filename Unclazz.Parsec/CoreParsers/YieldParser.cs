@@ -8,20 +8,15 @@
     /// <typeparam name="TResult">このパーサーの結果型</typeparam>
     sealed class YieldParser<TResult> : Parser<TResult>
     {
-        internal YieldParser(TResult value) : this(ParserFactory.Default, value) { }
-        internal YieldParser(IParserConfiguration conf, TResult value) : base(conf)
+        internal YieldParser(TResult value) : base("Yield")
         {
             _value = value;
         }
         readonly TResult _value;
-        protected override ResultCore<TResult> DoParse(Reader input)
+        protected override ResultCore<TResult> DoParse(Context ctx)
         {
             // いつでも成功
             return Success(_value);
-        }
-        public override string ToString()
-        {
-            return string.Format("Yield({0})");
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     sealed class QuotedStringParser : Parser<string>
     {
-        internal QuotedStringParser(char quote = '"', Parser<char> escape = null)
+        internal QuotedStringParser(char quote = '"', Parser<char> escape = null) : base("QuotedString")
         {
             var q = Char(quote);
             var nq = CharIn(!CharClass.Exact(quote)).Capture();
@@ -10,9 +10,9 @@
             else _string = q & (escape | nq).Repeat().Join() & q;
         }
         readonly Parser<string> _string;
-        protected override ResultCore<string> DoParse(Reader input)
+        protected override ResultCore<string> DoParse(Context ctx)
         {
-            return _string.Parse(input);
+            return _string.Parse(ctx);
         }
     }
 }

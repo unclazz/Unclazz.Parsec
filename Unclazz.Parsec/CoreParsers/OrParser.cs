@@ -4,8 +4,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class OrParser<T> : Parser<T>
     {
-        internal OrParser(Parser<T> left, Parser<T> right) : this(ParserFactory.Default, left, right) { }
-        internal OrParser(IParserConfiguration conf, Parser<T> left, Parser<T> right) : base(conf)
+        internal OrParser(Parser<T> left, Parser<T> right) : base("Or")
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -14,28 +13,23 @@ namespace Unclazz.Parsec.CoreParsers
         internal Parser<T> Left { get; }
         internal Parser<T> Right { get; }
 
-        protected override ResultCore<T> DoParse(Reader input)
+        protected override ResultCore<T> DoParse(Context ctx)
         {
-            input.Mark();
-            var leftResult = Left.Parse(input);
+            ctx.Source.Mark();
+            var leftResult = Left.Parse(ctx);
             if (leftResult.Successful || !leftResult.CanBacktrack)
             {
-                input.Unmark();
+                ctx.Source.Unmark();
                 return leftResult.AllowBacktrack(true);
             }
-            input.Reset();
-            input.Unmark();
-            var rightResult = Right.Parse(input);
+            ctx.Source.Reset(true);
+            var rightResult = Right.Parse(ctx);
             return rightResult.AllowBacktrack(true);
-        }
-        public override string ToString()
-        {
-            return string.Format("Or({0}, {1})", Left, Right);
         }
     }
     sealed class CharOrParser : CharParser
     {
-        internal CharOrParser(CharParser left, CharParser right) : base(left.Configuration)
+        internal CharOrParser(CharParser left, CharParser right) : base("Or")
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -44,13 +38,11 @@ namespace Unclazz.Parsec.CoreParsers
         internal CharParser Left { get; }
         internal CharParser Right { get; }
 
-        protected override ResultCore DoParse(Reader input) => ParsecUtility.Or(input, Left, Right);
-        public override string ToString() => string.Format("Or({0}, {1})", Left, Right);
+        protected override ResultCore DoParse(Context ctx) => ParsecUtility.Or(ctx, Left, Right);
     }
     sealed class OrParser : Parser
     {
-        internal OrParser(Parser left, Parser right) : this(ParserFactory.Default, left, right) { }
-        internal OrParser(IParserConfiguration conf, Parser left, Parser right) : base(conf)
+        internal OrParser(Parser left, Parser right) : base("Or")
         {
             Left = left ?? throw new ArgumentNullException(nameof(left));
             Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -59,7 +51,6 @@ namespace Unclazz.Parsec.CoreParsers
         internal Parser Left { get; }
         internal Parser Right { get; }
 
-        protected override ResultCore DoParse(Reader input) => ParsecUtility.Or(input, Left, Right);
-        public override string ToString() => string.Format("Or({0}, {1})", Left, Right);
+        protected override ResultCore DoParse(Context ctx) => ParsecUtility.Or(ctx, Left, Right);
     }
 }

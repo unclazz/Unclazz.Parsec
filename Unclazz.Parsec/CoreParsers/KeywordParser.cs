@@ -4,15 +4,10 @@ using System.Text;
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    /// <summary>
-    /// 指定されたキーワードを読み取るパーサーです。
-    /// カット（Cut）を行う文字位置を指定することができます。
-    /// </summary>
     sealed class KeywordParser : Parser
     {
-        internal KeywordParser(string keyword) : this(ParserFactory.Default, keyword) { }
-        internal KeywordParser(IParserConfiguration conf, string keyword) : this(conf, keyword, -1) { }
-        internal KeywordParser(IParserConfiguration conf, string keyword, int cutIndex) : base(conf)
+        internal KeywordParser(string keyword) : this(keyword, -1) { }
+        internal KeywordParser(string keyword, int cutIndex) : base("Keyword")
         {
             // カットをONにする文字位置（文字境界）は-1以上 かつ 0以外であること
             if (cutIndex < -1 || cutIndex == 0) throw new ArgumentOutOfRangeException(nameof(cutIndex));
@@ -30,7 +25,7 @@ namespace Unclazz.Parsec.CoreParsers
         readonly int _cut;
         readonly string _keyword;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
             // キーワードの左側から順番に文字の照合を実施
             // ＊照合中にEOFに到達した場合も通常の文字と同じ比較処理で検出し
@@ -40,7 +35,7 @@ namespace Unclazz.Parsec.CoreParsers
                 // 期待される文字
                 var expected = _keyword[i];
                 // 実際の文字
-                var actual = input.Read();
+                var actual = ctx.Source.Read();
                 // 比較を行う
                 if (expected != actual)
                 {
@@ -51,11 +46,6 @@ namespace Unclazz.Parsec.CoreParsers
                 }
             }
             return Success();
-        }
-        public override string ToString()
-        {
-            if (_cut == -1) return string.Format("Keyword({0})", _keyword);
-            return string.Format("Keyword({0}, cutIndex = {1})", _keyword, _cut);
         }
     }
 }

@@ -4,18 +4,18 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class NotParser<T> : Parser
     {
-        internal NotParser(IParserConfiguration conf, Parser<T> original) : base(conf)
+        internal NotParser(Parser<T> original) : base("Not")
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
         readonly Parser<T> _original;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
-            input.Mark();
-            var p = input.Position;
-            var originalResult = _original.Parse(input);
+            ctx.Source.Mark();
+            var p = ctx.Source.Position;
+            var originalResult = _original.Parse(ctx);
             if (originalResult.Successful)
             {
                 var m = string.Format("parsing with {0} must be failed but actualy be successful.", _original);
@@ -23,30 +23,25 @@ namespace Unclazz.Parsec.CoreParsers
             }
             else
             {
-                input.Reset();
-                input.Unmark();
+                ctx.Source.Reset();
+                ctx.Source.Unmark();
                 return Success(originalResult.CanBacktrack);
             }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Not({0})", _original);
         }
     }
     sealed class NotParser : Parser
     {
-        internal NotParser(IParserConfiguration conf, Parser original) : base(conf)
+        internal NotParser(Parser original) : base("Not")
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
         readonly Parser _original;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
-            input.Mark();
-            var originalResult = _original.Parse(input);
+            ctx.Source.Mark();
+            var originalResult = _original.Parse(ctx);
             if (originalResult.Successful)
             {
                 var m = string.Format("parsing with {0} must be failed but actualy be successful.", _original);
@@ -54,15 +49,9 @@ namespace Unclazz.Parsec.CoreParsers
             }
             else
             {
-                input.Reset();
-                input.Unmark();
+                ctx.Source.Reset(true);
                 return Success(originalResult.CanBacktrack);
             }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Not({0})", _original);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Unclazz.Parsec.CoreParsers;
 
 namespace Unclazz.Parsec
@@ -21,7 +22,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator !(Parser operand)
         {
-            return new NotParser(operand.Configuration, operand);
+            return new NotParser(operand);
         }
         /// <summary>
         /// <see cref="Or(Parser)"/>と同義です。
@@ -31,7 +32,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator |(Parser left, Parser right)
         {
-            return new OrParser(left.Configuration, left, right);
+            return new OrParser(left, right);
         }
         /// <summary>
         /// <see cref="Or(Parser)"/>と同義です。
@@ -42,7 +43,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいインスタンス</returns>
         public static Parser operator |(Parser left, string right)
         {
-            return new OrParser(left.Configuration, left, new KeywordParser(right));
+            return new OrParser(left, new KeywordParser(right));
         }
         /// <summary>
         /// <see cref="Or(Parser)"/>と同義です。
@@ -94,29 +95,19 @@ namespace Unclazz.Parsec
         /// </summary>
         protected Parser()
         {
-            _factory = ParserFactory.Default;
-            _autoSkip = _factory.AutoSkip;
-            _parseLogging = _factory.ParseLogging;
+            _name = Regex.Replace(GetType().Name, "Parser$", string.Empty);
         }
         /// <summary>
         /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
         /// </summary>
         /// <param name="config"></param>
-        protected Parser(IParserConfiguration config)
+        protected Parser(string name)
         {
-            _factory = new ParserFactory(config) ?? throw new ArgumentNullException(nameof(config));
-            _autoSkip = _factory.AutoSkip;
-            _parseLogging = _factory.ParseLogging;
+            _name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        readonly ParserFactory _factory;
-        bool _autoSkip;
-        bool _parseLogging;
-
-        /// <summary>
-        /// このパーサーのコンフィギュレーションです。
-        /// </summary>
-        public IParserConfiguration Configuration => _factory;
+        readonly ParserFactory _factory = ParserFactory.Default;
+        readonly string _name;
 
         /// <summary>
         /// パースを行います。
@@ -131,7 +122,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="input">入力データ</param>
         /// <returns>パース結果</returns>
-        protected abstract ResultCore DoParse(Reader input);
+        protected abstract ResultCore DoParse(Context input);
 
         /// <summary>
         /// パース成功を表す<see cref="ResultCore"/>インスタンスを生成します。
@@ -190,56 +181,15 @@ namespace Unclazz.Parsec
         /// <returns>パース結果</returns>
         public Result Parse(Reader input)
         {
-            if (_autoSkip) SkipWhileIn(input, _factory.SkipTarget);
-            var start = input.Position;
-            if (_parseLogging)
-            {
-                LogPreParse(input.Position, input.Peek());
-                var res = DoParse(input);
-                LogPostParse(input.Position, input.Peek(), res);
-                return res.AttachPosition(start, input.Position);
-            }
-            return DoParse(input).AttachPosition(start, input.Position);
+            return Parse(new Context(input));
         }
-        /// <summary>
-        /// このパーサーのコンフィギュレーションを変更します。
-        /// </summary>
-        /// <param name="act">変更を行うアクション</param>
-        public void Configure(Action<IParserConfigurer> act)
+        public Result Parse(Context ctx)
         {
-            act(_factory);
-            _autoSkip = _factory.AutoSkip;
-            _parseLogging = _factory.ParseLogging;
-        }
-        void LogPreParse(CharPosition pos, int peek)
-        {
-            WriteLine("##### Pre-Parse #####");
-            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
-            WriteLine("Position   : {0} ", pos);
-            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
-        }
-        void LogPostParse(CharPosition pos, int peek, ResultCore result)
-        {
-            WriteLine("##### Post-Parse #####");
-            WriteLine("Parser     : {0} ", ParsecUtility.ObjectTypeToString(this));
-            WriteLine("Successful : {0} ", result.Successful);
-            if (!result.Successful)
-                WriteLine("Message    : {0} ", result.Message);
-            WriteLine("Position   : {0} ", pos);
-            WriteLine("Char       : {0} ", ParsecUtility.CharToString(peek));
-        }
-        void WriteLine(string format, params object[] args)
-        {
-            _factory.ParseLogger(string.Format(format, args));
-        }
-        void SkipWhileIn(Reader r, CharClass c)
-        {
-            while (!r.EndOfFile)
-            {
-                var ch = (char)r.Peek();
-                if (!c.Contains(ch)) break;
-                r.Read();
-            }
+            var start = ctx.Source.Position;
+            ctx.PreParse(_name);
+            var resultCore = DoParse(ctx);
+            ctx.PostParse(resultCore);
+            return resultCore.AttachPosition(start, ctx.Source.Position);
         }
 
         /// <summary>
@@ -258,7 +208,7 @@ namespace Unclazz.Parsec
         public Parser<string> Capture()
         {
 
-            return new CaptureParser(Configuration, this);
+            return new CaptureParser(this);
         }
         /// <summary>
         /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックを無効化します。
@@ -271,7 +221,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Cut()
         {
-            return new CutParser(Configuration, this);
+            return new CutParser(this);
         }
         /// <summary>
         /// <c>Capture().Map(...)</c>と同義です。
@@ -313,7 +263,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Or(Parser another)
         {
-            return new OrParser(Configuration, this, another);
+            return new OrParser(this, another);
         }
         /// <summary>
         /// このパーサーのパースの結果成否にかかわらずパース成功とみなす新しいパーサーを返します。
@@ -321,7 +271,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser OrNot()
         {
-            return new OptionalParser(Configuration, this);
+            return new OptionalParser(this);
         }
         /// <summary>
         /// シーケンスを読み取るパーサーを生成します。
@@ -349,17 +299,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser AutoSkip(CharClass target)
         {
-            if (target == null) throw new ArgumentNullException(nameof(target));
-            return new SkipParser(Configuration, this, true, target);
-        }
-        /// <summary>
-        /// パース対象に先行する空白文字をスキップするパーサーを返します。
-        /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
-        /// </summary>
-        /// <returns>新しいパーサー</returns>
-        public Parser AutoSkip()
-        {
-            return new SkipParser(Configuration, this, true, CharClass.SpaceAndControl);
+            return new SkipParser(this, target);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -374,7 +314,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Then(Parser another)
         {
-            return new ThenParser(Configuration, this, another);
+            return new ThenParser(this, another);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。
@@ -389,7 +329,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Then<T>(Parser<T> another)
         {
-            return new ThenTakeRightParser<T>(Configuration, this, another);
+            return new ThenTakeRightParser<T>(this, another);
         }
         /// <summary>
         /// パース結果型を持つパーサーに変換します。

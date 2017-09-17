@@ -19,8 +19,6 @@ namespace Example.Unclazz.Parsec
 
         public JsonExprParser()
         {
-            Configure(c => c.SetAutoSkip(true));
-
             // JSON表現はObject・Arrayの要素としても登場。
             // 結果、jsonExpr・_array・_objectは再帰的関係を持つ。
             // C#言語仕様により、同じスコープ内でも後続行（下方の行）で宣言される変数は
@@ -48,9 +46,9 @@ namespace Example.Unclazz.Parsec
                 a0 => a0.Build());
         }
 
-        protected override ResultCore<IJsonObject> DoParse(Reader input)
+        protected override ResultCore<IJsonObject> DoParse(Context ctx)
         {
-            return jsonExpr.Parse(input);
+            return jsonExpr.Parse(ctx);
         }
     }
 }

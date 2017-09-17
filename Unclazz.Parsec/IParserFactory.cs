@@ -128,14 +128,14 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        Parser For(Func<Reader, Result> func);
+        Parser For(Func<Context, Result> func);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        Parser<T> For<T>(Func<Reader, Result<T>> func);
+        Parser<T> For<T>(Func<Context, Result<T>> func);
         /// <summary>
         /// 指定したキーワードにのみマッチするパーサーを生成します。
         /// <para>

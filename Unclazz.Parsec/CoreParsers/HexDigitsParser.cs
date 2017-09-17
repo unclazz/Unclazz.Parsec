@@ -5,16 +5,16 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class HexDigitsParser : Parser<int>
     {
-        internal HexDigitsParser(int min = 1, int max = -1, int exactly = -1)
+        internal HexDigitsParser(int min = 1, int max = -1, int exactly = -1) : base("HexDigits")
         {
             if (min < 1) throw new ArgumentOutOfRangeException(nameof(min));
             _hexDigits = CharIn(CharClass.HexDigit).Capture()
                 .Map(HexDigits_HexDigitToInt).Repeat(min, max, exactly)
                 .Reduce((a, b) => a * 16 + b);
         }
-        protected override ResultCore<int> DoParse(Reader input)
+        protected override ResultCore<int> DoParse(Context ctx)
         {
-            return _hexDigits.Parse(input);
+            return _hexDigits.Parse(ctx);
         }
         readonly Parser<int> _hexDigits;
         int HexDigits_HexDigitToInt(char ch)

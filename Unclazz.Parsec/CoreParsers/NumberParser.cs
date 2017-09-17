@@ -6,7 +6,7 @@ namespace Unclazz.Parsec.CoreParsers
     sealed class NumberParser : Parser<double>
     {
         readonly Parser<double> _number;
-        public NumberParser()
+        public NumberParser() : base("Number")
         {
             var signOpt = CharIn("+-").OrNot();
             var digits = CharsWhileIn("0123456789", min: 0);
@@ -16,9 +16,9 @@ namespace Unclazz.Parsec.CoreParsers
             var raw = (signOpt & integral & fractionalOpt & exponentOpt).Capture();
             _number = raw.Map(double.Parse);
         }
-        protected override ResultCore<double> DoParse(Reader input)
+        protected override ResultCore<double> DoParse(Context ctx)
         {
-            return _number.Parse(input);
+            return _number.Parse(ctx);
         }
     }
 }

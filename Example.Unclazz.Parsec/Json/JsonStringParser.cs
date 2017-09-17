@@ -27,9 +27,9 @@ namespace Example.Unclazz.Parsec
         {
             return Regex.Unescape(escaped);
         }
-        protected override ResultCore<IJsonObject> DoParse(Reader input)
+        protected override ResultCore<IJsonObject> DoParse(Context ctx)
         {
-            return _string.Parse(input);
+            return _string.Parse(ctx);
         }
     }
 }

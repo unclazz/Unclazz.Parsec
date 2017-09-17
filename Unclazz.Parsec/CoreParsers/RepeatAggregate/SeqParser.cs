@@ -13,6 +13,6 @@ namespace Unclazz.Parsec.CoreParsers.RepeatAggregate
             return a;
         }
         internal SeqParser(Parser<T> original, RepeatConfiguration repConf)
-            : base(original.Configuration, original, repConf, aggConf) { }
+            : base("Seq", original, repConf, aggConf) { }
     }
 }

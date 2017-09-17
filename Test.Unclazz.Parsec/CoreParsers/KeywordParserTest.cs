@@ -133,29 +133,5 @@ namespace Test.Unclazz.Parsec
             Assert.That(() => Keyword("", -1), Throws.InstanceOf<ArgumentException>());
             Assert.That(() => Keyword(null), Throws.InstanceOf<ArgumentNullException>());
         }
-        [Test]
-        public void ToString_Case1()
-        {
-            // Arrange
-            var parser = Keyword("0123", 2);
-
-            // Act
-            var result = parser.ToString();
-
-            // Assert
-            Assert.That(result, Is.EqualTo("Keyword(0123, cutIndex = 2)"));
-        }
-        [Test]
-        public void ToString_Case2()
-        {
-            // Arrange
-            var parser = Keyword("0123", -1);
-
-            // Act
-            var result = parser.ToString();
-
-            // Assert
-            Assert.That(result, Is.EqualTo("Keyword(0123)"));
-        }
     }
 }

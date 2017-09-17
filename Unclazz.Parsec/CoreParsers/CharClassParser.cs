@@ -4,16 +4,16 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class CharClassParser : CharParser
     {
-        internal CharClassParser(IParserConfiguration conf, CharClass clazz) : base(conf)
+        internal CharClassParser(CharClass clazz) : base("CharClass")
         {
             _clazz = clazz ?? throw new ArgumentNullException(nameof(clazz));
         }
 
         readonly CharClass _clazz;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
-            var ch = input.Read();
+            var ch = ctx.Source.Read();
             if (0 <= ch && _clazz.Contains((char)ch))
             {
                 return Success();

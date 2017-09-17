@@ -5,36 +5,28 @@
     /// </summary>
     sealed class ExactCharParser : CharParser
     {
-        internal ExactCharParser(IParserConfiguration conf, char ch) : base(conf)
+        internal ExactCharParser(char ch) : base("Char")
         {
-            Character = ch;
+            _expected = ch;
         }
-        internal char Character { get; }
+        readonly char _expected;
         /// <summary>
         /// パースを行います。
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
-            var actual = input.Read();
-            if (Character == actual)
+            var actual = ctx.Source.Read();
+            if (_expected == actual)
             {
                 return Success();
             }
             else
             {
                 return Failure(string.Format("expected {0} but found {1}.",
-                    ParsecUtility.CharToString(Character), ParsecUtility.CharToString(actual)));
+                    ParsecUtility.CharToString(_expected), ParsecUtility.CharToString(actual)));
             }
-        }
-        /// <summary>
-        /// このインスタンスの文字列表現を返します。
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return string.Format("Char({0})", ParsecUtility.CharToString(Character));
         }
     }
 }

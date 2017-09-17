@@ -112,13 +112,13 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser<T> For<T>(Func<Reader, Result<T>> func) => _factory.For(func);
+        public static Parser<T> For<T>(Func<Context, Result<T>> func) => _factory.For(func);
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public static Parser For(Func<Reader, Result> func) => _factory.For(func);
+        public static Parser For(Func<Context, Result> func) => _factory.For(func);
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
         /// デリゲートはパースの直前になるまで実行されません。

@@ -11,7 +11,7 @@ namespace Unclazz.Parsec
     /// <typeparam name="T">読み取り結果のシーケンスの要素型</typeparam>
     public sealed class RepeatParser<T> : Parser<Seq<T>>
     {
-        internal RepeatParser(Parser<T> original, int min, int max, int exactly, Parser sep)
+        internal RepeatParser(Parser<T> original, int min, int max, int exactly, Parser sep) : base("Repeat")
         {
             _inner = new SeqParser<T>(original, new RepeatConfiguration(min, max, exactly, sep));
         }
@@ -21,9 +21,9 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        protected override ResultCore<Seq<T>> DoParse(Reader input)
+        protected override ResultCore<Seq<T>> DoParse(Context ctx)
         {
-            return _inner.Parse(input);
+            return _inner.Parse(ctx);
         }
         /// <summary>
         /// シーケンス要素の集約を行います。

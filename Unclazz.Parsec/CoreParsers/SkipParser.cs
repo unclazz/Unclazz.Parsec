@@ -4,50 +4,26 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class SkipParser : Parser
     {
-        static IParserConfiguration CopyAndModify(IParserConfiguration factory, bool skipOnOff, CharClass target)
-        {
-            var copy = new ParserFactory(factory);
-            copy.SetAutoSkip(skipOnOff);
-            copy.SetSkipTarget(target ?? CharClass.SpaceAndControl);
-            return copy;
-        }
-
-        internal SkipParser(IParserConfiguration conf, Parser original, 
-            bool onOff, CharClass target) : base(CopyAndModify(conf, onOff, target))
+        internal SkipParser(Parser original, CharClass target) : base("Skip")
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
-            _onOff = onOff;
+            _clazz = target;
         }
         readonly Parser _original;
-        readonly bool _onOff;
-        protected override ResultCore DoParse(Reader input) => _original.Parse(input);
-        public override string ToString()
-        {
-            return string.Format("Skip({0}, onOff = {1})", _original, _onOff);
-        }
+        readonly CharClass _clazz;
+        protected override ResultCore DoParse(Context ctx) => _original
+            .Parse(ctx.Configure(a => a.SetSkipTarget(_clazz)));
     }
-    sealed class SkipSpaceParser<T> : Parser<T>
+    sealed class SkipParser<T> : Parser<T>
     {
-        static IParserConfiguration CopyAndModify(IParserConfiguration factory, bool skipOnOff, CharClass target)
-        {
-            var copy = new ParserFactory(factory);
-            copy.SetAutoSkip(skipOnOff);
-            copy.SetSkipTarget(target ?? CharClass.SpaceAndControl);
-            return copy;
-        }
-
-        internal SkipSpaceParser(IParserConfiguration conf, Parser<T> original,
-            bool onOff, CharClass target) : base(CopyAndModify(conf, onOff, target))
+        internal SkipParser(Parser<T> original, CharClass target) : base("Skip")
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
-            _onOff = onOff;
+            _clazz = target;
         }
         readonly Parser<T> _original;
-        readonly bool _onOff;
-        protected override ResultCore<T> DoParse(Reader input) => _original.Parse(input);
-        public override string ToString()
-        {
-            return string.Format("Skip({0}, onOff = {1})", _original, _onOff);
-        }
+        readonly CharClass _clazz;
+        protected override ResultCore<T> DoParse(Context ctx) => _original
+            .Parse(ctx.Configure(a => a.SetSkipTarget(_clazz)));
     }
 }

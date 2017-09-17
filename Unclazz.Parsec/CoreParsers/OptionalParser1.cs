@@ -2,39 +2,26 @@
 
 namespace Unclazz.Parsec.CoreParsers
 {
-    /// <summary>
-    /// オプションのトークンをパースするためのパーサーです。
-    /// このパーサーは元になるパーサーによりパースを試みますが、
-    /// その結果の成否に関わらずパース成功を示す値を返します。
-    /// ただし元になるパーサーのパースが失敗した場合、
-    /// このパーサーが返す<see cref="Optional{T}"/>は空の状態となります。
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
     sealed class OptionalParser<T> : Parser<Optional<T>>
     {
-        internal OptionalParser(Parser<T> original) : this(original.Configuration, original) { }
-        internal OptionalParser(IParserConfiguration conf, Parser<T> original) : base(conf)
+        internal OptionalParser(Parser<T> original) : base("OrNot")
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
 
         readonly Parser<T> _original;
 
-        protected override ResultCore<Optional<T>> DoParse(Reader input)
+        protected override ResultCore<Optional<T>> DoParse(Context ctx)
         {
-            input.Mark();
-            var result = _original.Parse(input);
+            ctx.Source.Mark();
+            var result = _original.Parse(ctx);
             if (result.Successful)
             {
-                input.Unmark();
+                ctx.Source.Unmark();
                 return result.Map(a => new Optional<T>(a));
             }
-            input.Reset(true);
+            ctx.Source.Reset(true);
             return Success(new Optional<T>());
-        }
-        public override string ToString()
-        {
-            return string.Format("Optional({0})", _original);
         }
     }
 }

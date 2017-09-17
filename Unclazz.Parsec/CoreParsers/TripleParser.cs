@@ -14,14 +14,14 @@ namespace Unclazz.Parsec.CoreParsers
     {
         public static TripleParser<T1,T2,T3> Create(Parser<T1> left, Parser<Tuple<T2, T3>> right)
         {
-            return new ThenDoubleParser<T1, T2, T3>(left.Configuration, left, right);
+            return new ThenDoubleParser<T1, T2, T3>(left, right);
         }
         public static TripleParser<T1,T2,T3> Create(Parser<Tuple<T1, T2>> left, Parser<T3> right)
         {
-            return new DoubleThenParser<T1, T2, T3>(left.Configuration, left, right);
+            return new DoubleThenParser<T1, T2, T3>(left, right);
         }
 
-        internal TripleParser(IParserConfiguration conf) : base(conf) { }
+        internal TripleParser() : base("Triple") { }
 
         /// <summary>
         /// <see cref="TripleParser{T1, T2, T3}"/>から派生した具象クラスです。
@@ -32,7 +32,7 @@ namespace Unclazz.Parsec.CoreParsers
         /// <typeparam name="U3">右被演算子のパーサーの結果型タプルの第2要素型</typeparam>
         sealed class ThenDoubleParser<U1, U2, U3> : TripleParser<U1, U2, U3>
         {
-            internal ThenDoubleParser(IParserConfiguration conf, Parser<U1> left, Parser<Tuple<U2, U3>> right) : base(conf)
+            internal ThenDoubleParser(Parser<U1> left, Parser<Tuple<U2, U3>> right)
             {
                 Left = left ?? throw new ArgumentNullException(nameof(left));
                 Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -41,15 +41,15 @@ namespace Unclazz.Parsec.CoreParsers
             public Parser<U1> Left { get; }
             public Parser<Tuple<U2, U3>> Right { get; }
 
-            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader input)
+            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Context ctx)
             {
-                var leftResult = Left.Parse(input);
+                var leftResult = Left.Parse(ctx);
                 if (!leftResult.Successful)
                 {
                     return leftResult.Retyped<Tuple<U1, U2, U3>>();
                 }
 
-                var rightResult = Right.Parse(input);
+                var rightResult = Right.Parse(ctx);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
@@ -62,10 +62,6 @@ namespace Unclazz.Parsec.CoreParsers
                     rightTuple == null ? default(U3) : rightTuple.Item2);
                 return Success(finalTuple, canBacktrack);
             }
-            public override string ToString()
-            {
-                return string.Format("Triple({0}, {1})", Left, Right);
-            }
         }
         /// <summary>
         /// <see cref="TripleParser{T1, T2, T3}"/>から派生した具象クラスです。
@@ -76,7 +72,7 @@ namespace Unclazz.Parsec.CoreParsers
         /// <typeparam name="U3">右被演算子のパーサーの結果型</typeparam>
         sealed class DoubleThenParser<U1, U2, U3> : TripleParser<U1, U2, U3>
         {
-            internal DoubleThenParser(IParserConfiguration conf, Parser<Tuple<U1, U2>> left, Parser<U3> right) : base(conf)
+            internal DoubleThenParser(Parser<Tuple<U1, U2>> left, Parser<U3> right)
             {
                 Left = left ?? throw new ArgumentNullException(nameof(left));
                 Right = right ?? throw new ArgumentNullException(nameof(right));
@@ -85,15 +81,15 @@ namespace Unclazz.Parsec.CoreParsers
             public Parser<Tuple<U1, U2>> Left { get; }
             public Parser<U3> Right { get; }
 
-            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader input)
+            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Context ctx)
             {
-                var leftResult = Left.Parse(input);
+                var leftResult = Left.Parse(ctx);
                 if (!leftResult.Successful)
                 {
                     return leftResult.Retyped<Tuple<U1, U2, U3>>();
                 }
 
-                var rightResult = Right.Parse(input);
+                var rightResult = Right.Parse(ctx);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
@@ -106,10 +102,6 @@ namespace Unclazz.Parsec.CoreParsers
                     leftTuple == null ? default(U2) : leftTuple.Item2,
                     rightResult.Capture);
                 return Success(finalTuple, canBacktrack);
-            }
-            public override string ToString()
-            {
-                return string.Format("Triple({0}, {1})", Left, Right);
             }
         }
     }

@@ -11,22 +11,18 @@ namespace Unclazz.Parsec.CoreParsers
     sealed class TypedParser<TResult> : Parser<TResult>
     {
         internal TypedParser(Parser original) : this(original, default(TResult)) { }
-        internal TypedParser(Parser original, TResult value) : base(original.Configuration)
+        internal TypedParser(Parser original, TResult value) : base("Typed")
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _value = value;
         }
         readonly Parser _original;
         readonly TResult _value;
-        protected override ResultCore<TResult> DoParse(Reader input)
+        protected override ResultCore<TResult> DoParse(Context ctx)
         {
             // 元になったパーサーでパースを実施、
             // 結果型の変換のみ行って呼び出し元に返す
-            return _original.Parse(input).Typed(_value);
-        }
-        public override string ToString()
-        {
-            return _original.ToString();
+            return _original.Parse(ctx).Typed(_value);
         }
     }
 }

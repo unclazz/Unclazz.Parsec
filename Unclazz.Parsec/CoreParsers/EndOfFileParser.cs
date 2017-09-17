@@ -6,16 +6,12 @@
     /// </summary>
     sealed class EndOfFileParser : Parser
     {
-        internal EndOfFileParser(IParserConfiguration conf) : base(conf) { }
-        protected override ResultCore DoParse(Reader input)
+        internal EndOfFileParser() : base("EOF") { }
+        protected override ResultCore DoParse(Context ctx)
         {
-            return input.EndOfFile ? Success() 
+            return ctx.Source.EndOfFile ? Success() 
                 : Failure(string.Format("EOF expected but found {0}.", 
-                ParsecUtility.CharToString(input.Peek())));
-        }
-        public override string ToString()
-        {
-            return string.Format("EndOfFile()");
+                ParsecUtility.CharToString(ctx.Source.Peek())));
         }
     }
 }

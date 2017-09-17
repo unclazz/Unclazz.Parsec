@@ -5,8 +5,7 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class FlatMapParser<TSource, TResult> : Parser<TResult>
     {
-        internal FlatMapParser(IParserConfiguration conf, Parser<TSource> source,
-            Func<TSource, Parser<TResult>> mapper, bool canThrow) : base(conf)
+        internal FlatMapParser(Parser<TSource> source, Func<TSource, Parser<TResult>> mapper, bool canThrow) : base("FlatMap")
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -17,14 +16,14 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Func<TSource, Parser<TResult>> _mapper;
         readonly bool _canThrow;
 
-        protected override ResultCore<TResult> DoParse(Reader input)
+        protected override ResultCore<TResult> DoParse(Context ctx)
         {
-            var r = _source.Parse(input);
+            var r = _source.Parse(ctx);
             try
             {
                 if (r.Successful)
                 {
-                    return _mapper(r.Capture).Parse(input);
+                    return _mapper(r.Capture).Parse(ctx);
                 }
                 return r.Retyped<TResult>();
             }
@@ -34,16 +33,10 @@ namespace Unclazz.Parsec.CoreParsers
                 return Failure(ex.ToString(), r.CanBacktrack);
             }
         }
-        public override string ToString()
-        {
-            return string.Format("FlatMap({0}, mapper = {1})",
-                _source, ParsecUtility.ObjectTypeToString(_mapper));
-        }
     }
     sealed class FlatMapParser<TSource> : Parser
     {
-        internal FlatMapParser(IParserConfiguration conf, Parser<TSource> source,
-            Func<TSource, Parser> mapper, bool canThrow) : base(conf)
+        internal FlatMapParser(Parser<TSource> source, Func<TSource, Parser> mapper, bool canThrow) : base("FlatMap")
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -54,14 +47,14 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Func<TSource, Parser> _mapper;
         readonly bool _canThrow;
 
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
-            var r = _source.Parse(input);
+            var r = _source.Parse(ctx);
             try
             {
                 if (r.Successful)
                 {
-                    return _mapper(r.Capture).Parse(input);
+                    return _mapper(r.Capture).Parse(ctx);
                 }
                 return r.Untyped();
             }
@@ -70,11 +63,6 @@ namespace Unclazz.Parsec.CoreParsers
                 if (_canThrow) throw;
                 return Failure(ex.ToString(), r.CanBacktrack);
             }
-        }
-        public override string ToString()
-        {
-            return string.Format("FlatMap({0}, mapper = {1})",
-                _source, ParsecUtility.ObjectTypeToString(_mapper));
         }
     }
 }

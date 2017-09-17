@@ -32,9 +32,9 @@ namespace Example.Unclazz.Parsec
             // 後続にはEOF
             _helloXSpEof = helloX & spEof;
         }
-        protected override ResultCore<string> DoParse(Reader input)
+        protected override ResultCore<string> DoParse(Context ctx)
         {
-            return _helloXSpEof.Parse(input);
+            return _helloXSpEof.Parse(ctx);
         }
     }
 }

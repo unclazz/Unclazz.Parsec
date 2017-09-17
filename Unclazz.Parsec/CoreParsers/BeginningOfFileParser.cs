@@ -6,16 +6,12 @@
     /// </summary>
     sealed class BeginningOfFileParser : Parser
     {
-        internal BeginningOfFileParser(IParserConfiguration conf) : base(conf) { }
-        protected override ResultCore DoParse(Reader input)
+        internal BeginningOfFileParser(IParserConfiguration conf) : base("BOF") { }
+        protected override ResultCore DoParse(Context ctx)
         {
-            var p = input.Position;
+            var p = ctx.Source.Position;
             if (p.Index == 0) return Success();
             else return Failure(string.Format("BOF(index = 0) expected but already index is {0}.", p.Index));
-        }
-        public override string ToString()
-        {
-            return string.Format("BeginningOfFile()");
         }
     }
 }

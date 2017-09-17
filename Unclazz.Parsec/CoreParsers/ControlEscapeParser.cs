@@ -5,14 +5,14 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class ControlEscapeParser : Parser<char>
     {
-        internal ControlEscapeParser(char prefix = '\\')
+        internal ControlEscapeParser(char prefix = '\\') : base("ControlEscape")
         {
             _control = Char(prefix) & CharIn("0abtnvfre").Capture().Map(Unescape);
         }
         readonly Parser<char> _control;
-        protected override ResultCore<char> DoParse(Reader input)
+        protected override ResultCore<char> DoParse(Context ctx)
         {
-            return _control.Parse(input);
+            return _control.Parse(ctx);
         }
         char Unescape(char escape)
         {

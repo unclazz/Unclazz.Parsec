@@ -32,10 +32,10 @@ namespace Unclazz.Parsec.CoreParsers
         /// <param name="conf"></param>
         /// <param name="keywords"></param>
         /// <returns></returns>
-        static Parser KeywordsParser(IParserConfiguration conf, string[] keywords)
+        static Parser KeywordsParser(string[] keywords)
         {
             // キーワード数が1の場合、単にKeywordParserのインスタンスを返すだけ
-            if (keywords.Length == 1) return new KeywordParser(conf, keywords[0]);
+            if (keywords.Length == 1) return new KeywordParser(keywords[0]);
 
             // 合成過程のパーサーを格納する一時変数
             Parser tmp = null;
@@ -56,7 +56,7 @@ namespace Unclazz.Parsec.CoreParsers
                 var cutIndex = Math.Min(zipElem.Keyword.Length, zipElem.CommonPrefixLength + 1);
                 
                 // キーワードを単体で読み取るパーサーを作成
-                var nextParser = new KeywordParser(conf, zipElem.Keyword, cutIndex);
+                var nextParser = new KeywordParser(zipElem.Keyword, cutIndex);
                 
                 // 一時変数が空 ＝ 初回 は、作成したパーサーを単純にアサインする
                 // 一時変数が空でない ＝ 2回目以降 は、Orで連結して再アサインする
@@ -65,10 +65,10 @@ namespace Unclazz.Parsec.CoreParsers
 
             // 終わりに、キーワードのコレクションの末尾のものをOrで連結する
             // ＊ZIPを行った時、末尾のキーワードは除外されてしまうため、ここで救済する
-            return tmp.Or(new KeywordParser(conf, keywords[keywords.Length - 1]));
+            return tmp.Or(new KeywordParser(keywords[keywords.Length - 1]));
         }
 
-        internal KeywordInParser(IParserConfiguration conf, string[] keywords) : base(conf)
+        internal KeywordInParser(string[] keywords) : base("KeywordIn")
         {
             // キーワードのコレクションはnullであってはならない
             var tmp = keywords ?? throw new ArgumentNullException(nameof(keywords));
@@ -81,19 +81,14 @@ namespace Unclazz.Parsec.CoreParsers
             // キーワードのコレクションをソート＆一意性確保
             _keywords = tmp.Distinct().OrderBy(k => k).ToArray();
             // 内部パーサーを構築
-            _parser = KeywordsParser(conf, tmp);
+            _parser = KeywordsParser(tmp);
 
         }
         readonly string[] _keywords;
         readonly Parser _parser;
-        protected override ResultCore DoParse(Reader input)
+        protected override ResultCore DoParse(Context ctx)
         {
-            return _parser.Parse(input);
-        }
-        public override string ToString()
-        {
-            return string.Format("StringIn({0})", 
-                ParsecUtility.ValueToString(_keywords));
+            return _parser.Parse(ctx);
         }
     }
 }

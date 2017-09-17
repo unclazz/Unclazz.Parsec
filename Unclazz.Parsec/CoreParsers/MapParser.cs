@@ -4,8 +4,8 @@ namespace Unclazz.Parsec.CoreParsers
 {
     sealed class MapParser<TSource, TResult> : Parser<TResult>
     {
-        internal MapParser(IParserConfiguration conf, Parser<TSource> source, 
-            Func<TSource, TResult> transform, bool canThrow) : base(conf)
+        internal MapParser(Parser<TSource> source, 
+            Func<TSource, TResult> transform, bool canThrow) : base("Map")
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _transform = transform ?? throw new ArgumentNullException(nameof(transform));
@@ -16,9 +16,9 @@ namespace Unclazz.Parsec.CoreParsers
         readonly Func<TSource, TResult> _transform;
         readonly bool _canThrow;
 
-        protected override ResultCore<TResult> DoParse(Reader input)
+        protected override ResultCore<TResult> DoParse(Context ctx)
         {
-            var r = _source.Parse(input);
+            var r = _source.Parse(ctx);
             try
             {
                 return r.Map(_transform);
@@ -28,11 +28,6 @@ namespace Unclazz.Parsec.CoreParsers
                 if (_canThrow) throw;
                 return Failure(ex.ToString(), r.CanBacktrack);
             }
-        }
-        public override string ToString()
-        {
-            return string.Format("Map({0}, transform = {1})",
-                _source, ParsecUtility.ObjectTypeToString(_transform));
         }
     }
 }

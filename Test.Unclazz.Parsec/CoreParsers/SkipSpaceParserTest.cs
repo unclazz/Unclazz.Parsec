@@ -14,7 +14,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var ssp = kp.AutoSkip();
+            var ssp = kp.AutoSkip(CharClass.SpaceAndControl);
 
             // Act
             var res = ssp.Parse("012XXXXX");
@@ -28,7 +28,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             // Arrange
             var kp = Keyword("0123");
-            var ssp = kp.AutoSkip();
+            var ssp = kp.AutoSkip(CharClass.SpaceAndControl);
 
             // Act
             var res = ssp.Parse("0123XXXX");
@@ -42,7 +42,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         {
             var kp = Keyword("0123");
             var cp = kp.Capture();
-            var ssp = cp.AutoSkip();
+            var ssp = cp.AutoSkip(CharClass.SpaceAndControl);
 
             // Act
             var res = ssp.Parse("  0123XXXX");
@@ -52,28 +52,13 @@ namespace Test.Unclazz.Parsec.CoreParsers
             Assert.That(res.Capture, Is.EqualTo("0123"));
         }
         [Test]
-        [Description("Parse - Case#4 - スキップ設定は継承される")]
-        public void Parse_Case4()
-        {
-            var kp = Keyword("0123");
-            var ssp = kp.AutoSkip();
-            var cp = ssp.Capture(); // sspのCaptureを呼び出すことでcpへとコンフィギュレーションが継承される
-
-            // Act
-            var res = cp.Parse("  0123XXXX");
-
-            // Assert
-            Assert.That(res.Successful, Is.True);
-            Assert.That(res.Capture, Is.EqualTo("0123")); // kpではなくcpの事前処理でスキップが行われている
-        }
-        [Test]
         [Description("Parse - Case#5 - " +
             "スキップなしとスキップありの2つのパーサーを連結すると" +
             "間のスキップ対象文字列はキャプチャ対象となる")]
         public void Parse_Case5()
         {
             var kp = Keyword("0123");
-            var ssp = kp & kp.AutoSkip();
+            var ssp = kp & kp.AutoSkip(CharClass.SpaceAndControl);
             var cp = ssp.Capture();
 
             // Act
@@ -88,7 +73,7 @@ namespace Test.Unclazz.Parsec.CoreParsers
         public void Parse_Case6()
         {
             var kp = Keyword("0123");
-            var ssp = kp.AutoSkip();
+            var ssp = kp.AutoSkip(CharClass.SpaceAndControl);
             var cp = ssp.Capture(); // sspのCaptureを呼び出すことでcpへとコンフィギュレーションが継承される
             var ssp2 = cp & kp;
 

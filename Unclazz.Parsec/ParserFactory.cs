@@ -78,13 +78,13 @@ namespace Unclazz.Parsec
         /// <summary>
         /// データソースの終端（EOF）にだけマッチするパーサーです。
         /// </summary>
-        public Parser EndOfFile => _cachedEndOfFile ?? (_cachedEndOfFile = new EndOfFileParser(this));
+        public Parser EndOfFile => _cachedEndOfFile ?? (_cachedEndOfFile = new EndOfFileParser());
         /// <summary>
         /// 0文字以上の空白文字(コードポイント<c>32</c>）と
         /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
         public Parser WhileSpaceAndControls => _cachedWhileSpaceAndControls 
-            ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(this, CharClass.SpaceAndControl, 0));
+            ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(CharClass.SpaceAndControl, 0));
 
         public Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
         public Parser<double> Number => _number ?? (_number = new NumberParser());
@@ -113,7 +113,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Not<T>(Parser<T> operand)
         {
-            return new NotParser<T>(this, operand);
+            return new NotParser<T>(operand);
         }
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
@@ -122,7 +122,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Not(Parser operand)
         {
-            return new NotParser(this, operand);
+            return new NotParser(operand);
         }
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
@@ -130,18 +130,18 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> For<T>(Func<Reader, Result<T>> func)
+        public Parser<T> For<T>(Func<Context, Result<T>> func)
         {
-            return new DelegateParser<T>(this, func);
+            return new DelegateParser<T>(func);
         }
         /// <summary>
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser For(Func<Reader, Result> func)
+        public Parser For(Func<Context, Result> func)
         {
-            return new DelegateParser(this, func);
+            return new DelegateParser(func);
         }
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
@@ -152,7 +152,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<T> Lazy<T>(Func<Parser<T>> factory)
         {
-            return new LazyParser<T>(this, factory);
+            return new LazyParser<T>(factory);
         }
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
@@ -162,7 +162,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Lazy(Func<Parser> factory)
         {
-            return new LazyParser(this, factory);
+            return new LazyParser(factory);
         }
         /// <summary>
         /// 先読み（look-ahead）を行うパーサーを生成します。
@@ -181,7 +181,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public CharParser Char(char ch)
         {
-            return new ExactCharParser(this, ch);
+            return new ExactCharParser(ch);
         }
         /// <summary>
         /// 指定された範囲に該当する文字にマッチするパーサーを返します。
@@ -191,7 +191,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public CharParser CharBetween(char start, char end)
         {
-            return new CharClassParser(this, CharClass.Between(start, end));
+            return new CharClassParser(CharClass.Between(start, end));
         }
         /// <summary>
         /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
@@ -200,7 +200,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public CharParser CharIn(CharClass clazz)
         {
-            return new CharClassParser(this, clazz);
+            return new CharClassParser(clazz);
         }
         /// <summary>
         /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
@@ -209,7 +209,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public CharParser CharIn(IEnumerable<char> chars)
         {
-            return new CharClassParser(this, CharClass.AnyOf(chars));
+            return new CharClassParser(CharClass.AnyOf(chars));
         }
         /// <summary>
         /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
@@ -220,7 +220,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser CharsWhileBetween(char start, char end, int min = 1)
         {
-            return new CharsWhileBetweenParser(this, start, end, min);
+            return new CharsWhileBetweenParser(start, end, min);
         }
         /// <summary>
         /// 文字集合に属する文字からなる文字列にマッチするパーサーを返します。
@@ -230,7 +230,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser CharsWhileIn(IEnumerable<char> chars, int min = 1)
         {
-            return new CharsWhileInParser(this, CharClass.AnyOf(chars), min);
+            return new CharsWhileInParser(CharClass.AnyOf(chars), min);
         }
         /// <summary>
         /// 文字クラスに属する文字からなる文字列にマッチするパーサーを返します。
@@ -240,7 +240,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser CharsWhileIn(CharClass clazz, int min = 1)
         {
-            return new CharsWhileInParser(this, clazz, min);
+            return new CharsWhileInParser(clazz, min);
         }
         /// <summary>
         /// 指定したキーワードにのみマッチするパーサーを生成します。
@@ -254,7 +254,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser Keyword(string keyword, int cutIndex = -1)
         {
-            return new KeywordParser(this, keyword, cutIndex);
+            return new KeywordParser(keyword, cutIndex);
         }
         /// <summary>
         /// 指定したキーワードのいずれかにのみマッチするパーサーを生成します。
@@ -263,7 +263,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser KeywordIn(params string[] keywords)
         {
-            return new KeywordInParser(this, keywords);
+            return new KeywordInParser(keywords);
         }
         /// <summary>
         /// 指定した値をキャプチャ結果とするパーサーを生成します。
@@ -276,7 +276,7 @@ namespace Unclazz.Parsec
         /// <returns>新しいパーサー</returns>
         public Parser<U> Yield<U>(U value)
         {
-            return new YieldParser<U>(this, value);
+            return new YieldParser<U>(value);
         }
         #endregion
     }
