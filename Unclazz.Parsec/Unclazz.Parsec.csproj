@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CharClasses\CharRange.cs" />
     <Compile Include="Context.cs" />
+    <Compile Include="ContextConfigurer.cs" />
     <Compile Include="CoreParsers\CharCaptureParser.cs" />
     <Compile Include="CoreParsers\ControlEscapeParser.cs" />
     <Compile Include="CoreParsers\DoubleParser.cs" />
