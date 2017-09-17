@@ -29,7 +29,6 @@ namespace Unclazz.Parsec.CoreParsers
         /// <summary>
         /// キーワードのコレクションからそれらにマッチするパーサーを組み立てます。
         /// </summary>
-        /// <param name="conf"></param>
         /// <param name="keywords"></param>
         /// <returns></returns>
         static Parser KeywordsParser(string[] keywords)

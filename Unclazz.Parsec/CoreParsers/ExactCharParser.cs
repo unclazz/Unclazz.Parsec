@@ -13,7 +13,7 @@
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
         protected override ResultCore DoParse(Context ctx)
         {

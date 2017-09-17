@@ -145,7 +145,7 @@ namespace Unclazz.Parsec
         /// <summary>
         /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
         /// </summary>
-        /// <param name="config"></param>
+        /// <param name="name"></param>
         protected Parser(string name)
         {
             _name = name ?? throw new ArgumentNullException(nameof(name));
@@ -165,7 +165,7 @@ namespace Unclazz.Parsec
         /// <see cref="ResultCore{T}"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
         /// </summary>
-        /// <param name="input">入力データ</param>
+        /// <param name="ctx"></param>
         /// <returns>パース結果</returns>
         protected abstract ResultCore<T> DoParse(Context ctx);
 
@@ -179,7 +179,7 @@ namespace Unclazz.Parsec
         /// <see cref="Result{T}"/>を通じて呼び出し元に通知されます。
         /// </para>
         /// <para>
-        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Reader)"/>を呼び出します。
+        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Context)"/>を呼び出します。
         /// その後事後処理を終えてから、呼び出し元に結果を返します。
         /// </para>
         /// </summary>
@@ -189,6 +189,22 @@ namespace Unclazz.Parsec
         {
             return Parse(new Context(input));
         }
+        /// <summary>
+        /// パースを行います。
+        /// <para>
+        /// パース成否は戻り値の<see cref="Result{T}"/>のインスタンスで表されます。
+        /// このメソッドはいかなる場合も<c>null</c>を返しません。
+        /// またこのメソッドは原則として例外スローも行いません。
+        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
+        /// <see cref="Result{T}"/>を通じて呼び出し元に通知されます。
+        /// </para>
+        /// <para>
+        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Context)"/>を呼び出します。
+        /// その後事後処理を終えてから、呼び出し元に結果を返します。
+        /// </para>
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns>パース結果</returns>
         public Result<T> Parse(Context ctx)
         {
             var start = ctx.Source.Position;

@@ -21,7 +21,7 @@ namespace Unclazz.Parsec
         /// <summary>
         /// コンストラクタです。
         /// </summary>
-        /// <param name="conf"></param>
+        /// <param name="name"></param>
         protected CharParser(string name) : base(name) { }
         /// <summary>
         /// 値をキャプチャするパーサーを返します。

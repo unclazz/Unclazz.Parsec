@@ -19,7 +19,7 @@ namespace Unclazz.Parsec
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
         protected override ResultCore<Seq<T>> DoParse(Context ctx)
         {

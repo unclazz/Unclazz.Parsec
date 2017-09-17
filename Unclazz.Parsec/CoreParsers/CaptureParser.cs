@@ -14,7 +14,7 @@ namespace Unclazz.Parsec.CoreParsers
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="input">入力データ</param>
+        /// <param name="ctx"></param>
         /// <returns>パース結果</returns>
         protected override ResultCore<string> DoParse(Context ctx)
         {
