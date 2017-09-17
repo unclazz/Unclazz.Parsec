@@ -8,7 +8,7 @@ using Unclazz.Parsec.CoreParsers;
 namespace Unclazz.Parsec
 {
 
-    sealed class ParserFactory : IParserFactory
+    sealed class ParserFactory
     {
 
         #region IParserFactoryメンバーの宣言
@@ -32,21 +32,58 @@ namespace Unclazz.Parsec
         /// </summary>
         public Parser WhileSpaceAndControls => _cachedWhileSpaceAndControls 
             ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(CharClass.SpaceAndControl, 0));
-
+        /// <summary>
+        /// 16進数リテラルを読み取ります。
+        /// </summary>
         public Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
+        /// <summary>
+        /// 数値リテラルを読み取ります。
+        /// <para>
+        /// 構文はJSONの<c>Number</c>型リテラルと同じです。
+        /// オプションの符合で始まり、整数部、オプションの小数部、そしてオプションの指数部を含みます。
+        /// </para>
+        /// </summary>
         public Parser<double> Number => _number ?? (_number = new NumberParser());
+
+        /// <summary>
+        /// <c>"\\u"</c>もしくは任意の接頭辞から始まるUnicodeエスケープシーケンスを読み取ります。
+        /// Unicode拡張領域の文字は上位サロゲートと下位サロゲートのそれぞれ単体でパースされます。
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public Parser<char> Utf16UnicodeEscape(string prefix = "\\u")
         {
             return new Utf16UnicodeEscapeParser(prefix);
         }
+        /// <summary>
+        /// 制御文字のエスケープシーケンスを読み取ります。
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public Parser<char> ControlEscape (char prefix = '\\')
         {
             return new ControlEscapeParser(prefix);
         }
+        /// <summary>
+        /// 任意の文字のエスケープシーケンスを読み取ります。
+        /// 読み取り結果はその文字そのもの、つまりエスケープシーケンスから接頭辞を除去したものです。
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
         {
             return new EscapeCharInParser(chars, prefix);
         }
+        /// <summary>
+        /// 引用符で囲われた文字列を読み取ります。
+        /// デフォルトでは引用符自体を含めていかなるエスケープシーケンスも認識しません。
+        /// パース対象文字列にエスケープシーケンスが含まれる場合は、
+        /// 当該シーケンスを適切にハンドルするパーサーを引数で指定してください。
+        /// </summary>
+        /// <param name="quote"></param>
+        /// <param name="escape"></param>
+        /// <returns></returns>
         public Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
         {
             return new QuotedStringParser(quote, escape);

@@ -10,7 +10,7 @@ namespace Unclazz.Parsec
     /// </summary>
     public static class Parsers
     {
-        readonly static IParserFactory _factory = new ParserFactory();
+        readonly static ParserFactory _factory = new ParserFactory();
 
         #region 定義済みパーサーを提供するプロパティの宣言
         /// <summary>

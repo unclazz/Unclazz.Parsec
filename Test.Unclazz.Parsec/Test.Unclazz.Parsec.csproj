@@ -73,7 +73,7 @@
     <Compile Include="CoreParsers\RepeatExacltyParserTest.cs" />
     <Compile Include="CoreParsers\RepeatMinMaxParserTest.cs" />
     <Compile Include="CoreParsers\KeywordInParserTest.cs" />
-    <Compile Include="Readers\PrefixQueueTest.cs" />
+    <Compile Include="Readers\CharArrayReaderTest.cs" />
     <Compile Include="ResultTTest.cs" />
     <Compile Include="CoreParsers\EndOfFileParserTest.cs" />
     <Compile Include="Readers\PrependableReaderTest.cs" />
