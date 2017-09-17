@@ -9,19 +9,19 @@ using static Unclazz.Parsec.Readers.PrependableReader;
 namespace Test.Unclazz.Parsec.Readers
 {
     [TestFixture]
-    public class PrefixQueueTest
+    public class CharArrayReaderTest
     {
         [Test]
         public void Empty_Case1()
         {
             // Arrange
-            var q = PrefixQueue.Empty;
+            var q = CharArrayReader.Empty;
             // Act
             // Assert
-            Assert.That(q.HasItems, Is.False);
+            Assert.That(q.EndOfFile, Is.True);
             Assert.That(q.Count, Is.EqualTo(0));
-            Assert.That(() => q.Peek(), Throws.InstanceOf<InvalidOperationException>());
-            Assert.That(() => q.Dequeue(), Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(q.Peek(), Is.EqualTo(-1));
+            Assert.That(q.Read(), Is.EqualTo(-1));
         }
         [TestCase("")]
         [TestCase("0")]
@@ -29,16 +29,16 @@ namespace Test.Unclazz.Parsec.Readers
         public void From_Case1(string chars)
         {
             // Arrange
-            var q = PrefixQueue.From(chars.ToArray());
+            var q = CharArrayReader.From(chars.ToArray());
             // Act
             // Assert
-            Assert.That(q.HasItems, Is.EqualTo(chars.Length > 0));
+            Assert.That(q.EndOfFile, Is.EqualTo(chars.Length <= 0));
             Assert.That(q.Count, Is.EqualTo(chars.Length));
 
             if (chars.Length == 0)
             {
-                Assert.That(() => q.Peek(), Throws.InstanceOf<InvalidOperationException>());
-                Assert.That(() => q.Dequeue(), Throws.InstanceOf<InvalidOperationException>());
+                Assert.That(() => q.Peek(), Is.EqualTo(-1));
+                Assert.That(() => q.Read(), Is.EqualTo(-1));
             }
             else
             {
@@ -51,7 +51,7 @@ namespace Test.Unclazz.Parsec.Readers
             // Arrange
             // Act
             // Assert
-            Assert.That(() => PrefixQueue.From(null), Throws.InstanceOf<ArgumentNullException>());
+            Assert.That(() => CharArrayReader.From(null), Throws.InstanceOf<ArgumentNullException>());
         }
         [TestCase("")]
         [TestCase("0")]
@@ -59,7 +59,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void Prepend_Case1(string chars)
         {
             // Arrange
-            var q = PrefixQueue.From("abc".ToArray());
+            var q = CharArrayReader.From("abc".ToArray());
 
             // Act
             var q2 = q.Prepend(chars.ToArray());
@@ -74,7 +74,7 @@ namespace Test.Unclazz.Parsec.Readers
         public void Prepend_Case2(string chars)
         {
             // Arrange
-            var q = PrefixQueue.From(chars.ToArray());
+            var q = CharArrayReader.From(chars.ToArray());
 
             // Act
             var q2 = q.Prepend("abc".ToArray());
@@ -82,6 +82,16 @@ namespace Test.Unclazz.Parsec.Readers
             // Assert
             Assert.That(q2.Count, Is.EqualTo(3 + chars.Length));
             Assert.That(q2.ToArray(), Is.EqualTo(("abc" + chars).ToArray()));
+        }
+        [Test]
+        public void ReadToEnd_Case1()
+        {
+            // Arrange
+            var q = CharArrayReader.From("hello\n01234\r\nabcde".ToArray());
+
+            // Act
+            // Assert
+            Assert.That(q.ReadToEnd(), Is.EqualTo("hello\n01234\r\nabcde"));
         }
     }
 }

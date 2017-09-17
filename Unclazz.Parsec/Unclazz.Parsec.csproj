@@ -98,6 +98,7 @@
     <Compile Include="ParsecUtility.cs" />
     <Compile Include="Parser1.cs" />
     <Compile Include="Reader.cs" />
+    <Compile Include="Readers\CharArrayReader.cs" />
     <Compile Include="Readers\IResettableReader.cs" />
     <Compile Include="Readers\ITextReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
