@@ -32,7 +32,7 @@ namespace Unclazz.Parsec.CharClasses
             }
             else
             {
-                var result = _categories.Any(c => c == char.GetUnicodeCategory(ch));
+                var result = _categories.Any(c => c == CharUnicodeInfo.GetUnicodeCategory(ch));
                 _cache[ch] = result;
                 return result;
             }

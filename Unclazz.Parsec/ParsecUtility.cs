@@ -55,34 +55,6 @@ namespace Unclazz.Parsec
                 return buff.ToString();
             }
         }
-        public static string ObjectTypeToString<T>(T value)
-        {
-            return TypeToString(value.GetType());
-        }
-        public static string TypeToString(Type type)
-        {
-            var buff = new StringBuilder();
-            TypeToString(type, buff);
-            return buff.ToString();
-        }
-        static void TypeToString(Type t, StringBuilder b)
-        {
-            var type = t;
-            var typeName = type.Name;
-            var typeArgs = type.GenericTypeArguments;
-            b.Append(typeName);
-            if (typeArgs.Length > 0)
-            {
-                b.Append('<');
-                var initLength = b.Length;
-                foreach (var a in typeArgs)
-                {
-                    if (b.Length > initLength) b.Append(',').Append(' ');
-                    TypeToString(a, b);
-                }
-                b.Append('>');
-            }
-        }
         public static ResultCore Or(Context ctx, Parser left, Parser right)
         {
             ctx.Source.Mark();

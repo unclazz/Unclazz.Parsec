@@ -11,7 +11,7 @@ namespace Unclazz.Parsec.CharClasses
         internal PredicateCharClass(Func<char, bool> pred)
         {
             _pred = pred ?? throw new ArgumentNullException(nameof(pred));
-            _desc = ParsecUtility.ObjectTypeToString(pred);
+            _desc = pred.GetType().Name;
         }
         internal PredicateCharClass(Func<char, bool> pred, string desc)
         {

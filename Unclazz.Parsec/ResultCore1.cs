@@ -124,12 +124,12 @@ namespace Unclazz.Parsec
             if (Successful)
             {
                 return string.Format("ResultCore<{2}>(Successful: {0}, Value: {1})",
-                    Successful, _value, ParsecUtility.TypeToString(typeof(T)));
+                    Successful, _value, typeof(T).Name);
             }
             else
             {
                 return string.Format("ResultCore<{2}>(Successful: {0}, Message: {1})",
-                    Successful, _message, ParsecUtility.TypeToString(typeof(T)));
+                    Successful, _message, typeof(T).Name);
             }
         }
     }

@@ -242,12 +242,12 @@ namespace Unclazz.Parsec
             if (Successful)
             {
                 return string.Format("Result<{4}>(Successful: {0}, Value: {1}, Start: {2}, End: {3})",
-                    Successful, _value, Start, End, ParsecUtility.TypeToString(typeof(T)));
+                    Successful, _value, Start, End, typeof(T).Name);
             }
             else
             {
                 return string.Format("Result<{4}>(Successful: {0}, Message: {1}, Start: {2}, End: {3})",
-                    Successful, _message, Start, End, ParsecUtility.TypeToString(typeof(T)));
+                    Successful, _message, Start, End, typeof(T).Name);
             }
         }
     }
