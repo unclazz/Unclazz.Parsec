@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Unclazz.Parsec.CoreParsers.RepeatAggregate;
+using Unclazz.Parsec.Intrinsics.RepeatAggregate;
 
 namespace Unclazz.Parsec
 {

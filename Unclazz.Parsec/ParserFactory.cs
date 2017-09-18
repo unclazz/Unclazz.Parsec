@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unclazz.Parsec.CoreParsers;
+using Unclazz.Parsec.Intrinsics;
 
 namespace Unclazz.Parsec
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Unclazz.Parsec.CoreParsers;
-using Unclazz.Parsec.CoreParsers.RepeatAggregate;
+using Unclazz.Parsec.Intrinsics;
+using Unclazz.Parsec.Intrinsics.RepeatAggregate;
 
 namespace Unclazz.Parsec
 {

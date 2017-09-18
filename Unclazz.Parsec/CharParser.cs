@@ -1,4 +1,4 @@
-﻿using Unclazz.Parsec.CoreParsers;
+﻿using Unclazz.Parsec.Intrinsics;
 
 namespace Unclazz.Parsec
 {

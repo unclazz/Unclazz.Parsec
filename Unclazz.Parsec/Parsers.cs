@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unclazz.Parsec.CharClasses;
-using Unclazz.Parsec.CoreParsers;
+using Unclazz.Parsec.Intrinsics;
 
 namespace Unclazz.Parsec
 {

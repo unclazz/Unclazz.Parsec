@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Unclazz.Parsec.CharClasses;
-using Unclazz.Parsec.CoreParsers;
+using Unclazz.Parsec.Intrinsics;
 
 namespace Unclazz.Parsec
 {
