@@ -6,7 +6,7 @@
     <authors>unclazz.org</authors>
     <licenseUrl>https://github.com/unclazz/Unclazz.Parsec/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/unclazz/Unclazz.Parsec</projectUrl>
-    <iconUrl>https://github.com/unclazz/Unclazz.Parsec/blob/master/icon.png</iconUrl>
+    <iconUrl>https://github.com/unclazz/Unclazz.Parsec/blob/master/icon.png?raw=true</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A parser combinator library in C#</description>
     <copyright>Copyright 2017</copyright>
