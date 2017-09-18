@@ -5,7 +5,7 @@ Scala言語で実装されたパーサーコンビネーター [FastParse](https
 C#言語の機能もしくは制約にあわせたAPIを提供しています。
 
 ライブラリが公開するAPIを使用してパーサーを組み立てる方法については
-[Wikiページ](wiki)を参照してください。
+[Wikiページ](https://github.com/unclazz/Unclazz.Parsec/wiki)を参照してください。
 
 例えば次のコードは`"hello"`や`"hello hello"`という文字列をパースするパーサーです：
 
