@@ -56,10 +56,10 @@
     <Compile Include="Intrinsics\LookaheadParser.cs" />
     <Compile Include="Intrinsics\OptionalParser1.cs" />
     <Compile Include="Intrinsics\QuotedStringParser.cs" />
-    <Compile Include="Intrinsics\RepeatAggregate\ReduceConfiguration.cs" />
-    <Compile Include="Intrinsics\RepeatAggregate\RepeatReduceParser.cs" />
-    <Compile Include="Intrinsics\RepeatAggregate\RepeatConfiguration.cs" />
-    <Compile Include="Intrinsics\RepeatAggregate\SeqParser.cs" />
+    <Compile Include="Intrinsics\ReduceConfiguration.cs" />
+    <Compile Include="Intrinsics\RepeatReduceParser.cs" />
+    <Compile Include="Intrinsics\RepeatConfiguration.cs" />
+    <Compile Include="Intrinsics\SeqParser.cs" />
     <Compile Include="Intrinsics\ThenTakeLeftParser.cs" />
     <Compile Include="Intrinsics\ThenTakeRightParser.cs" />
     <Compile Include="Intrinsics\TypedParser.cs" />

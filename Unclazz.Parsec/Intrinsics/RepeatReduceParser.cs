@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Unclazz.Parsec.Intrinsics.RepeatAggregate
+namespace Unclazz.Parsec.Intrinsics
 {
     class RepeatReduceParser<T, U, V> : Parser<V>
     {

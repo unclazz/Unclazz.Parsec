@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-using Unclazz.Parsec.Intrinsics.RepeatAggregate;
+using Unclazz.Parsec.Intrinsics;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {

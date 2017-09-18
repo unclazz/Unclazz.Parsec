@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Unclazz.Parsec.Intrinsics.RepeatAggregate
+namespace Unclazz.Parsec.Intrinsics
 {
     sealed class SeqParser<T> : RepeatReduceParser<T, IList<T>, Seq<T>>
     {

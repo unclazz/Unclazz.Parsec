@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Unclazz.Parsec.Intrinsics.RepeatAggregate
+namespace Unclazz.Parsec.Intrinsics
 {
     sealed class ReduceConfiguration<T, U, V>
     {

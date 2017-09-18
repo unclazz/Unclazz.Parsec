@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using Unclazz.Parsec.Intrinsics.RepeatAggregate;
+using Unclazz.Parsec.Intrinsics;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
