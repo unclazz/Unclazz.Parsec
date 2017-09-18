@@ -4,6 +4,7 @@
 Scala言語で実装されたパーサーコンビネーター [FastParse](https://github.com/lihaoyi/fastparse)を参考にしつつ、
 C#言語の機能もしくは制約にあわせたAPIを提供しています。
 
+アセンブリは[NuGet Gallery](https://www.nuget.org/packages/Unclazz.Parsec)で公開されています。
 ライブラリが公開するAPIを使用してパーサーを組み立てる方法については
 [Wikiページ](https://github.com/unclazz/Unclazz.Parsec/wiki)を参照してください。
 
