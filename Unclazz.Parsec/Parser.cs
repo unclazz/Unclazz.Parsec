@@ -16,6 +16,26 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
+        /// 暗黙の型変換をします。
+        /// </summary>
+        /// <returns>キーワードにマッチするパーサー</returns>
+        /// <param name="keyword">キーワード</param>
+        public static implicit operator Parser(string keyword)
+        {
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            if (keyword.Length == 0) throw new ArgumentException("keyword must not be empty");
+            return Keyword(keyword);
+        }
+        /// <summary>
+        /// 暗黙の型変換をします。
+        /// </summary>
+        /// <returns>文字にマッチするパーサー</returns>
+        /// <param name="ch">文字</param>
+        public static implicit operator Parser(char ch)
+        {
+            return Char(ch);
+        }
+        /// <summary>
         /// <see cref="ParserBase.Not(Parser)"/>と同義です。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
@@ -112,9 +132,9 @@ namespace Unclazz.Parsec
         /// <see cref="ResultCore"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
         /// </summary>
-        /// <param name="input">入力データ</param>
+        /// <param name="ctx">入力データ</param>
         /// <returns>パース結果</returns>
-        protected abstract ResultCore DoParse(Context input);
+        protected abstract ResultCore DoParse(Context ctx);
 
         /// <summary>
         /// パース成功を表す<see cref="ResultCore"/>インスタンスを生成します。
