@@ -285,6 +285,15 @@ namespace Unclazz.Parsec
         {
             return new YieldParser<U>(value);
         }
+        /// <summary>
+        /// 指定されたパーサーがマッチするまで入力データを1文字ずつ先に読み進めるパーサーを生成します。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
+        /// <param name="end">パーサー</param>
+        protected static Parser SkipTo(Parser end)
+        {
+            return new SkipToParser(end);
+        }
         #endregion
     }
 }

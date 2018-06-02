@@ -113,6 +113,7 @@
     <Compile Include="ResultCore1.cs" />
     <Compile Include="Seq.cs" />
     <Compile Include="ParserBase.cs" />
+    <Compile Include="Intrinsics\SkipToParser.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
