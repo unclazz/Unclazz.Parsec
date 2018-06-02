@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class CaptureParserTest
+    public class CaptureParserTest : ParserBase
     {
         [Test]
         public void Parse_Case1()

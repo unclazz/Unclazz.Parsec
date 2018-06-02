@@ -1,12 +1,11 @@
 ﻿using NUnit.Framework;
 using System.Linq;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class CharEscapeParserTest
+    public class CharEscapeParserTest: ParserBase
     {
         [Test]
         [Description("Case1 - バックスラッシュによるエスケープ - 読み取り結果が正しいこと")]

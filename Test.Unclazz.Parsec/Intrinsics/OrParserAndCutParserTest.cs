@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class OrParserAndCutParserTest
+    public class OrParserAndCutParserTest : ParserBase
     {
         [Test]
         public void Parse_Case1()

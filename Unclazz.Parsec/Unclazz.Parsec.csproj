@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="CharClasses\CharRange.cs" />
     <Compile Include="Context.cs" />
-    <Compile Include="ContextConfigurer.cs" />
     <Compile Include="Intrinsics\CharCaptureParser.cs" />
     <Compile Include="Intrinsics\ControlEscapeParser.cs" />
     <Compile Include="Intrinsics\DoubleParser.cs" />
@@ -64,7 +63,6 @@
     <Compile Include="Intrinsics\ThenTakeRightParser.cs" />
     <Compile Include="Intrinsics\TypedParser.cs" />
     <Compile Include="Intrinsics\FlatMapParser.cs" />
-    <Compile Include="Intrinsics\SkipParser.cs" />
     <Compile Include="Intrinsics\KeywordInParser.cs" />
     <Compile Include="Intrinsics\ThenParser.cs" />
     <Compile Include="Intrinsics\LazyParser.cs" />
@@ -72,9 +70,7 @@
     <Compile Include="Intrinsics\UntypedParser.cs" />
     <Compile Include="Intrinsics\Utf16UnicodeEscapeParser.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="ParserFactory.cs" />
-    <Compile Include="ParserExtension.cs" />
-    <Compile Include="Parsers.cs" />
+    <Compile Include="ParserExtensions.cs" />
     <Compile Include="Readers\AutoDispose.cs" />
     <Compile Include="Intrinsics\BeginningOfFileParser.cs" />
     <Compile Include="Optional.cs" />
@@ -116,6 +112,7 @@
     <Compile Include="ResultCore.cs" />
     <Compile Include="ResultCore1.cs" />
     <Compile Include="Seq.cs" />
+    <Compile Include="ParserBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

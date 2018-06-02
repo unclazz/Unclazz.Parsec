@@ -21,7 +21,7 @@ namespace Unclazz.Parsec
     /// </para>
     /// </summary>
     /// <typeparam name="T">パース結果の型</typeparam>
-    public abstract class Parser<T>
+    public abstract class Parser<T> : ParserBase
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
@@ -30,7 +30,7 @@ namespace Unclazz.Parsec
         /// <param name="func"></param>
         public static implicit operator Parser<T>(Func<Context, Result<T>> func)
         {
-            return Parsers.For(func);
+            return For(func);
         }
         /// <summary>
         /// デリゲートを使用してパーサーを生成します。
@@ -40,7 +40,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public static implicit operator Parser<T>(Func<Parser<T>> factory)
         {
-            return Parsers.Lazy(factory);
+            return Lazy(factory);
         }
         /// <summary>
         /// パーサーのパース結果成否を反転させるパーサーを生成します。
@@ -49,7 +49,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public static Parser operator !(Parser<T> operand)
         {
-            return Parsers.Not(operand);
+            return Not(operand);
         }
         /// <summary>
         /// <see cref="Or(Parser{T})"/>と同義です。
@@ -113,7 +113,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// <see cref="Then(Parser)"/>と同義です。
-        /// 右被演算子は<see cref="Keyword(string, int)"/>によりパーサーに変換されます。
+        /// 右被演算子は<see cref="ParserBase.Keyword(string, int)"/>によりパーサーに変換されます。
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -124,7 +124,7 @@ namespace Unclazz.Parsec
         }
         /// <summary>
         /// <see cref="Parser.Then{T}(Parser{T})"/>と同義です。
-        /// 左被演算子は<see cref="Keyword(string, int)"/>によりパーサーに変換されます。
+        /// 左被演算子は<see cref="ParserBase.Keyword(string, int)"/>によりパーサーに変換されます。
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -136,23 +136,15 @@ namespace Unclazz.Parsec
         #endregion
 
         /// <summary>
-        /// デフォルトのコンフィギュレーションを使用するコンストラクタです。
+        /// デフォルトのコンストラクタです。
+        /// <see cref="ParserBase.Name"/>には型名から導出された値が設定されます。
         /// </summary>
-        protected Parser()
-        {
-            _name = Regex.Replace(GetType().Name, "Parser$", string.Empty);
-        }
+        protected Parser() : base() { }
         /// <summary>
-        /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
+        /// 任意のパーサー名を指定できるコンストラクタです。
         /// </summary>
-        /// <param name="name"></param>
-        protected Parser(string name)
-        {
-            _name = name ?? throw new ArgumentNullException(nameof(name));
-        }
-
-        readonly static ParserFactory _factory = new ParserFactory();
-        readonly string _name;
+        /// <param name="name">パーサー名</param>
+        protected Parser(string name) : base(name) { }
 
         /// <summary>
         /// パースを行います。
@@ -183,11 +175,11 @@ namespace Unclazz.Parsec
         /// その後事後処理を終えてから、呼び出し元に結果を返します。
         /// </para>
         /// </summary>
-        /// <param name="input">入力データ</param>
+        /// <param name="src">入力データ</param>
         /// <returns>パース結果</returns>
-        public Result<T> Parse(Reader input)
+        public Result<T> Parse(Reader src)
         {
-            return Parse(new Context(input));
+            return Parse(new Context(src));
         }
         /// <summary>
         /// パースを行います。
@@ -208,7 +200,7 @@ namespace Unclazz.Parsec
         public Result<T> Parse(Context ctx)
         {
             var start = ctx.Source.Position;
-            ctx.PreParse(_name);
+            ctx.PreParse(Name);
             var resultCore = DoParse(ctx);
             ctx.PostParse(resultCore);
             return resultCore.AttachPosition(start, ctx.Source.Position);
@@ -253,203 +245,6 @@ namespace Unclazz.Parsec
         {
             return ResultCore<T>.OfFailure(message, canBacktrack);
         }
-
-        #region 定義済みパーサーを提供するプロパティの宣言
-        /// <summary>
-        /// データソースの先頭（BOF）にだけマッチするパーサーです。
-        /// </summary>
-        protected Parser BeginningOfFile => _factory.BeginningOfFile;
-        /// <summary>
-        /// データソースの終端（EOF）にだけマッチするパーサーです。
-        /// </summary>
-        public Parser EndOfFile => _factory.EndOfFile;
-        /// <summary>
-        /// 0文字以上の空白文字(コードポイント<c>32</c>）と
-        /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
-        /// </summary>
-        public Parser WhileSpaceAndControls => _factory.WhileSpaceAndControls;
-        /// <summary>
-        /// 数値リテラルを読み取ります。
-        /// <para>
-        /// 構文はJSONの<c>Number</c>型リテラルと同じです。
-        /// オプションの符合で始まり、整数部、オプションの小数部、そしてオプションの指数部を含みます。
-        /// </para>
-        /// </summary>
-        public Parser<int> HexDigits => _factory.HexDigits;
-        /// <summary>
-        /// 16進数リテラルを読み取ります。
-        /// </summary>
-        public Parser<double> Number => _factory.Number;
-        #endregion
-
-        #region 定義済みパーサーを提供するメソッドの宣言
-        /// <summary>
-        /// パーサーのパース結果成否を反転させるパーサーを生成します。
-        /// </summary>
-        /// <typeparam name="U">任意の型</typeparam>
-        /// <param name="operand">元になるパーサー</param>
-        /// <returns></returns>
-        protected Parser Not<U>(Parser<U> operand) => _factory.Not(operand);
-        /// <summary>
-        /// パーサーのパース結果成否を反転させるパーサーを生成します。
-        /// </summary>
-        /// <param name="operand">元になるパーサー</param>
-        /// <returns></returns>
-        protected Parser Not(Parser operand) => _factory.Not(operand);
-        /// <summary>
-        /// デリゲートをもとにパーサーを生成します。
-        /// </summary>
-        /// <typeparam name="U">任意の型</typeparam>
-        /// <param name="func">パースの実処理を行うデリゲート</param>
-        /// <returns></returns>
-        protected Parser<U> For<U>(Func<Context, Result<U>> func) => _factory.For(func);
-        /// <summary>
-        /// デリゲートをもとにパーサーを生成します。
-        /// </summary>
-        /// <param name="func">パースの実処理を行うデリゲート</param>
-        /// <returns></returns>
-        protected Parser For(Func<Context, Result> func) => _factory.For(func);
-        /// <summary>
-        /// デリゲートを使用してパーサーを生成します。
-        /// デリゲートはパースの直前になるまで実行されません。
-        /// </summary>
-        /// <typeparam name="U">パーサーが返す値の型</typeparam>
-        /// <param name="factory">パーサーを生成するデリゲート</param>
-        /// <returns></returns>
-        protected Parser<U> Lazy<U>(Func<Parser<U>> factory) => _factory.Lazy(factory);
-        /// <summary>
-        /// デリゲートを使用してパーサーを生成します。
-        /// デリゲートはパースの直前になるまで実行されません。
-        /// </summary>
-        /// <param name="factory">パーサーを生成するデリゲート</param>
-        /// <returns></returns>
-        protected Parser Lazy(Func<Parser> factory) => _factory.Lazy(factory);
-        /// <summary>
-        /// 先読み（look-ahead）を行うパーサーを生成します。
-        /// <para>このパーサーはその成否に関わらず文字位置を前進させません。</para>
-        /// </summary>
-        /// <param name="operand">元になるパーサー</param>
-        /// <returns></returns>
-        protected Parser Lookahead(Parser operand) => _factory.Lookahead(operand);
-        /// <summary>
-        /// 指定された文字にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="ch">文字</param>
-        /// <returns></returns>
-        protected CharParser Char(char ch) => _factory.Char(ch);
-        /// <summary>
-        /// 指定された範囲に該当する文字にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="start">範囲の開始</param>
-        /// <param name="end">範囲の終了</param>
-        /// <returns></returns>
-        protected CharParser CharBetween(char start, char end) => _factory.CharBetween(start, end);
-        /// <summary>
-        /// 指定された文字クラスに属する文字にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="clazz">文字クラス</param>
-        /// <returns></returns>
-        protected CharParser CharIn(CharClass clazz) => _factory.CharIn(clazz);
-        /// <summary>
-        /// 指定された文字の集合に属する文字にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="chars">文字集合</param>
-        /// <returns></returns>
-        protected CharParser CharIn(IEnumerable<char> chars) => _factory.CharIn(chars);
-        /// <summary>
-        /// 文字範囲に該当する文字からなる文字列にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="start">範囲の開始</param>
-        /// <param name="end">範囲の終了</param>
-        /// <param name="min">最小の文字数</param>
-        /// <returns></returns>
-        protected Parser CharsWhileBetween(char start, char end, int min = 1) => _factory.CharsWhileBetween(start, end, min);
-        /// <summary>
-        /// 文字集合に属する文字からなる文字列にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="chars">文字集合</param>
-        /// <param name="min">最小の文字数</param>
-        /// <returns></returns>
-        protected Parser CharsWhileIn(IEnumerable<char> chars, int min = 1) => _factory.CharsWhileIn(chars, min);
-        /// <summary>
-        /// 文字クラスに属する文字からなる文字列にマッチするパーサーを返します。
-        /// </summary>
-        /// <param name="clazz">文字クラス</param>
-        /// <param name="min">最小の文字数</param>
-        /// <returns></returns>
-        protected Parser CharsWhileIn(CharClass clazz, int min = 1) => _factory.CharsWhileIn(clazz, min);
-        /// <summary>
-        /// 指定したキーワードにのみマッチするパーサーを生成します。
-        /// <para>
-        /// <paramref name="cutIndex"/>によりカット（トラックバックの無効化）を行う文字位置を指定できます。
-        /// パース処理がこの文字位置の以降に進んだ時、直前の<c>|</c>や<c>Or(...)</c>を起点とするトラックバックは無効になります。
-        /// </para>
-        /// </summary>
-        /// <param name="keyword">キーワード</param>
-        /// <param name="cutIndex">カットを行う文字位置</param>
-        /// <returns></returns>
-        protected Parser Keyword(string keyword, int cutIndex = -1) => _factory.Keyword(keyword, cutIndex);
-        /// <summary>
-        /// 指定したキーワードのいずれかにのみマッチするパーサーを生成します。
-        /// </summary>
-        /// <param name="keywords">キーワード</param>
-        /// <returns></returns>
-        protected Parser KeywordIn(params string[] keywords) => _factory.KeywordIn(keywords);
-        /// <summary>
-        /// 指定した値をキャプチャ結果とするパーサーを生成します。
-        /// <para>このパーサーは実際には読み取りは行わず、パース結果は必ず成功となります。
-        /// キャプチャを行わないパーサーに<c>&amp;</c>や<c>Then(...)</c>で結合することで、
-        /// そのパーサーの代わりにキャプチャ結果を作り出すように働きます。</para>
-        /// </summary>
-        /// <typeparam name="U">任意の型</typeparam>
-        /// <param name="value">キャプチャ結果となる値</param>
-        /// <returns></returns>
-        protected Parser<U> Yield<U>(U value) => _factory.Yield(value);
-
-        /// <summary>
-        /// <c>"\\u"</c>もしくは任意の接頭辞から始まるUnicodeエスケープシーケンスを読み取ります。
-        /// Unicode拡張領域の文字は上位サロゲートと下位サロゲートのそれぞれ単体でパースされます。
-        /// </summary>
-        /// <param name="prefix"></param>
-        /// <returns></returns>
-        protected Parser<char> Utf16UnicodeEscape(string prefix = "\\u")
-        {
-            return _factory.Utf16UnicodeEscape(prefix);
-        }
-        /// <summary>
-        /// 制御文字のエスケープシーケンスを読み取ります。
-        /// </summary>
-        /// <param name="prefix"></param>
-        /// <returns></returns>
-        protected Parser<char> ControlEscape(char prefix = '\\')
-        {
-            return _factory.ControlEscape(prefix);
-        }
-        /// <summary>
-        /// 任意の文字のエスケープシーケンスを読み取ります。
-        /// 読み取り結果はその文字そのもの、つまりエスケープシーケンスから接頭辞を除去したものです。
-        /// </summary>
-        /// <param name="chars"></param>
-        /// <param name="prefix"></param>
-        /// <returns></returns>
-        protected Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
-        {
-            return _factory.CharEscape(chars, prefix);
-        }
-        /// <summary>
-        /// 引用符で囲われた文字列を読み取ります。
-        /// デフォルトでは引用符自体を含めていかなるエスケープシーケンスも認識しません。
-        /// パース対象文字列にエスケープシーケンスが含まれる場合は、
-        /// 当該シーケンスを適切にハンドルするパーサーを引数で指定してください。
-        /// </summary>
-        /// <param name="quote"></param>
-        /// <param name="escape"></param>
-        /// <returns></returns>
-        protected Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
-        {
-            return _factory.QuotedString(quote, escape);
-        }
-        #endregion
 
         /// <summary>
         /// 直近の<c>|</c>や<c>Or(...)</c>を起点としたバックトラックを無効化します。
@@ -569,16 +364,6 @@ namespace Unclazz.Parsec
         public RepeatParser<T> Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             return new RepeatParser<T>(this, min, max, exactly, sep);
-        }
-        /// <summary>
-        /// パース対象に先行する指定された文字クラスをスキップするパーサーを返します。
-        /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
-        /// </summary>
-        /// <param name="target">スキップ対象の文字クラス</param>
-        /// <returns>新しいパーサー</returns>
-        public Parser<T> AutoSkip(CharClass target)
-        {
-            return new SkipParser<T>(this, target);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。

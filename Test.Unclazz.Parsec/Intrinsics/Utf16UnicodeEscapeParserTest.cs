@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
-using static Unclazz.Parsec.Parsers;
+using Unclazz.Parsec;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class Utf16UnicodeEscapeParserTest
+    public class Utf16UnicodeEscapeParserTest : ParserBase
     {
         [TestCase("\\u0030", '0')]
         [TestCase("\\u0031", '1')]

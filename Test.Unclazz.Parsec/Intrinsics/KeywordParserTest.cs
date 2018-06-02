@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 using Unclazz.Parsec.Intrinsics;
 
 namespace Test.Unclazz.Parsec
 {
     [TestFixture]
-    public class StringParserTest
+    public class StringParserTest : ParserBase
     {
         [TestCase("0123456789X", "0", true)]
         [TestCase("0123456789X", "01", true)]

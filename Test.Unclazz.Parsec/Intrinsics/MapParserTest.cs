@@ -1,12 +1,11 @@
 ﻿using NUnit.Framework;
 using System;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class MapParserTest
+    public class MapParserTest : ParserBase
     {
         [Test]
         [Description("Parse - Case3 - パース成功 x キャプチャありの場合")]

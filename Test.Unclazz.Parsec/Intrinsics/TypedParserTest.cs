@@ -2,12 +2,11 @@
 using System;
 using System.Linq;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class TypedParserTest
+    public class TypedParserTest : ParserBase
     {
         [Test]
         public void Parse_Case3()
