@@ -45,30 +45,45 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <returns>新しいインスタンス</returns>
         /// <param name="src">入力データ</param>
+        /// <param name="callStack">パーサーの呼び出し階層を記録する</param>
+        /// <exception cref="ArgumentNullException">引数のいずれかが<c>null</c>である場合</exception>
+        public static Context Create(Reader src, bool callStack)
+        {
+            return new Context(src, callStack, null);
+        }
+        /// <summary>
+        /// 新しいインスタンスを生成して返します。
+        /// </summary>
+        /// <returns>新しいインスタンス</returns>
+        /// <param name="src">入力データ</param>
         /// <param name="logAppender">ログ出力に使用されるアクション</param>
         /// <exception cref="ArgumentNullException">引数のいずれかが<c>null</c>である場合</exception>
         public static Context Create(Reader src, Action<string> logAppender)
         {
-            return new Context(src, logAppender ?? throw new ArgumentNullException(nameof(logAppender)));
+            return new Context(src, true, logAppender
+                               ?? throw new ArgumentNullException(nameof(logAppender)));
         }
 
-        internal Context(Reader source) : this(source, null) { }
-        internal Context(Reader source, Action<string> logAppender)
+        internal Context(Reader source) : this(source, false, null) { }
+        internal Context(Reader source, bool callStack, Action<string> logAppender)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            _stack = logAppender == null ? null : new Stack<string>();
-            _logAppender = logAppender;
             _nolog = logAppender == null;
+            _nostack = !callStack && _nolog;
+            _stack = _nostack ? null : new Stack<ParseCall>();
+            _logAppender = logAppender;
         }
 
         readonly Action<string> _logAppender;
-        readonly Stack<string> _stack;
+        readonly Stack<ParseCall> _stack;
         readonly bool _nolog;
+        readonly bool _nostack;
 
         /// <summary>
         /// 入力データソースです。
         /// </summary>
         public Reader Source { get; }
+        public IEnumerable<ParseCall> CallStack => _stack?.ToArray();
         /// <summary>
         /// ロギングが有効な場合<c>true</c>です。
         /// </summary>
@@ -140,12 +155,15 @@ namespace Unclazz.Parsec
         /// パース本処理前に呼び出しスタックを更新し、自動スキップとロギングを行います。
         /// </summary>
         /// <param name="parserName"></param>
-        internal void PreParse(string parserName)
+        internal void PreParse(string parserName, CharPosition position)
         {
+            // 呼び出し階層の記録がOFFの場合は処理を直ちに終了
+            if (_nostack) return;
+            // スタックにパーサー名を追加
+            _stack.Push(new ParseCall(parserName, position, _stack.Count + 1));
+
             // アペンダーが存在しない場合は処理を直ちに終了
             if (_nolog) return;
-            // スタックにパーサー名を追加
-            _stack.Push(parserName);
             // パース開始を示すログメッセージを作成してアペンダーをコール
             _logAppender(MakeLabel('+').ToString());
         }
@@ -155,8 +173,15 @@ namespace Unclazz.Parsec
         /// <param name="result"></param>
         internal void PostParse(ResultCore result)
         {
+            // 呼び出し階層の記録がOFFの場合は処理を直ちに終了
+            if (_nostack) return;
+
             // アペンダーが存在しない場合は処理を直ちに終了
-            if (_nolog) return;
+            if (_nolog) 
+            {
+                _stack?.Pop();
+                return;
+            }
 
             // パース終了を示すログメッセージを作成してアペンダーをコール
             var buff = MakeLabel('-');
@@ -174,8 +199,15 @@ namespace Unclazz.Parsec
         /// <param name="result"></param>
         internal void PostParse<T>(ResultCore<T> result)
         {
+            // 呼び出し階層の記録がOFFの場合は処理を直ちに終了
+            if (_nostack) return;
+
             // アペンダーが存在しない場合は処理を直ちに終了
-            if (_nolog) return;
+            if (_nolog)
+            {
+                _stack?.Pop();
+                return;
+            }
 
             // パース終了を示すログメッセージを作成してアペンダーをコール
             var buff = MakeLabel('-');
@@ -191,11 +223,8 @@ namespace Unclazz.Parsec
         {
             var pos = Source.Position;
             return new StringBuilder()
-                .Append(' ', (_stack.Count -1) * 2)
-                .Append(sign).Append(' ').Append(_stack.Peek())
-                .Append(" (ln=").Append(pos.Line).Append(", col=")
-                .Append(pos.Column).Append(", idx=").Append(pos.Index).Append(") ");
+                .Append(' ', (_stack.Count - 1) * 2)
+                .Append(sign).Append(' ').Append(_stack.Peek());
         }
     }
-
 }
