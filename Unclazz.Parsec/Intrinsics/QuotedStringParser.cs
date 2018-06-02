@@ -10,9 +10,9 @@
             else _string = q & (escape | nq).Repeat().Join() & q;
         }
         readonly Parser<string> _string;
-        protected override ResultCore<string> DoParse(Context ctx)
+        protected override ResultCore<string> DoParse(Reader src)
         {
-            return _string.Parse(ctx);
+            return _string.Parse(src);
         }
     }
 }

@@ -23,9 +23,9 @@ namespace Example.Unclazz.Parsec
             var raw = (signOpt & integral & fractionalOpt & exponentOpt).Capture();
             _number = raw.Map(double.Parse).Map(JsonObject.Of);
         }
-        protected override ResultCore<IJsonObject> DoParse(Context ctx)
+        protected override ResultCore<IJsonObject> DoParse(Reader src)
         {
-            return _number.Parse(ctx);
+            return _number.Parse(src);
         }
     }
 }

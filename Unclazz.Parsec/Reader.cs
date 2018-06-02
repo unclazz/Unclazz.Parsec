@@ -49,46 +49,58 @@ namespace Unclazz.Parsec
         /// <paramref name="text"/>をデータソースとする<see cref="Reader"/>を返します。
         /// </summary>
         /// <param name="text">データソース</param>
+        /// <param name="callStack">パーサー呼び出し階層を記録する場合<c>true</c></param>
+        /// <param name="logAppender">ログ出力を行うアクション</param>
         /// <returns>新しいリーダー</returns>
-        public static Reader From(string text)
+        public static Reader From(string text, bool callStack = false, Action<string> logAppender = null)
         {
-            return From(new StringReader(text ?? throw new ArgumentNullException(nameof(text))));
+            return From(new StringReader(text ?? throw new ArgumentNullException(nameof(text))), callStack, logAppender);
         }
         /// <summary>
         /// <paramref name="filepath"/>が指すファイルをデータソースとする<see cref="Reader"/>を返します。
         /// </summary>
         /// <param name="filepath">ファイルパス</param>
         /// <param name="enc">エンコーディング</param>
+        /// <param name="callStack">パーサー呼び出し階層を記録する場合<c>true</c></param>
+        /// <param name="logAppender">ログ出力を行うアクション</param>
         /// <returns>新しいリーダー</returns>
-        public static Reader From(string filepath, Encoding enc)
+        public static Reader From(string filepath, Encoding enc, 
+                                  bool callStack = false, Action<string> logAppender = null)
         {
-            return From(filepath ?? throw new ArgumentNullException(nameof(filepath)), enc);
+            return From(filepath ?? throw new ArgumentNullException(nameof(filepath)), enc, callStack, logAppender);
         }
         /// <summary>
         /// <paramref name="stream"/>をデータソースとする<see cref="Reader"/>を返します。
         /// </summary>
         /// <param name="stream">ストリーム</param>
         /// <param name="enc">エンコーディング</param>
+        /// <param name="callStack">パーサー呼び出し階層を記録する場合<c>true</c></param>
+        /// <param name="logAppender">ログ出力を行うアクション</param>
         /// <returns>新しいリーダー</returns>
-        public static Reader From(Stream stream, Encoding enc)
+        public static Reader From(Stream stream, Encoding enc, 
+                                  bool callStack = false, Action<string> logAppender = null)
         {
             return From(new StreamReader(
                 stream ?? throw new ArgumentNullException(nameof(stream)),
-                enc ?? throw new ArgumentNullException(nameof(enc))));
+                enc ?? throw new ArgumentNullException(nameof(enc))), 
+                        callStack, logAppender);
         }
         /// <summary>
         /// <paramref name="reader"/>をデータソースとする<see cref="Reader"/>を返します。
         /// </summary>
         /// <param name="reader">リーダー</param>
+        /// <param name="callStack">パーサー呼び出し階層を記録する場合<c>true</c></param>
+        /// <param name="logAppender">ログ出力を行うアクション</param>
         /// <returns>新しいリーダー</returns>
-        public static Reader From(TextReader reader)
+        public static Reader From(TextReader reader, bool callStack = false, Action<string> logAppender = null)
         {
-            return new Reader(reader ?? throw new ArgumentNullException(nameof(reader)));
+            return new Reader(reader ?? throw new ArgumentNullException(nameof(reader)), callStack, logAppender);
         }
 
-        Reader(TextReader reader)
+        Reader(TextReader reader, bool callStack, Action<string> logAppender)
         {
             _inner = new ResettableReader(reader);
+            Context = new Context(this, callStack, logAppender);
         }
         /// <summary>
         /// デストラクタです。
@@ -121,6 +133,11 @@ namespace Unclazz.Parsec
         /// <param name="unmark"><c>true</c>の場合コンテンツを返す前に<see cref="Unmark"/>を行う</param>
         /// <returns>キャプチャしたコンテンツ</returns>
         public string Capture(bool unmark) => _inner.Capture(unmark);
+        /// <summary>
+        /// パース処理コンテキストです。
+        /// </summary>
+        /// <value></value>
+        public Context Context { get; }
 
         /// <summary>
         /// 現在の文字位置に印をつけます。

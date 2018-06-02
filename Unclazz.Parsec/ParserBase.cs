@@ -138,7 +138,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        protected static Parser<T> For<T>(Func<Context, Result<T>> func)
+        protected static Parser<T> For<T>(Func<Reader, Result<T>> func)
         {
             return new DelegateParser<T>(func);
         }
@@ -147,7 +147,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        protected static Parser For(Func<Context, Result> func)
+        protected static Parser For(Func<Reader, Result> func)
         {
             return new DelegateParser(func);
         }

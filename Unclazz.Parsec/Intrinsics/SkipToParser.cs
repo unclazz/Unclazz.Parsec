@@ -10,14 +10,12 @@ namespace Unclazz.Parsec.Intrinsics
 
         readonly Parser _end;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            var src = ctx.Source;
-
             while (!src.EndOfFile)
             {
                 src.Mark();
-                if (_end.Parse(ctx).Successful)
+                if (_end.Parse(src).Successful)
                 {
                     return Success();
                 }

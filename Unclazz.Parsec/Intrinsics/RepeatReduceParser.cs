@@ -33,7 +33,7 @@ namespace Unclazz.Parsec.Intrinsics
         readonly Parser _repSep;
         readonly bool _aggNoSeed;
 
-        protected override ResultCore<V> DoParse(Context ctx)
+        protected override ResultCore<V> DoParse(Reader src)
         {
             // シードの有無を確認
             var acc = _aggNoSeed 
@@ -46,32 +46,32 @@ namespace Unclazz.Parsec.Intrinsics
             for (var i = 1; i <= _repMax; i++)
             {
                 // min ＜ ループ回数 ならリセットのための準備
-                if (_repBreakable && _repMin < i) ctx.Source.Mark();
+                if (_repBreakable && _repMin < i) src.Mark();
 
                 // ループが2回目 かつ セパレーターのパーサーが指定されている場合
                 if (1 < i && _repSep != null)
                 {
                     // セパレーターのトークンのパース
-                    var sepResult = _repSep.Parse(ctx);
+                    var sepResult = _repSep.Parse(src);
                     if (!sepResult.Successful)
                     {
                         if (_repBreakable && _repMin < i)
                         {
                             // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
-                            ctx.Source.Reset(true);
+                            src.Reset(true);
                             break;
                         }
                         return Failure(sepResult.Message);
                     }
                 }
 
-                var mainResult = _original.Parse(ctx);
+                var mainResult = _original.Parse(src);
                 if (!mainResult.Successful)
                 {
                     if (_repBreakable && _repMin < i)
                     {
                         // min ＜ ループ回数 なら失敗とせずリセットしてループを抜ける
-                        ctx.Source.Reset(true);
+                        src.Reset(true);
                         break;
                     }
                     return Failure(mainResult.Message);
@@ -85,7 +85,7 @@ namespace Unclazz.Parsec.Intrinsics
                     : _aggConf.Accumulator(acc, mainResult.Capture);
 
                 // min ＜ ループ回数 ならリセットのための準備を解除
-                if (_repBreakable && _repMin < i) ctx.Source.Unmark();
+                if (_repBreakable && _repMin < i) src.Unmark();
             }
             return Success(_aggConf.ResultSelector(acc));
         }

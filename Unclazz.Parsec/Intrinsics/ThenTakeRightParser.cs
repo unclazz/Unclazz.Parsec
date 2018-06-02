@@ -16,10 +16,10 @@ namespace Unclazz.Parsec.Intrinsics
         }
         public Parser Left { get; }
         public Parser<TRight> Right { get; }
-        protected override ResultCore<TRight> DoParse(Context ctx)
+        protected override ResultCore<TRight> DoParse(Reader src)
         {
             // 左被演算子側のパーサーでパース
-            var leftResult = Left.Parse(ctx);
+            var leftResult = Left.Parse(src);
 
             // パース結果をチェック、失敗の場合はその結果を呼び出し元に返す
             // ＊このとき型の変換（付与）を行っているが、
@@ -27,7 +27,7 @@ namespace Unclazz.Parsec.Intrinsics
             if (!leftResult.Successful) return leftResult.Typed<TRight>();
 
             // 続いて、右被演算子側のパーサーでパース
-            var rightResult = Right.Parse(ctx);
+            var rightResult = Right.Parse(src);
 
             // 成否に関わらず左右のバックトラック設定を合成
             var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;

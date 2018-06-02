@@ -13,11 +13,11 @@
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="src"></param>
         /// <returns></returns>
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            var actual = ctx.Source.Read();
+            var actual = src.Read();
             if (_expected == actual)
             {
                 return Success();

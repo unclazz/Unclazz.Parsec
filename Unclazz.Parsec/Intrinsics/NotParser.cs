@@ -11,11 +11,11 @@ namespace Unclazz.Parsec.Intrinsics
 
         readonly Parser<T> _original;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            ctx.Source.Mark();
-            var p = ctx.Source.Position;
-            var originalResult = _original.Parse(ctx);
+            src.Mark();
+            var p = src.Position;
+            var originalResult = _original.Parse(src);
             if (originalResult.Successful)
             {
                 var m = string.Format("parsing with {0} must be failed but actualy be successful.", _original);
@@ -23,8 +23,8 @@ namespace Unclazz.Parsec.Intrinsics
             }
             else
             {
-                ctx.Source.Reset();
-                ctx.Source.Unmark();
+                src.Reset();
+                src.Unmark();
                 return Success(originalResult.CanBacktrack);
             }
         }
@@ -38,10 +38,10 @@ namespace Unclazz.Parsec.Intrinsics
 
         readonly Parser _original;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            ctx.Source.Mark();
-            var originalResult = _original.Parse(ctx);
+            src.Mark();
+            var originalResult = _original.Parse(src);
             if (originalResult.Successful)
             {
                 var m = string.Format("parsing with {0} must be failed but actualy be successful.", _original);
@@ -49,7 +49,7 @@ namespace Unclazz.Parsec.Intrinsics
             }
             else
             {
-                ctx.Source.Reset(true);
+                src.Reset(true);
                 return Success(originalResult.CanBacktrack);
             }
         }

@@ -16,14 +16,14 @@ namespace Unclazz.Parsec.Intrinsics
         readonly Func<TSource, Parser<TResult>> _mapper;
         readonly bool _canThrow;
 
-        protected override ResultCore<TResult> DoParse(Context ctx)
+        protected override ResultCore<TResult> DoParse(Reader src)
         {
-            var r = _source.Parse(ctx);
+            var r = _source.Parse(src);
             try
             {
                 if (r.Successful)
                 {
-                    return _mapper(r.Capture).Parse(ctx);
+                    return _mapper(r.Capture).Parse(src);
                 }
                 return r.Retyped<TResult>();
             }
@@ -47,14 +47,14 @@ namespace Unclazz.Parsec.Intrinsics
         readonly Func<TSource, Parser> _mapper;
         readonly bool _canThrow;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            var r = _source.Parse(ctx);
+            var r = _source.Parse(src);
             try
             {
                 if (r.Successful)
                 {
-                    return _mapper(r.Capture).Parse(ctx);
+                    return _mapper(r.Capture).Parse(src);
                 }
                 return r.Untyped();
             }

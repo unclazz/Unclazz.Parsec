@@ -10,9 +10,9 @@ namespace Unclazz.Parsec.Intrinsics
         }
         readonly Func<Parser<T>> _factory;
         Parser<T> _cache;
-        protected override ResultCore<T> DoParse(Context ctx)
+        protected override ResultCore<T> DoParse(Reader src)
         {
-            return (_cache ?? (_cache = _factory())).Parse(ctx);
+            return (_cache ?? (_cache = _factory())).Parse(src);
         }
     }
 }

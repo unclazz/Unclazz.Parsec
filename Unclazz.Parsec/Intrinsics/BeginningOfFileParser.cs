@@ -7,9 +7,9 @@
     sealed class BeginningOfFileParser : Parser
     {
         internal BeginningOfFileParser() : base("BOF") { }
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            var p = ctx.Source.Position;
+            var p = src.Position;
             if (p.Index == 0) return Success();
             else return Failure(string.Format("BOF(index = 0) expected but already index is {0}.", p.Index));
         }

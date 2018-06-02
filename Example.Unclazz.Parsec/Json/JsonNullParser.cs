@@ -13,9 +13,9 @@ namespace Example.Unclazz.Parsec
             // "null"マッチ成功後、読み取り結果のキャプチャはせず、Yieldパーサーで直接値を産生
             _null = Keyword("null", cutIndex: 1) & Yield(JsonObject.OfNull());
         }
-        protected override ResultCore<IJsonObject> DoParse(Context ctx)
+        protected override ResultCore<IJsonObject> DoParse(Reader src)
         {
-            return _null.Parse(ctx);
+            return _null.Parse(src);
         }
     }
 }

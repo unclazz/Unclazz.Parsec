@@ -41,15 +41,15 @@ namespace Unclazz.Parsec.Intrinsics
             public Parser<U1> Left { get; }
             public Parser<Tuple<U2, U3>> Right { get; }
 
-            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Context ctx)
+            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader src)
             {
-                var leftResult = Left.Parse(ctx);
+                var leftResult = Left.Parse(src);
                 if (!leftResult.Successful)
                 {
                     return leftResult.Retyped<Tuple<U1, U2, U3>>();
                 }
 
-                var rightResult = Right.Parse(ctx);
+                var rightResult = Right.Parse(src);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {
@@ -81,15 +81,15 @@ namespace Unclazz.Parsec.Intrinsics
             public Parser<Tuple<U1, U2>> Left { get; }
             public Parser<U3> Right { get; }
 
-            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Context ctx)
+            protected override ResultCore<Tuple<U1, U2, U3>> DoParse(Reader src)
             {
-                var leftResult = Left.Parse(ctx);
+                var leftResult = Left.Parse(src);
                 if (!leftResult.Successful)
                 {
                     return leftResult.Retyped<Tuple<U1, U2, U3>>();
                 }
 
-                var rightResult = Right.Parse(ctx);
+                var rightResult = Right.Parse(src);
                 var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;
                 if (!rightResult.Successful)
                 {

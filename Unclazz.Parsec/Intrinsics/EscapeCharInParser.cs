@@ -9,9 +9,9 @@ namespace Unclazz.Parsec.Intrinsics
             _charIn = Char(prefix) & CharIn(charIn).Capture();
         }
         readonly Parser<char> _charIn;
-        protected override ResultCore<char> DoParse(Context ctx)
+        protected override ResultCore<char> DoParse(Reader src)
         {
-            return _charIn.Parse(ctx);
+            return _charIn.Parse(src);
         }
     }
 }

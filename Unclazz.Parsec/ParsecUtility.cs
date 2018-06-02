@@ -55,16 +55,16 @@ namespace Unclazz.Parsec
                 return buff.ToString();
             }
         }
-        public static ResultCore Or(Context ctx, Parser left, Parser right)
+        public static ResultCore Or(Reader ctx, Parser left, Parser right)
         {
-            ctx.Source.Mark();
+            ctx.Mark();
             var leftResult = left.Parse(ctx);
             if (leftResult.Successful || !leftResult.CanBacktrack)
             {
-                ctx.Source.Unmark();
+                ctx.Unmark();
                 return leftResult.AllowBacktrack(true);
             }
-            ctx.Source.Reset(true);
+            ctx.Reset(true);
             var rightResult = right.Parse(ctx);
             return rightResult.AllowBacktrack(true);
         }

@@ -15,14 +15,14 @@ namespace Unclazz.Parsec.Intrinsics
         readonly int _min;
         readonly CharClass _clazz;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
             var count = 0;
-            while (!ctx.Source.EndOfFile)
+            while (!src.EndOfFile)
             {
-                var ch = (char)ctx.Source.Peek();
+                var ch = (char)src.Peek();
                 if (!_clazz.Contains(ch)) break;
-                ctx.Source.Read();
+                src.Read();
                 count++;
             }
             if (_min <= count)

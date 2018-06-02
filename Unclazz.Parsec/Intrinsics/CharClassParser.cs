@@ -11,9 +11,9 @@ namespace Unclazz.Parsec.Intrinsics
 
         readonly CharClass _clazz;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            var ch = ctx.Source.Read();
+            var ch = src.Read();
             if (0 <= ch && _clazz.Contains((char)ch))
             {
                 return Success();

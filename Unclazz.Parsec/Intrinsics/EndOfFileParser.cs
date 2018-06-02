@@ -7,11 +7,11 @@
     sealed class EndOfFileParser : Parser
     {
         internal EndOfFileParser() : base("EOF") { }
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            return ctx.Source.EndOfFile ? Success() 
+            return src.EndOfFile ? Success() 
                 : Failure(string.Format("EOF expected but found {0}.", 
-                ParsecUtility.CharToString(ctx.Source.Peek())));
+                ParsecUtility.CharToString(src.Peek())));
         }
     }
 }

@@ -13,17 +13,17 @@ namespace Unclazz.Parsec.Intrinsics
         internal Parser<T> Left { get; }
         internal Parser<T> Right { get; }
 
-        protected override ResultCore<T> DoParse(Context ctx)
+        protected override ResultCore<T> DoParse(Reader src)
         {
-            ctx.Source.Mark();
-            var leftResult = Left.Parse(ctx);
+            src.Mark();
+            var leftResult = Left.Parse(src);
             if (leftResult.Successful || !leftResult.CanBacktrack)
             {
-                ctx.Source.Unmark();
+                src.Unmark();
                 return leftResult.AllowBacktrack(true);
             }
-            ctx.Source.Reset(true);
-            var rightResult = Right.Parse(ctx);
+            src.Reset(true);
+            var rightResult = Right.Parse(src);
             return rightResult.AllowBacktrack(true);
         }
     }
@@ -38,7 +38,7 @@ namespace Unclazz.Parsec.Intrinsics
         internal CharParser Left { get; }
         internal CharParser Right { get; }
 
-        protected override ResultCore DoParse(Context ctx) => ParsecUtility.Or(ctx, Left, Right);
+        protected override ResultCore DoParse(Reader src) => ParsecUtility.Or(src, Left, Right);
     }
     sealed class OrParser : Parser
     {
@@ -51,6 +51,6 @@ namespace Unclazz.Parsec.Intrinsics
         internal Parser Left { get; }
         internal Parser Right { get; }
 
-        protected override ResultCore DoParse(Context ctx) => ParsecUtility.Or(ctx, Left, Right);
+        protected override ResultCore DoParse(Reader src) => ParsecUtility.Or(src, Left, Right);
     }
 }

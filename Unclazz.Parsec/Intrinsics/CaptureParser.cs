@@ -14,17 +14,17 @@ namespace Unclazz.Parsec.Intrinsics
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="src"></param>
         /// <returns>パース結果</returns>
-        protected override ResultCore<string> DoParse(Context ctx)
+        protected override ResultCore<string> DoParse(Reader src)
         {
-            ctx.Source.Mark();
-            var r = _parse.Parse(ctx);
+            src.Mark();
+            var r = _parse.Parse(src);
             if (r.Successful)
             {
-                return r.Typed(ctx.Source.Capture(true));
+                return r.Typed(src.Capture(true));
             }
-            ctx.Source.Unmark();
+            src.Unmark();
             return r.Typed<string>();
         }
     }

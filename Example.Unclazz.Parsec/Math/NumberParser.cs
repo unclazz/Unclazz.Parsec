@@ -20,9 +20,9 @@ namespace Example.Unclazz.Parsec.Math
             Parser<string> raw = (signOpt & integral & fractionalOpt & exponentOpt).Capture();
             _number = raw.Map(double.Parse);
         }
-        protected override ResultCore<double> DoParse(Context ctx)
+        protected override ResultCore<double> DoParse(Reader src)
         {
-            return _number.Parse(ctx);
+            return _number.Parse(src);
         }
     }
 }

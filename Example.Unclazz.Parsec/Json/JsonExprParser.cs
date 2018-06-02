@@ -46,9 +46,9 @@ namespace Example.Unclazz.Parsec
                 a0 => a0.Build());
         }
 
-        protected override ResultCore<IJsonObject> DoParse(Context ctx)
+        protected override ResultCore<IJsonObject> DoParse(Reader src)
         {
-            return jsonExpr.Parse(ctx);
+            return jsonExpr.Parse(src);
         }
     }
 }

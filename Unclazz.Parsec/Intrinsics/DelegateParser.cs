@@ -4,42 +4,42 @@ namespace Unclazz.Parsec.Intrinsics
 {
     sealed class DelegateParser<T> : Parser<T>
     {
-        internal DelegateParser(Func<Context, ResultCore<T>> func) : base("Delegate")
+        internal DelegateParser(Func<Reader, ResultCore<T>> func) : base("Delegate")
         {
             _delegate1 = func ?? throw new ArgumentNullException(nameof(func));
         }
-        internal DelegateParser(Func<Context, Result<T>> func) : base("Delegate")
+        internal DelegateParser(Func<Reader, Result<T>> func) : base("Delegate")
         {
             _delegate2 = func ?? throw new ArgumentNullException(nameof(func));
         }
 
-        readonly Func<Context, ResultCore<T>> _delegate1;
-        readonly Func<Context, Result<T>> _delegate2;
+        readonly Func<Reader, ResultCore<T>> _delegate1;
+        readonly Func<Reader, Result<T>> _delegate2;
 
-        protected override ResultCore<T> DoParse(Context ctx)
+        protected override ResultCore<T> DoParse(Reader src)
         {
-            if (_delegate1 == null) return _delegate2(ctx);
-            else return _delegate1(ctx);
+            if (_delegate1 == null) return _delegate2(src);
+            else return _delegate1(src);
         }
     }
     sealed class DelegateParser : Parser
     {
-        internal DelegateParser(Func<Context, ResultCore> func) : base("Delegate")
+        internal DelegateParser(Func<Reader, ResultCore> func) : base("Delegate")
         {
             _delegate1 = func ?? throw new ArgumentNullException(nameof(func));
         }
-        internal DelegateParser(Func<Context, Result> func) : base("Delegate")
+        internal DelegateParser(Func<Reader, Result> func) : base("Delegate")
         {
             _delegate2 = func ?? throw new ArgumentNullException(nameof(func));
         }
 
-        readonly Func<Context, ResultCore> _delegate1;
-        readonly Func<Context, Result> _delegate2;
+        readonly Func<Reader, ResultCore> _delegate1;
+        readonly Func<Reader, Result> _delegate2;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            if (_delegate1 == null) return _delegate2(ctx);
-            else return _delegate1(ctx);
+            if (_delegate1 == null) return _delegate2(src);
+            else return _delegate1(src);
         }
     }
 }
