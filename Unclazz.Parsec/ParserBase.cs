@@ -11,11 +11,6 @@ namespace Unclazz.Parsec
     /// </summary>
     public abstract class ParserBase
     {
-        static Parser _cachedBeginningOfFile;
-        static Parser _cachedEndOfFile;
-        static Parser _cachedWhileSpaceAndControls;
-        static Parser<int> _hexDigits;
-        static Parser<double> _number;
 
         /// <summary>
         /// デフォルトのコンストラクタです。
@@ -41,6 +36,12 @@ namespace Unclazz.Parsec
         protected internal string Name { get; }
 
         #region 定義済みパーサーを提供するプロパティの宣言
+        static Parser _cachedBeginningOfFile;
+        static Parser _cachedEndOfFile;
+        static Parser _cachedWhileSpaceAndControls;
+        static Parser<int> _hexDigits;
+        static Parser<double> _number;
+
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
         /// </summary>
