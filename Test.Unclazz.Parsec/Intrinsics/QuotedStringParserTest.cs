@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class QuotedStringParserTest
+    public class QuotedStringParserTest: ParserBase
     {
         readonly Parser<string> quoted0 = QuotedString();
         readonly Parser<string> quoted1 = QuotedString(escape: ControlEscape() | Utf16UnicodeEscape() | CharEscape("\""));

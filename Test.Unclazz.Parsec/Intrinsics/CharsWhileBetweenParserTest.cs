@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec
 {
     [TestFixture]
-    public class CharsWhileBetweenParserTest
+    public class CharsWhileBetweenParserTest : ParserBase
     {
         [TestCase("0123456789X", '0', '0', true, 1)]
         [TestCase("0123456789X", '0', '1', true, 2)]

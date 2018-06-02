@@ -189,22 +189,5 @@ namespace Unclazz.Parsec
             }
             _disposed = true;
         }
-        /// <summary>
-        /// リーダーからコンテキストを作成します。
-        /// </summary>
-        /// <returns></returns>
-        public Context ToContext()
-        {
-            return new Context(this);
-        }
-        /// <summary>
-        /// リーダーからコンテキストを作成し、コンフィギュレーションを変更します。
-        /// </summary>
-        /// <param name="act"></param>
-        /// <returns></returns>
-        public Context ToContext(Action<ContextConfigurer> act)
-        {
-            return ToContext().Configure(act ?? throw new ArgumentNullException(nameof(act)));
-        }
     }
 }

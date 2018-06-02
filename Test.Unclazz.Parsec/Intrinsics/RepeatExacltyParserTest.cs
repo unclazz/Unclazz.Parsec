@@ -1,13 +1,12 @@
 ﻿using NUnit.Framework;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 using System;
 using Unclazz.Parsec.Intrinsics;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class RepeatExacltyParserTest
+    public class RepeatExacltyParserTest : ParserBase
     {
         [TestCase("hello", 0, false)]
         [TestCase("hello", 1, false)]

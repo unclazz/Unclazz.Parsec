@@ -8,7 +8,7 @@ namespace Unclazz.Parsec
     /// <summary>
     /// <see cref="Parser{T}"/>のための拡張メソッドを提供する静的クラスです。
     /// </summary>
-    public static class ParserExtension
+    public static class ParserExtensions
     {
         /// <summary>
         /// シーケンス要素の集約を行います。

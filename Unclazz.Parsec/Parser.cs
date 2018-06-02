@@ -12,11 +12,11 @@ namespace Unclazz.Parsec
     /// キャプチャが必要な場合は<see cref="Capture"/>や<see cref="Map{U}(Func{string, U})"/>メソッドを呼び出します。
     /// </para>
     /// </summary>
-    public abstract class Parser
+    public abstract class Parser : ParserBase
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
-        /// <see cref="Parsers.Not(Parser)"/>と同義です。
+        /// <see cref="ParserBase.Not(Parser)"/>と同義です。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいインスタンス</returns>
@@ -91,23 +91,15 @@ namespace Unclazz.Parsec
         #endregion
 
         /// <summary>
-        /// デフォルトのコンフィギュレーションを使用するコンストラクタです。
+        /// デフォルトのコンストラクタです。
+        /// <see cref="ParserBase.Name"/>には型名から導出された値が設定されます。
         /// </summary>
-        protected Parser()
-        {
-            _name = Regex.Replace(GetType().Name, "Parser$", string.Empty);
-        }
+        protected Parser() : base() { }
         /// <summary>
-        /// 引数で指定されたコンフィギュレーションを使用するコンストラクタです。
+        /// 任意のパーサー名を指定できるコンストラクタです。
         /// </summary>
-        /// <param name="name"></param>
-        protected Parser(string name)
-        {
-            _name = name ?? throw new ArgumentNullException(nameof(name));
-        }
-
-        readonly static ParserFactory _factory = new ParserFactory();
-        readonly string _name;
+        /// <param name="name">パーサー名</param>
+        protected Parser(string name) : base(name) { }
 
         /// <summary>
         /// パースを行います。
@@ -177,11 +169,11 @@ namespace Unclazz.Parsec
         /// その後事後処理を終えてから、呼び出し元に結果を返します。
         /// </para>
         /// </summary>
-        /// <param name="input">入力データ</param>
+        /// <param name="src">入力データ</param>
         /// <returns>パース結果</returns>
-        public Result Parse(Reader input)
+        public Result Parse(Reader src)
         {
-            return Parse(new Context(input));
+            return Parse(new Context(src));
         }
         /// <summary>
         /// パースを行います。
@@ -207,7 +199,7 @@ namespace Unclazz.Parsec
             }
 
             var start = ctx.Source.Position;
-            ctx.PreParse(_name);
+            ctx.PreParse(Name);
             var resultCore = DoParse(ctx);
             ctx.PostParse(resultCore);
             return resultCore.AttachPosition(start, ctx.Source.Position);
@@ -311,16 +303,6 @@ namespace Unclazz.Parsec
         public Parser Repeat(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             return new RepeatParser<int>(Typed(0), min, max, exactly,sep).Untyped();
-        }
-        /// <summary>
-        /// パース対象に先行する指定された文字クラスをスキップするパーサーを返します。
-        /// <para>新しいパーサーを元に生成される他のパーサーもこの設定を引き継ぎます。</para>
-        /// </summary>
-        /// <param name="target">スキップ対象の文字クラス</param>
-        /// <returns>新しいパーサー</returns>
-        public Parser AutoSkip(CharClass target)
-        {
-            return new SkipParser(this, target);
         }
         /// <summary>
         /// このパーサーのパースが成功したあと引数で指定した別のパーサーのパースを行う新しいパーサーを返します。

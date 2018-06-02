@@ -1,11 +1,11 @@
 ﻿using NUnit.Framework;
 using System;
-using static Unclazz.Parsec.Parsers;
+using Unclazz.Parsec;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class YieldParserTest
+    public class YieldParserTest : ParserBase
     {
         [Test]
         public void Parse_Case1()

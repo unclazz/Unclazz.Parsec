@@ -1,12 +1,11 @@
 ﻿using NUnit.Framework;
 using System;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class ExactCharParserTest
+    public class ExactCharParserTest: ParserBase
     {
         [Test]
         public void Parse_Case1()

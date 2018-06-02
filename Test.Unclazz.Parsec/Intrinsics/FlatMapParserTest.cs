@@ -1,12 +1,11 @@
 ﻿using NUnit.Framework;
 using System;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class FlatMapParserTest
+    public class FlatMapParserTest : ParserBase
     {
         [Test]
         [Description("Parse - Case1 - パース失敗の場合")]

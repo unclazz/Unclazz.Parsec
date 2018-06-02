@@ -1,41 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Unclazz.Parsec.Intrinsics;
 
 namespace Unclazz.Parsec
 {
-
-    sealed class ParserFactory
+    /// <summary>
+    /// <see cref="Parser"/>と<see cref="Parser{T}"/>のベースクラスです。
+    /// 2つのクラスに共通するロジックを実装します。
+    /// </summary>
+    public abstract class ParserBase
     {
+        static Parser _cachedBeginningOfFile;
+        static Parser _cachedEndOfFile;
+        static Parser _cachedWhileSpaceAndControls;
+        static Parser<int> _hexDigits;
+        static Parser<double> _number;
 
-        #region IParserFactoryメンバーの宣言
-        Parser _cachedBeginningOfFile;
-        Parser _cachedEndOfFile;
-        Parser _cachedWhileSpaceAndControls;
-        Parser<int> _hexDigits;
-        Parser<double> _number;
+        /// <summary>
+        /// デフォルトのコンストラクタです。
+        /// パーサー名<see cref="Name"/>には型名から導出された値が設定されます。
+        /// </summary>
+        internal ParserBase()
+        {
+            Name = Regex.Replace(GetType().Name, "Parser$", string.Empty);
+        }
+        /// <summary>
+        /// 任意のパーサー名を指定できるコンストラクタです。
+        /// </summary>
+        /// <param name="name">パーサー名</param>
+        internal ParserBase(string name)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+        }
 
+        /// <summary>
+        /// パーサー名
+        /// </summary>
+        /// <value>パーサー名</value>
+        protected internal string Name { get; }
+
+        #region 定義済みパーサーを提供するプロパティの宣言
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
         /// </summary>
-        public Parser BeginningOfFile => _cachedEndOfFile ?? (_cachedBeginningOfFile = new BeginningOfFileParser());
+        protected static Parser BeginningOfFile => _cachedEndOfFile ?? (_cachedBeginningOfFile = new BeginningOfFileParser());
         /// <summary>
         /// データソースの終端（EOF）にだけマッチするパーサーです。
         /// </summary>
-        public Parser EndOfFile => _cachedEndOfFile ?? (_cachedEndOfFile = new EndOfFileParser());
+        protected static Parser EndOfFile => _cachedEndOfFile ?? (_cachedEndOfFile = new EndOfFileParser());
         /// <summary>
         /// 0文字以上の空白文字(コードポイント<c>32</c>）と
         /// 制御文字（同<c>0</c>から<c>31</c>と<c>127</c>）にマッチするパーサーです。
         /// </summary>
-        public Parser WhileSpaceAndControls => _cachedWhileSpaceAndControls 
+        protected static Parser WhileSpaceAndControls => _cachedWhileSpaceAndControls
             ?? (_cachedWhileSpaceAndControls = new CharsWhileInParser(CharClass.SpaceAndControl, 0));
         /// <summary>
         /// 16進数リテラルを読み取ります。
         /// </summary>
-        public Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
+        protected static Parser<int> HexDigits => _hexDigits ?? (_hexDigits = new HexDigitsParser());
         /// <summary>
         /// 数値リテラルを読み取ります。
         /// <para>
@@ -43,7 +66,7 @@ namespace Unclazz.Parsec
         /// オプションの符合で始まり、整数部、オプションの小数部、そしてオプションの指数部を含みます。
         /// </para>
         /// </summary>
-        public Parser<double> Number => _number ?? (_number = new NumberParser());
+        protected static Parser<double> Number => _number ?? (_number = new NumberParser());
 
         /// <summary>
         /// <c>"\\u"</c>もしくは任意の接頭辞から始まるUnicodeエスケープシーケンスを読み取ります。
@@ -51,7 +74,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public Parser<char> Utf16UnicodeEscape(string prefix = "\\u")
+        protected static Parser<char> Utf16UnicodeEscape(string prefix = "\\u")
         {
             return new Utf16UnicodeEscapeParser(prefix);
         }
@@ -60,7 +83,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public Parser<char> ControlEscape (char prefix = '\\')
+        protected static Parser<char> ControlEscape(char prefix = '\\')
         {
             return new ControlEscapeParser(prefix);
         }
@@ -71,7 +94,7 @@ namespace Unclazz.Parsec
         /// <param name="chars"></param>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
+        protected static Parser<char> CharEscape(IEnumerable<char> chars, char prefix = '\\')
         {
             return new EscapeCharInParser(chars, prefix);
         }
@@ -84,7 +107,7 @@ namespace Unclazz.Parsec
         /// <param name="quote"></param>
         /// <param name="escape"></param>
         /// <returns></returns>
-        public Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
+        protected static Parser<string> QuotedString(char quote = '\"', Parser<char> escape = null)
         {
             return new QuotedStringParser(quote, escape);
         }
@@ -95,7 +118,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Not<T>(Parser<T> operand)
+        protected static Parser Not<T>(Parser<T> operand)
         {
             return new NotParser<T>(operand);
         }
@@ -104,7 +127,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Not(Parser operand)
+        protected static Parser Not(Parser operand)
         {
             return new NotParser(operand);
         }
@@ -114,7 +137,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> For<T>(Func<Context, Result<T>> func)
+        protected static Parser<T> For<T>(Func<Context, Result<T>> func)
         {
             return new DelegateParser<T>(func);
         }
@@ -123,7 +146,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser For(Func<Context, Result> func)
+        protected static Parser For(Func<Context, Result> func)
         {
             return new DelegateParser(func);
         }
@@ -134,7 +157,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">パーサーが返す値の型</typeparam>
         /// <param name="factory">パーサーを生成するデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<T> Lazy<T>(Func<Parser<T>> factory)
+        protected static Parser<T> Lazy<T>(Func<Parser<T>> factory)
         {
             return new LazyParser<T>(factory);
         }
@@ -144,7 +167,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="factory">パーサーを生成するデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Lazy(Func<Parser> factory)
+        protected static Parser Lazy(Func<Parser> factory)
         {
             return new LazyParser(factory);
         }
@@ -154,7 +177,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Lookahead(Parser operand)
+        protected static Parser Lookahead(Parser operand)
         {
             return new LookaheadParser(operand);
         }
@@ -163,7 +186,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="ch">文字</param>
         /// <returns>新しいパーサー</returns>
-        public CharParser Char(char ch)
+        protected static CharParser Char(char ch)
         {
             return new ExactCharParser(ch);
         }
@@ -173,7 +196,7 @@ namespace Unclazz.Parsec
         /// <param name="start">範囲の開始</param>
         /// <param name="end">範囲の終了</param>
         /// <returns>新しいパーサー</returns>
-        public CharParser CharBetween(char start, char end)
+        protected static CharParser CharBetween(char start, char end)
         {
             return new CharClassParser(CharClass.Between(start, end));
         }
@@ -182,7 +205,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="clazz">文字クラス</param>
         /// <returns>新しいパーサー</returns>
-        public CharParser CharIn(CharClass clazz)
+        protected static CharParser CharIn(CharClass clazz)
         {
             return new CharClassParser(clazz);
         }
@@ -191,7 +214,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="chars">文字集合</param>
         /// <returns>新しいパーサー</returns>
-        public CharParser CharIn(IEnumerable<char> chars)
+        protected static CharParser CharIn(IEnumerable<char> chars)
         {
             return new CharClassParser(CharClass.AnyOf(chars));
         }
@@ -202,7 +225,7 @@ namespace Unclazz.Parsec
         /// <param name="end">範囲の終了</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharsWhileBetween(char start, char end, int min = 1)
+        protected static Parser CharsWhileBetween(char start, char end, int min = 1)
         {
             return new CharsWhileBetweenParser(start, end, min);
         }
@@ -212,7 +235,7 @@ namespace Unclazz.Parsec
         /// <param name="chars">文字集合</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharsWhileIn(IEnumerable<char> chars, int min = 1)
+        protected static Parser CharsWhileIn(IEnumerable<char> chars, int min = 1)
         {
             return new CharsWhileInParser(CharClass.AnyOf(chars), min);
         }
@@ -222,7 +245,7 @@ namespace Unclazz.Parsec
         /// <param name="clazz">文字クラス</param>
         /// <param name="min">最小の文字数</param>
         /// <returns>新しいパーサー</returns>
-        public Parser CharsWhileIn(CharClass clazz, int min = 1)
+        protected static Parser CharsWhileIn(CharClass clazz, int min = 1)
         {
             return new CharsWhileInParser(clazz, min);
         }
@@ -236,7 +259,7 @@ namespace Unclazz.Parsec
         /// <param name="keyword">キーワード</param>
         /// <param name="cutIndex">カットを行う文字位置</param>
         /// <returns>新しいパーサー</returns>
-        public Parser Keyword(string keyword, int cutIndex = -1)
+        protected static Parser Keyword(string keyword, int cutIndex = -1)
         {
             return new KeywordParser(keyword, cutIndex);
         }
@@ -245,7 +268,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="keywords">キーワード</param>
         /// <returns>新しいパーサー</returns>
-        public Parser KeywordIn(params string[] keywords)
+        protected static Parser KeywordIn(params string[] keywords)
         {
             return new KeywordInParser(keywords);
         }
@@ -258,7 +281,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="U">任意の型</typeparam>
         /// <param name="value">キャプチャ結果となる値</param>
         /// <returns>新しいパーサー</returns>
-        public Parser<U> Yield<U>(U value)
+        protected static Parser<U> Yield<U>(U value)
         {
             return new YieldParser<U>(value);
         }

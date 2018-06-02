@@ -2,12 +2,11 @@
 using System;
 using System.Linq;
 using Unclazz.Parsec;
-using static Unclazz.Parsec.Parsers;
 
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class DoubleParserTest
+    public class DoubleParserTest: ParserBase
     {
         [Test]
         [Description("Parse - Case#1 - パース失敗時")]

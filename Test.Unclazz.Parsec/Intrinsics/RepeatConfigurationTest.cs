@@ -10,7 +10,7 @@ using Unclazz.Parsec.Intrinsics;
 namespace Test.Unclazz.Parsec.Intrinsics
 {
     [TestFixture]
-    public class RepeatConfigurationTest
+    public class RepeatConfigurationTest : ParserBase
     {
         [Test]
         public void Ctor_Case01_NoArgs()
@@ -107,7 +107,7 @@ namespace Test.Unclazz.Parsec.Intrinsics
         {
             // Arrange
             // Act
-            var c = new RepeatConfiguration(sep: Parsers.Char('a'));
+            var c = new RepeatConfiguration(sep: Char('a'));
 
             // Assert
             Assert.That(c.Breakable, Is.True);
