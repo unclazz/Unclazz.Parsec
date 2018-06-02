@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>Unclazz.Parsec</id>
-    <version>1.0.0.1</version>
+    <version>1.1.0.0</version>
     <authors>unclazz.org</authors>
     <licenseUrl>https://github.com/unclazz/Unclazz.Parsec/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/unclazz/Unclazz.Parsec</projectUrl>
     <iconUrl>https://github.com/unclazz/Unclazz.Parsec/blob/master/icon.png?raw=true</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A parser combinator library in C#</description>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright 2018</copyright>
   </metadata>
   <files>
     <file src="lib/net40/Unclazz.Parsec.dll" target="lib/net40"/>
