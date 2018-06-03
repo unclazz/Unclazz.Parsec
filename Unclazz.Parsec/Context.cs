@@ -172,7 +172,7 @@ namespace Unclazz.Parsec
             var pos = _reader.Position;
             return new StringBuilder()
                 .Append(' ', (_stack.Count - 1) * 2)
-                .Append(sign).Append(' ').Append(_stack.Peek())
+                .Append(sign).Append(' ').Append(_stack.Peek().ParserName)
                 .Append(" (ln=").Append(pos.Line).Append(", col=")
                 .Append(pos.Column).Append(", idx=").Append(pos.Index).Append(") ");
         }
