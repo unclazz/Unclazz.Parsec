@@ -42,5 +42,14 @@ namespace Test.Unclazz.Parsec.Intrinsics
             Assert.That(result.Successful, Is.True);
             Assert.That(result.End.Index, Is.EqualTo(7));
         }
+
+        [Test]
+        public void Parse_Case5()
+        {
+            var result = SkipTo("*/").Parse("/* *abc");
+
+            Assert.That(result.Successful, Is.False);
+            Assert.That(result.End.Index, Is.EqualTo(7));
+        }
     }
 }
