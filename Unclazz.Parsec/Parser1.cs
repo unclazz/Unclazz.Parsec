@@ -28,7 +28,7 @@ namespace Unclazz.Parsec
         /// デリゲートをもとにパーサーを生成します。
         /// </summary>
         /// <param name="func"></param>
-        public static implicit operator Parser<T>(Func<Context, Result<T>> func)
+        public static implicit operator Parser<T>(Func<Reader, Result<T>> func)
         {
             return For(func);
         }
@@ -157,9 +157,9 @@ namespace Unclazz.Parsec
         /// <see cref="ResultCore{T}"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="src"></param>
         /// <returns>パース結果</returns>
-        protected abstract ResultCore<T> DoParse(Context ctx);
+        protected abstract ResultCore<T> DoParse(Reader src);
 
         /// <summary>
         /// パースを行います。
@@ -171,39 +171,19 @@ namespace Unclazz.Parsec
         /// <see cref="Result{T}"/>を通じて呼び出し元に通知されます。
         /// </para>
         /// <para>
-        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Context)"/>を呼び出します。
+        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Reader)"/>を呼び出します。
         /// その後事後処理を終えてから、呼び出し元に結果を返します。
         /// </para>
         /// </summary>
-        /// <param name="src">入力データ</param>
+        /// <param name="src"></param>
         /// <returns>パース結果</returns>
         public Result<T> Parse(Reader src)
         {
-            return Parse(new Context(src));
-        }
-        /// <summary>
-        /// パースを行います。
-        /// <para>
-        /// パース成否は戻り値の<see cref="Result{T}"/>のインスタンスで表されます。
-        /// このメソッドはいかなる場合も<c>null</c>を返しません。
-        /// またこのメソッドは原則として例外スローも行いません。
-        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
-        /// <see cref="Result{T}"/>を通じて呼び出し元に通知されます。
-        /// </para>
-        /// <para>
-        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Context)"/>を呼び出します。
-        /// その後事後処理を終えてから、呼び出し元に結果を返します。
-        /// </para>
-        /// </summary>
-        /// <param name="ctx"></param>
-        /// <returns>パース結果</returns>
-        public Result<T> Parse(Context ctx)
-        {
-            var start = ctx.Source.Position;
-            ctx.PreParse(Name);
-            var resultCore = DoParse(ctx);
-            ctx.PostParse(resultCore);
-            return resultCore.AttachPosition(start, ctx.Source.Position);
+            var start = src.Position;
+            src.Context.PreParse(Name);
+            var resultCore = DoParse(src);
+            src.Context.PostParse(resultCore);
+            return resultCore.AttachPosition(start, src.Position);
         }
         /// <summary>
         /// パース成功を表す<see cref="ResultCore{T}"/>インスタンスを生成します。

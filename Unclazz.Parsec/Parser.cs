@@ -16,6 +16,26 @@ namespace Unclazz.Parsec
     {
         #region 演算子オーバーロードの宣言
         /// <summary>
+        /// 暗黙の型変換をします。
+        /// </summary>
+        /// <returns>キーワードにマッチするパーサー</returns>
+        /// <param name="keyword">キーワード</param>
+        public static implicit operator Parser(string keyword)
+        {
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            if (keyword.Length == 0) throw new ArgumentException("keyword must not be empty");
+            return Keyword(keyword);
+        }
+        /// <summary>
+        /// 暗黙の型変換をします。
+        /// </summary>
+        /// <returns>文字にマッチするパーサー</returns>
+        /// <param name="ch">文字</param>
+        public static implicit operator Parser(char ch)
+        {
+            return Char(ch);
+        }
+        /// <summary>
         /// <see cref="ParserBase.Not(Parser)"/>と同義です。
         /// </summary>
         /// <param name="operand">元になるパーサー</param>
@@ -112,9 +132,9 @@ namespace Unclazz.Parsec
         /// <see cref="ResultCore"/>を通じて呼び出し元に通知される必要があります。
         /// </para>
         /// </summary>
-        /// <param name="input">入力データ</param>
+        /// <param name="src">入力データ</param>
         /// <returns>パース結果</returns>
-        protected abstract ResultCore DoParse(Context input);
+        protected abstract ResultCore DoParse(Reader src);
 
         /// <summary>
         /// パース成功を表す<see cref="ResultCore"/>インスタンスを生成します。
@@ -165,44 +185,24 @@ namespace Unclazz.Parsec
         /// <see cref="Result"/>を通じて呼び出し元に通知されます。
         /// </para>
         /// <para>
-        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Context)"/>を呼び出します。
+        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Reader)"/>を呼び出します。
         /// その後事後処理を終えてから、呼び出し元に結果を返します。
         /// </para>
         /// </summary>
-        /// <param name="src">入力データ</param>
+        /// <param name="src"></param>
         /// <returns>パース結果</returns>
         public Result Parse(Reader src)
         {
-            return Parse(new Context(src));
-        }
-        /// <summary>
-        /// パースを行います。
-        /// <para>
-        /// パース成否は戻り値の<see cref="Result"/>のインスタンスで表されます。
-        /// このメソッドはいかなる場合も<c>null</c>を返しません。
-        /// またこのメソッドは原則として例外スローも行いません。
-        /// 正常・異常を問わずこのメソッド内で起こったことはすべて
-        /// <see cref="Result"/>を通じて呼び出し元に通知されます。
-        /// </para>
-        /// <para>
-        /// このメソッドは事前処理の後、具象クラスが実装する<see cref="DoParse(Context)"/>を呼び出します。
-        /// その後事後処理を終えてから、呼び出し元に結果を返します。
-        /// </para>
-        /// </summary>
-        /// <param name="ctx"></param>
-        /// <returns>パース結果</returns>
-        public Result Parse(Context ctx)
-        {
-            if (ctx == null)
+            if (src == null)
             {
-                throw new ArgumentNullException(nameof(ctx));
+                throw new ArgumentNullException(nameof(src));
             }
 
-            var start = ctx.Source.Position;
-            ctx.PreParse(Name);
-            var resultCore = DoParse(ctx);
-            ctx.PostParse(resultCore);
-            return resultCore.AttachPosition(start, ctx.Source.Position);
+            var start = src.Position;
+            src.Context.PreParse(Name);
+            var resultCore = DoParse(src);
+            src.Context.PostParse(resultCore);
+            return resultCore.AttachPosition(start, src.Position);
         }
 
         /// <summary>

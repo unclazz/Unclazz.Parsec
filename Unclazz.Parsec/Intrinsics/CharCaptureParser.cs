@@ -13,12 +13,12 @@
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="src"></param>
         /// <returns></returns>
-        protected override ResultCore<char> DoParse(Context ctx)
+        protected override ResultCore<char> DoParse(Reader src)
         {
-            var ch = ctx.Source.Peek();
-            var res = _original.Parse(ctx);
+            var ch = src.Peek();
+            var res = _original.Parse(src);
             return res.Successful ? Success((char)ch) : Failure(res.Message);
         }
     }

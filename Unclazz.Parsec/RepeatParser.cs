@@ -19,11 +19,11 @@ namespace Unclazz.Parsec
         /// <summary>
         /// パースを行います。
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="src"></param>
         /// <returns></returns>
-        protected override ResultCore<Seq<T>> DoParse(Context ctx)
+        protected override ResultCore<Seq<T>> DoParse(Reader src)
         {
-            return _inner.Parse(ctx);
+            return _inner.Parse(src);
         }
         /// <summary>
         /// シーケンス要素の集約を行います。

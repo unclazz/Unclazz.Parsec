@@ -14,11 +14,11 @@ namespace Unclazz.Parsec.Intrinsics
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
         readonly Parser<TSource> _original;
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
             // 元になったパーサーでパース、
             // 結果型の変更（剥奪）のみ行って呼び出し元に返す
-            return _original.Parse(ctx).Untyped();
+            return _original.Parse(src).Untyped();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Unclazz.Parsec
     /// <summary>
     /// <see cref="Parser{T}"/>の派生クラスのパース結果となる構造体です。
     /// <para>
-    /// <see cref="Parser{T}.DoParse(Context)"/>の戻り値<see cref="ResultCore{T}"/>に対して、
+    /// <see cref="Parser{T}.DoParse(Reader)"/>の戻り値<see cref="ResultCore{T}"/>に対して、
     /// パースの開始と終了の文字位置が付与されたものです。
     /// この文字位置の付与の操作は<see cref="Parser{T}.Parse(Reader)"/>の中で自動的に行われます。
     /// </para>

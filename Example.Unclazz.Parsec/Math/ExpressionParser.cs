@@ -22,9 +22,9 @@ namespace Example.Unclazz.Parsec.Math
             number = new NumberParser();
         }
 
-        protected override ResultCore<double> DoParse(Context ctx)
+        protected override ResultCore<double> DoParse(Reader src)
         {
-            return (Expr() & EndOfFile).Parse(ctx);
+            return (Expr() & EndOfFile).Parse(src);
         }
         Parser<double> Expr()
         {

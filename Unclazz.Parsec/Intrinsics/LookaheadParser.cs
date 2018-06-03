@@ -9,11 +9,11 @@ namespace Unclazz.Parsec.Intrinsics
             _original = original ?? throw new ArgumentNullException(nameof(original));
         }
         readonly Parser _original;
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            ctx.Source.Mark();
-            var res = _original.Parse(ctx);
-            ctx.Source.Reset(true);
+            src.Mark();
+            var res = _original.Parse(src);
+            src.Reset(true);
             return res;
         }
     }

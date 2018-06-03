@@ -13,7 +13,7 @@
             _value = value;
         }
         readonly TResult _value;
-        protected override ResultCore<TResult> DoParse(Context ctx)
+        protected override ResultCore<TResult> DoParse(Reader src)
         {
             // いつでも成功
             return Success(_value);

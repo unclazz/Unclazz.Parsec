@@ -5,7 +5,7 @@ namespace Unclazz.Parsec
     /// <summary>
     /// <see cref="Parser"/>の派生クラスのパース結果中核部となる構造体です。
     /// <para>
-    /// <see cref="Parser"/>実装者は抽象メソッド<see cref="Parser.DoParse(Context)"/>を実装するとき、
+    /// <see cref="Parser"/>実装者は抽象メソッド<see cref="Parser.DoParse(Reader)"/>を実装するとき、
     /// このメソッドの戻り値として<see cref="ResultCore"/>構造体のインスタンスを返す必要があります。
     /// </para>
     /// </summary>

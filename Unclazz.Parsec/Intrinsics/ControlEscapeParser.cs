@@ -10,9 +10,9 @@ namespace Unclazz.Parsec.Intrinsics
             _control = Char(prefix) & CharIn("0abtnvfre").Capture().Map(Unescape);
         }
         readonly Parser<char> _control;
-        protected override ResultCore<char> DoParse(Context ctx)
+        protected override ResultCore<char> DoParse(Reader src)
         {
-            return _control.Parse(ctx);
+            return _control.Parse(src);
         }
         char Unescape(char escape)
         {

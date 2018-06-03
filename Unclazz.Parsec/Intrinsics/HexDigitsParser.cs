@@ -12,9 +12,9 @@ namespace Unclazz.Parsec.Intrinsics
                 .Map(HexDigits_HexDigitToInt).Repeat(min, max, exactly)
                 .Reduce((a, b) => a * 16 + b);
         }
-        protected override ResultCore<int> DoParse(Context ctx)
+        protected override ResultCore<int> DoParse(Reader src)
         {
-            return _hexDigits.Parse(ctx);
+            return _hexDigits.Parse(src);
         }
         readonly Parser<int> _hexDigits;
         int HexDigits_HexDigitToInt(char ch)

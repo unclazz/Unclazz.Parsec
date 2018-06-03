@@ -11,16 +11,16 @@ namespace Unclazz.Parsec.Intrinsics
         }
         public Parser Left { get; }
         public Parser Right { get; }
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
             // 左側のパーサーでパース
-            var leftResult = Left.Parse(ctx);
+            var leftResult = Left.Parse(src);
 
             // 結果NGの場合、ただちにその結果を呼び出し元に帰す
             if (!leftResult.Successful) return leftResult;
 
             // 右側のパーサーでパース
-            var rightResult = Right.Parse(ctx);
+            var rightResult = Right.Parse(src);
 
             // バックトラック設定を合成
             var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;

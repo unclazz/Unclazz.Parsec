@@ -25,7 +25,7 @@ namespace Unclazz.Parsec.Intrinsics
         readonly int _cut;
         readonly string _keyword;
 
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
             // キーワードの左側から順番に文字の照合を実施
             // ＊照合中にEOFに到達した場合も通常の文字と同じ比較処理で検出し
@@ -35,7 +35,7 @@ namespace Unclazz.Parsec.Intrinsics
                 // 期待される文字
                 var expected = _keyword[i];
                 // 実際の文字
-                var actual = ctx.Source.Read();
+                var actual = src.Read();
                 // 比較を行う
                 if (expected != actual)
                 {

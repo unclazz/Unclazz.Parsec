@@ -19,16 +19,16 @@ namespace Unclazz.Parsec.Intrinsics
         public Parser<T1> Left { get; }
         public Parser<T2> Right { get; }
 
-        protected override ResultCore<Tuple<T1, T2>> DoParse(Context ctx)
+        protected override ResultCore<Tuple<T1, T2>> DoParse(Reader src)
         {
             // 左側のパーサーでパース
-            var leftResult = Left.Parse(ctx);
+            var leftResult = Left.Parse(src);
             
             // 結果NGの場合、その結果を呼び出し元に返す
             if (!leftResult.Successful) return Failure(leftResult.Message);
 
             // 右側のパーサーでパース
-            var rightResult = Right.Parse(ctx);
+            var rightResult = Right.Parse(src);
 
             // 成否に関わらず左右のバックトラック設定を合成
             var canBacktrack = leftResult.CanBacktrack && rightResult.CanBacktrack;

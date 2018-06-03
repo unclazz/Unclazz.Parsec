@@ -8,9 +8,9 @@
             _unicode = Keyword(prefix, prefix.Length) & _hex4;
         }
         readonly Parser<char> _unicode;
-        protected override ResultCore<char> DoParse(Context ctx)
+        protected override ResultCore<char> DoParse(Reader src)
         {
-            return _unicode.Parse(ctx);
+            return _unicode.Parse(src);
         }
     }
 }

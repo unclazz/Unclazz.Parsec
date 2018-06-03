@@ -11,16 +11,16 @@ namespace Unclazz.Parsec.Intrinsics
 
         readonly Parser<T> _original;
 
-        protected override ResultCore<Optional<T>> DoParse(Context ctx)
+        protected override ResultCore<Optional<T>> DoParse(Reader src)
         {
-            ctx.Source.Mark();
-            var result = _original.Parse(ctx);
+            src.Mark();
+            var result = _original.Parse(src);
             if (result.Successful)
             {
-                ctx.Source.Unmark();
+                src.Unmark();
                 return result.Map(a => new Optional<T>(a));
             }
-            ctx.Source.Reset(true);
+            src.Reset(true);
             return Success(new Optional<T>());
         }
     }

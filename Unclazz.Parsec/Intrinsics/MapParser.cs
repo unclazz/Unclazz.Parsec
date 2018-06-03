@@ -16,9 +16,9 @@ namespace Unclazz.Parsec.Intrinsics
         readonly Func<TSource, TResult> _transform;
         readonly bool _canThrow;
 
-        protected override ResultCore<TResult> DoParse(Context ctx)
+        protected override ResultCore<TResult> DoParse(Reader src)
         {
-            var r = _source.Parse(ctx);
+            var r = _source.Parse(src);
             try
             {
                 return r.Map(_transform);

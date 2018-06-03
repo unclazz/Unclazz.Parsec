@@ -82,6 +82,7 @@
     <Compile Include="Intrinsics\KeywordParserTest.cs" />
     <Compile Include="SeqTest.cs" />
     <Compile Include="TestUtility.cs" />
+    <Compile Include="Intrinsics\SkipToParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

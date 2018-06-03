@@ -11,11 +11,6 @@ namespace Unclazz.Parsec
     /// </summary>
     public abstract class ParserBase
     {
-        static Parser _cachedBeginningOfFile;
-        static Parser _cachedEndOfFile;
-        static Parser _cachedWhileSpaceAndControls;
-        static Parser<int> _hexDigits;
-        static Parser<double> _number;
 
         /// <summary>
         /// デフォルトのコンストラクタです。
@@ -41,6 +36,12 @@ namespace Unclazz.Parsec
         protected internal string Name { get; }
 
         #region 定義済みパーサーを提供するプロパティの宣言
+        static Parser _cachedBeginningOfFile;
+        static Parser _cachedEndOfFile;
+        static Parser _cachedWhileSpaceAndControls;
+        static Parser<int> _hexDigits;
+        static Parser<double> _number;
+
         /// <summary>
         /// データソースの先頭（BOF）にだけマッチするパーサーです。
         /// </summary>
@@ -137,7 +138,7 @@ namespace Unclazz.Parsec
         /// <typeparam name="T">任意の型</typeparam>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        protected static Parser<T> For<T>(Func<Context, Result<T>> func)
+        protected static Parser<T> For<T>(Func<Reader, Result<T>> func)
         {
             return new DelegateParser<T>(func);
         }
@@ -146,7 +147,7 @@ namespace Unclazz.Parsec
         /// </summary>
         /// <param name="func">パースの実処理を行うデリゲート</param>
         /// <returns>新しいパーサー</returns>
-        protected static Parser For(Func<Context, Result> func)
+        protected static Parser For(Func<Reader, Result> func)
         {
             return new DelegateParser(func);
         }
@@ -284,6 +285,15 @@ namespace Unclazz.Parsec
         protected static Parser<U> Yield<U>(U value)
         {
             return new YieldParser<U>(value);
+        }
+        /// <summary>
+        /// 指定されたパーサーがマッチするまで入力データを1文字ずつ先に読み進めるパーサーを生成します。
+        /// </summary>
+        /// <returns>新しいパーサー</returns>
+        /// <param name="end">パーサー</param>
+        protected static Parser SkipTo(Parser end)
+        {
+            return new SkipToParser(end);
         }
         #endregion
     }

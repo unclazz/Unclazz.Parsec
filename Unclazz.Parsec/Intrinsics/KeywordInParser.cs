@@ -85,9 +85,9 @@ namespace Unclazz.Parsec.Intrinsics
         }
         readonly string[] _keywords;
         readonly Parser _parser;
-        protected override ResultCore DoParse(Context ctx)
+        protected override ResultCore DoParse(Reader src)
         {
-            return _parser.Parse(ctx);
+            return _parser.Parse(src);
         }
     }
 }

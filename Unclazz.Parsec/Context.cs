@@ -8,67 +8,30 @@ namespace Unclazz.Parsec
 {
     /// <summary>
     /// パース処理のコンテキストを表すクラスです。
-    /// <para>パーサー開発者に対して入力データソースへのアクセスやロギングAPIを提供します。</para>
-    /// <para>このクラスのインスタンスは<see cref="string"/>や<see cref="Reader"/>からの暗黙キャストのほか、
-    /// <see cref="Context.Create(Reader)"/>とその多重定義を通じても取得できます。</para>
+    /// <para>パーサー開発者に対してパーサー呼び出し階層へのアクセスやロギング機能を提供します。</para>
     /// </summary>
     public sealed class Context
     {
-        /// <summary>
-        /// 暗黙のキャストを行います。
-        /// </summary>
-        /// <param name="text"></param>
-        public static implicit operator Context(string text)
+        internal Context(Reader source, bool callStack, Action<string> logAppender)
         {
-            return new Context(Reader.From(text));
-        }
-        /// <summary>
-        /// 暗黙のキャストを行います。
-        /// </summary>
-        /// <param name="source"></param>
-        public static implicit operator Context(Reader source)
-        {
-            return new Context(source);
-        }
-        /// <summary>
-        /// 新しいインスタンスを生成して返します。
-        /// </summary>
-        /// <returns>新しいインスタンス</returns>
-        /// <param name="src">入力データ</param>
-        /// <exception cref="ArgumentNullException">引数が<c>null</c>である場合</exception>
-        public static Context Create(Reader src)
-        {
-            return new Context(src);
-        }
-        /// <summary>
-        /// 新しいインスタンスを生成して返します。
-        /// </summary>
-        /// <returns>新しいインスタンス</returns>
-        /// <param name="src">入力データ</param>
-        /// <param name="logAppender">ログ出力に使用されるアクション</param>
-        /// <exception cref="ArgumentNullException">引数のいずれかが<c>null</c>である場合</exception>
-        public static Context Create(Reader src, Action<string> logAppender)
-        {
-            return new Context(src, logAppender ?? throw new ArgumentNullException(nameof(logAppender)));
-        }
-
-        internal Context(Reader source) : this(source, null) { }
-        internal Context(Reader source, Action<string> logAppender)
-        {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            _stack = logAppender == null ? null : new Stack<string>();
-            _logAppender = logAppender;
+            _reader = source ?? throw new ArgumentNullException(nameof(source));
             _nolog = logAppender == null;
+            _nostack = !callStack && _nolog;
+            _stack = _nostack ? null : new Stack<ParseCall>();
+            _logAppender = logAppender;
         }
 
         readonly Action<string> _logAppender;
-        readonly Stack<string> _stack;
+        readonly Stack<ParseCall> _stack;
         readonly bool _nolog;
+        readonly bool _nostack;
+        readonly Reader _reader;
 
         /// <summary>
-        /// 入力データソースです。
+        /// 呼び出し階層です。
         /// </summary>
-        public Reader Source { get; }
+        /// <value></value>
+        public IEnumerable<ParseCall> CallStack => _stack?.ToArray();
         /// <summary>
         /// ロギングが有効な場合<c>true</c>です。
         /// </summary>
@@ -142,10 +105,13 @@ namespace Unclazz.Parsec
         /// <param name="parserName"></param>
         internal void PreParse(string parserName)
         {
+            // 呼び出し階層の記録がOFFの場合は処理を直ちに終了
+            if (_nostack) return;
+            // スタックにパーサー名を追加
+            _stack.Push(new ParseCall(parserName, _reader.Position, _stack.Count + 1));
+
             // アペンダーが存在しない場合は処理を直ちに終了
             if (_nolog) return;
-            // スタックにパーサー名を追加
-            _stack.Push(parserName);
             // パース開始を示すログメッセージを作成してアペンダーをコール
             _logAppender(MakeLabel('+').ToString());
         }
@@ -155,8 +121,15 @@ namespace Unclazz.Parsec
         /// <param name="result"></param>
         internal void PostParse(ResultCore result)
         {
+            // 呼び出し階層の記録がOFFの場合は処理を直ちに終了
+            if (_nostack) return;
+
             // アペンダーが存在しない場合は処理を直ちに終了
-            if (_nolog) return;
+            if (_nolog) 
+            {
+                _stack?.Pop();
+                return;
+            }
 
             // パース終了を示すログメッセージを作成してアペンダーをコール
             var buff = MakeLabel('-');
@@ -174,8 +147,15 @@ namespace Unclazz.Parsec
         /// <param name="result"></param>
         internal void PostParse<T>(ResultCore<T> result)
         {
+            // 呼び出し階層の記録がOFFの場合は処理を直ちに終了
+            if (_nostack) return;
+
             // アペンダーが存在しない場合は処理を直ちに終了
-            if (_nolog) return;
+            if (_nolog)
+            {
+                _stack?.Pop();
+                return;
+            }
 
             // パース終了を示すログメッセージを作成してアペンダーをコール
             var buff = MakeLabel('-');
@@ -189,13 +169,12 @@ namespace Unclazz.Parsec
         }
         StringBuilder MakeLabel(char sign)
         {
-            var pos = Source.Position;
+            var pos = _reader.Position;
             return new StringBuilder()
-                .Append(' ', (_stack.Count -1) * 2)
-                .Append(sign).Append(' ').Append(_stack.Peek())
+                .Append(' ', (_stack.Count - 1) * 2)
+                .Append(sign).Append(' ').Append(_stack.Peek().ParserName)
                 .Append(" (ln=").Append(pos.Line).Append(", col=")
                 .Append(pos.Column).Append(", idx=").Append(pos.Index).Append(") ");
         }
     }
-
 }

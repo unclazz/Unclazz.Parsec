@@ -18,11 +18,11 @@ namespace Unclazz.Parsec.Intrinsics
         }
         readonly Parser _original;
         readonly TResult _value;
-        protected override ResultCore<TResult> DoParse(Context ctx)
+        protected override ResultCore<TResult> DoParse(Reader src)
         {
             // 元になったパーサーでパースを実施、
             // 結果型の変換のみ行って呼び出し元に返す
-            return _original.Parse(ctx).Typed(_value);
+            return _original.Parse(src).Typed(_value);
         }
     }
 }
