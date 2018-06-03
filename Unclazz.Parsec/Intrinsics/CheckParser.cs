@@ -26,4 +26,37 @@ namespace Unclazz.Parsec.Intrinsics
             return result.Successful && !_check(result.Capture) ? Failure(_message) : result;
         }
     }
+    sealed class CheckParser : Parser<string>
+    {
+        internal CheckParser(Parser parser, Func<string, bool> check, string message)
+        {
+            _parser = parser ?? throw new ArgumentNullException(nameof(parser));
+            _check = check ?? throw new ArgumentNullException(nameof(check));
+            _message = message ?? throw new ArgumentNullException(nameof(message));
+        }
+
+        readonly Parser _parser;
+        readonly Func<string, bool> _check;
+        readonly string _message;
+
+        protected override ResultCore<string> DoParse(Reader src)
+        {
+            src.Mark();
+            var r = _parser.Parse(src);
+            if (r.Successful)
+            {
+                var value = src.Capture(true);
+                if (_check(value))
+                {
+                    return r.Typed(value);
+                }
+                else
+                {
+                    return Failure(_message);
+                }
+            }
+            src.Unmark();
+            return r.Typed<string>();
+        }
+    }
 }
