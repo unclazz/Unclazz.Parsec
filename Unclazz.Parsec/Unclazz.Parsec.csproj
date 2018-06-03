@@ -115,6 +115,7 @@
     <Compile Include="ParserBase.cs" />
     <Compile Include="Intrinsics\SkipToParser.cs" />
     <Compile Include="ParseCall.cs" />
+    <Compile Include="Intrinsics\CheckParser.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
