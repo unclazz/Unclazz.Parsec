@@ -36,6 +36,11 @@ namespace Unclazz.Parsec
         /// ロギングが有効な場合<c>true</c>です。
         /// </summary>
         public bool Logging => _logAppender != null;
+        /// <summary>
+        /// データを格納することができるディクショナリーです。
+        /// </summary>
+        /// <value></value>
+        public IDictionary<string, object> Data { get; } = new Dictionary<string, object>();
 
         /// <summary>
         /// ログを書き出します。

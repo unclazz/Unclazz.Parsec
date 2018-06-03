@@ -399,5 +399,16 @@ namespace Unclazz.Parsec
         {
             return new UntypedParser<T>(this);
         }
+        /// <summary>
+        /// 元のパーサーのパース結果をチェックして、
+        /// その結果がNGならパース失敗とみなす新しいパーサーを生成して返します。
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="check">チェックを行う関数</param>
+        /// <param name="message">チェック結果NGの場合に使用されるエラーメッセージ</param>
+        public Parser<T> Check(Func<T, bool> check, string message)
+        {
+            return new CheckParser<T>(this, check, message);
+        }
     }
 }

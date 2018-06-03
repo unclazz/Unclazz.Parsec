@@ -255,7 +255,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public Parser<U> Map<U>(Func<string, U> func, bool canThrow)
         {
-            return Capture().Map(func, canThrow);
+            return new MapParser<U>(this, func, canThrow);
         }
         /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
@@ -355,6 +355,17 @@ namespace Unclazz.Parsec
         {
             return new TypedParser<T>(this, value);
         }
-
+        /// <summary>
+        /// 元のパーサーのパース結果をチェックして、
+        /// その結果がNGならパース失敗とみなす新しいパーサーを生成して返します。
+        /// このメソッドの呼び出しは<c>Capture().Check(check, message)</c>と同義です。
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="check">チェックを行う関数</param>
+        /// <param name="message">チェック結果NGの場合に使用されるエラーメッセージ</param>
+        public Parser<string> Check(Func<string, bool> check, string message)
+        {
+            return new CheckParser(this, check, message);
+        }
     }
 }
