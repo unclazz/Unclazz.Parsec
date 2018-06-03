@@ -255,7 +255,7 @@ namespace Unclazz.Parsec
         /// <returns></returns>
         public Parser<U> Map<U>(Func<string, U> func, bool canThrow)
         {
-            return Capture().Map(func, canThrow);
+            return new MapParser<U>(this, func, canThrow);
         }
         /// <summary>
         /// このパーサーの読み取りが失敗したときに実行されるパーサーを指定します。
