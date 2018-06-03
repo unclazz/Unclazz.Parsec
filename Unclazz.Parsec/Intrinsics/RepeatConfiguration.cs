@@ -4,7 +4,7 @@ namespace Unclazz.Parsec.Intrinsics
 {
     sealed class RepeatConfiguration
     {
-        public RepeatConfiguration(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
+        internal RepeatConfiguration(int min = 0, int max = -1, int exactly = -1, Parser sep = null)
         {
             // exactlyが明示的に指定されているかチェック
             if (exactly == -1)

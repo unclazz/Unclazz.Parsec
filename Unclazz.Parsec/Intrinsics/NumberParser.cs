@@ -6,7 +6,7 @@ namespace Unclazz.Parsec.Intrinsics
     sealed class NumberParser : Parser<double>
     {
         readonly Parser<double> _number;
-        public NumberParser() : base("Number")
+        internal NumberParser() : base("Number")
         {
             var signOpt = CharIn("+-").OrNot();
             var digits = CharsWhileIn("0123456789", min: 0);

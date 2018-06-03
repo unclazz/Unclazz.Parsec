@@ -4,7 +4,7 @@ namespace Unclazz.Parsec.Intrinsics
 {
     sealed class ReduceConfiguration<T, U, V>
     {
-        public ReduceConfiguration(Func<U> seedFactory,
+        internal ReduceConfiguration(Func<U> seedFactory,
             Func<U, T, U> accumulator,
             Func<U, V> resultSelector)
         {

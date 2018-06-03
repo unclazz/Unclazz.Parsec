@@ -4,7 +4,7 @@ namespace Unclazz.Parsec.Intrinsics
 {
     sealed class CaptureParser : Parser<string>
     {
-        public CaptureParser(Parser parse) : base("Capture")
+        internal CaptureParser(Parser parse) : base("Capture")
         {
             _parse = parse ?? throw new ArgumentNullException(nameof(parse));
         }
