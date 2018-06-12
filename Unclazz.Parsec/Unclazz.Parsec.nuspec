@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Unclazz.Parsec</id>
-    <version>1.4.0.0</version>
+    <version>1.4.1.0</version>
     <authors>unclazz.org</authors>
     <licenseUrl>https://github.com/unclazz/Unclazz.Parsec/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/unclazz/Unclazz.Parsec</projectUrl>
@@ -18,5 +18,7 @@
     <file src="lib/net45/Unclazz.Parsec.xml" target="lib/net45"/>
     <file src="lib/net46/Unclazz.Parsec.dll" target="lib/net46"/>
     <file src="lib/net46/Unclazz.Parsec.xml" target="lib/net46"/>
+    <file src="lib/net47/Unclazz.Parsec.dll" target="lib/net47"/>
+    <file src="lib/net47/Unclazz.Parsec.xml" target="lib/net47"/>
   </files>
 </package>

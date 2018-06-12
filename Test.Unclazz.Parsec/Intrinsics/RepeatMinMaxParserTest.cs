@@ -76,5 +76,19 @@ namespace Test.Unclazz.Parsec.Intrinsics
             // Assert
             Assert.That(r1.Successful, Is.EqualTo(expectedResult));
         }
+
+        [TestCase(" abc", 0, true)] // 1回目は" "がパース成功、文字位置が移動していないので2回目に入らず、minを満たしているので成功
+        [TestCase("abc", 0, true)]  // 1回目は""がパース成功、文字位置が移動していないので2回目に入らず、minを満たしているので成功
+        [TestCase(" abc", 1, true)] // 1回目は" "がパース成功、文字位置が移動していないので2回目に入らず、minを満たしているので成功
+        [TestCase("abc", 1, true)]  // 1回目は""がパース成功、文字位置が移動していないので2回目に入らず、minを満たしているので成功
+        [TestCase(" abc", 2, true)] // 1回目は" "がパース成功、2回目は""がパース成功、文字位置が移動していないので3回目に入らず、minを満たしているので成功
+        [TestCase("abc", 2, false)] // 1回目は""がパース成功、文字位置が移動していないので2回目に入らず、minを満たないので失敗
+        public void Parse_Case3(string text, int min, bool result)
+        {
+            var sp = WhileSpaceAndControls.Repeat(min: min);
+            var src = Reader.From(text);
+            var res = sp.Parse(src);
+            Assert.That(res.Successful, Is.EqualTo(result));
+        }
     }
 }
