@@ -45,6 +45,9 @@ namespace Unclazz.Parsec.Intrinsics
             // 予め指定された回数のパースを試みる
             for (var i = 1; i <= _repMax; i++)
             {
+                // 初回の文字位置
+                var initIndex = src.Position.Index;
+
                 // min ＜ ループ回数 ならリセットのための準備
                 if (_repBreakable && _repMin < i) src.Mark();
 
@@ -86,6 +89,21 @@ namespace Unclazz.Parsec.Intrinsics
 
                 // min ＜ ループ回数 ならリセットのための準備を解除
                 if (_repBreakable && _repMin < i) src.Unmark();
+
+                // 仮に _original.Parse(...) によるトークンのパースに成功していても
+                // 現在位置が変化していない場合、ループを中断をする必要がある
+                if (initIndex == src.Position.Index)
+                {
+                    // 最少回数に満たない場合はパース失敗、そうでなければ成功
+                    if (i < _repMin)
+                    {
+                        return Failure(string.Format("token must exist at least {0} times.", _repMin));
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             return Success(_aggConf.ResultSelector(acc));
         }
